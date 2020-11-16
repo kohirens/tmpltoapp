@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    # docker run -it --entrypoint sh --rm -v  "${PWS}/:/go/src/github.com/kohirens/go-gitter/" --name gitter go_gitter_app
+    app:
+        build:
+            dockerfile: 'docker/Dockerfile'
+            context: '..'
+            target: 'dev'
+        cap_add:
+            - SYS_PTRACE
+            - SYSLOG
+        tty: true
+        security_opt:
+            - seccomp:unconfined
+        volumes:
+           - '../:/home/gitter/src/github.com/kohirens/go-gitter'
