@@ -5,8 +5,6 @@ ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 
-COPY ./docker/rsyslog.conf /etc/rsyslog.conf
-
 ENV GOPATH /home/$USER_NAME
 
 RUN apk --no-progress --purge --no-cache upgrade \
@@ -19,28 +17,32 @@ RUN apk --no-progress --purge --no-cache upgrade \
  && curl --version \
  && git --version
 
-RUN apk --no-progress --purge --no-cache upgrade \
- && apk --no-progress --purge --no-cache add --upgrade \
- && go get -u github.com/git-chglog/git-chglog/cmd/git-chglog \
- && go get -u -v golang.org/x/tools/gopls
-
 # Add a non-root group and user, helpful if you dev on Linux.
 RUN addgroup --system --gid $USER_GID $USER_GROUP \
  && adduser --system \
     --disabled-password \
     --ingroup $USER_GROUP \
     --uid $USER_UID \
-    $USER_NAME \
- && adduser $USER_NAME daemon
+    $USER_NAME
 
 USER gitter
 
+COPY --chown=$USER_NAME:$USER_GROUP ./docker/rsyslog.conf /home/gitter/rsyslog/rsyslog.conf
+
+RUN go get -u github.com/git-chglog/git-chglog/cmd/git-chglog \
+ && go get -u -v golang.org/x/tools/gopls
+
+RUN  mkdir -p ~/var/log \
+ && mkdir -p ~/rsyslog/spool \
+ && whoami && ls -la ~/
+#  && touch /home/gitter/rsyslog/rsyslog.pid
+
 WORKDIR /home/gitter/src/github.com/kohirens/go-gitter
 
-# ENTRYPOINT [ "syslogd" ]
 ENTRYPOINT [ "rsyslogd" ]
 
-CMD [ "-n" ]
+# Run your program under Tini
+CMD [ "-f", "/home/gitter/rsyslog/rsyslog.conf", "-i", "/home/gitter/rsyslog/rsyslog.pid", "-n" ]
 
 FROM dev AS build
 
@@ -58,4 +60,4 @@ COPY --from=build /home/$USER/bin /usr/local/bin
 
 ENTRYPOINT [ "gitter" ]
 
-CMD [ "" ]
+CMD [ "-h" ]
