@@ -11,7 +11,7 @@ RUN apk --no-progress --purge --no-cache upgrade \
  && apk --no-progress --purge --no-cache add --upgrade \
     curl \
     git \
-    rsyslog \
+    tini \
  && apk --no-progress --purge --no-cache upgrade \
  && rm -vrf /var/cache/apk/* \
  && curl --version \
@@ -27,22 +27,14 @@ RUN addgroup --system --gid $USER_GID $USER_GROUP \
 
 USER gitter
 
-COPY --chown=$USER_NAME:$USER_GROUP ./docker/rsyslog.conf /home/gitter/rsyslog/rsyslog.conf
-
 RUN go get -u github.com/git-chglog/git-chglog/cmd/git-chglog \
  && go get -u -v golang.org/x/tools/gopls
 
-RUN  mkdir -p ~/var/log \
- && mkdir -p ~/rsyslog/spool \
- && whoami && ls -la ~/
-#  && touch /home/gitter/rsyslog/rsyslog.pid
-
 WORKDIR /home/gitter/src/github.com/kohirens/go-gitter
 
-ENTRYPOINT [ "rsyslogd" ]
+ENTRYPOINT [ "tini", "--" ]
 
-# Run your program under Tini
-CMD [ "-f", "/home/gitter/rsyslog/rsyslog.conf", "-i", "/home/gitter/rsyslog/rsyslog.pid", "-n" ]
+CMD [ "tail", "-f", "/dev/null" ]
 
 FROM dev AS build
 
