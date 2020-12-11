@@ -6,6 +6,7 @@ ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 
 ENV GOPATH /home/$USER_NAME
+ENV GOFLAGS -mod=vendor
 
 RUN apk --no-progress --purge --no-cache upgrade \
  && apk --no-progress --purge --no-cache add --upgrade \
@@ -48,7 +49,7 @@ RUN go build
 
 FROM alpine3.12 AS release
 
-COPY --from=build /home/$USER/bin /usr/local/bin
+COPY  --chown=$USER_NAME:$USER_GROUP --from=build /home/$USER/bin /usr/local/bin
 
 ENTRYPOINT [ "gitter" ]
 

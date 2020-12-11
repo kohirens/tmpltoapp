@@ -8,10 +8,10 @@ services:
             context: '..'
             target: 'dev'
         cap_add:
-            - SYS_PTRACE
-            - SYSLOG
+            - 'SYS_PTRACE'
+            - 'SYSLOG'
         tty: true
         security_opt:
-            - seccomp:unconfined
+            - 'seccomp:unconfined'
         volumes:
            - '../:/home/gitter/src/github.com/kohirens/go-gitter'
