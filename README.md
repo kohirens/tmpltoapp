@@ -1,6 +1,7 @@
 # go-gitter
 
-Start a new project using a repos' directory structure as a manifest/blueprint.
+Start a new project using an existing directory structure as a
+manifest/blueprint.
 
 ## TOC
 
