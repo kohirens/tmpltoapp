@@ -7,6 +7,7 @@ ARG USER_GROUP='app_users'
 
 ENV GOPATH /home/$USER_NAME
 ENV GOFLAGS -mod=vendor
+ENV CGO_ENABLED=0
 
 RUN apk --no-progress --purge --no-cache upgrade \
  && apk --no-progress --purge --no-cache add --upgrade \
