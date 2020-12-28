@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+const (
+	tplPathKey = "templatePath"
+	appPathKey = "applicationPath"
+	answersKey = "applicationPath"
+)
+
 var verbosityLevel int = 0
 var errMsgs = [...]string{
 	"please specify a path (or URL) to a template",
