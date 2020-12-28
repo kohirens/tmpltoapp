@@ -11,7 +11,7 @@ const testTmp = "go_gitter_test_tmp"
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
-	os.Mkdir(testTmp, 0777) // set up a temporary dir for generate files
+	os.Mkdir(testTmp, 0774) // set up a temporary dir for generate files
 
 	// Create whatever test files are needed.
 
@@ -56,24 +56,22 @@ func xTestMainOutput(t *testing.T) {
 
 func TestInput(t *testing.T) {
 	var tests = []struct {
-		tpl, appName, ans, want string
+		name, tpl, appName, ans, want string
 	}{
-		{"", "", "", errMsgs[0]},
-		// {"non-existent", "", "", "The new application path is required."},
-		// {"htttps://github.com/dummy-template", "", "", "path/URL to template does not exist"},
+		{"noArgs", "", "", "", errMsgs[0]},
+		{"noAppPath", "test-template-path", "", "", errMsgs[1]},
+		// {"https://example.com/dummy-template", "appPath3", "", "path/URL to template is not in the allow-list"},
 		// {"./fixtures/tpl-1", "", "", "path/URL to template does not exist"},
 	}
 
 	for _, tt := range tests {
-
-		testName := fmt.Sprintf("%s,%s,%s", tt.tpl, tt.appName, tt.ans)
-		t.Run(testName, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			// backup args and restore after test run.
 			oldArgs := os.Args
 			defer func() { os.Args = oldArgs }()
 			// set args for test.
 			os.Args = []string{"dummyPath", tt.tpl, tt.appName, tt.ans}
-			//
+			// exec code.
 			_, gotErr := getArgs()
 
 			if !strings.Contains(gotErr.Error(), tt.want) {

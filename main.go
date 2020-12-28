@@ -13,6 +13,8 @@ var errMsgs = [...]string{
 	"enter a local path to output the app",
 }
 
+//TODO: add verbositry messages array.
+
 func main() {
 	// Ensure we exit with an error code and log message
 	// when needed after deferred cleanups have run.
@@ -23,43 +25,42 @@ func main() {
 			log.Fatalln(err)
 		}
 	}()
+
+	_, err = getArgs()
+}
+
+var answers string
+
+func init() {
+	flag.StringVar(&answers, "answers", "", "Path to an answer file.")
+	flag.IntVar(&verbosityLevel, "verbosity", 0, "extra detail processing info.")
 }
 
 func getArgs() (map[string]string, error) {
-	var tplPath string
-	var appPath string
-	var answers string
 	var err error
 	options := make(map[string]string)
 
 	verboseF(1, "no. arguments passed in: %d\n", len(os.Args))
 	verboseF(1, "arguments passed in: %v\n", os.Args)
 
-	if len(os.Args) < 2 {
-		err = fmt.Errorf("display help")
-	}
+	flag.Parse()
 
-	flag.StringVar(&answers, "answers", "", "Path to an answer file.")
-	flag.IntVar(&verbosityLevel, "verbosity", 0, "extra detail processing info.")
+	options[tplPathKey] = flag.Arg(0)
+	options[appPathKey] = flag.Arg(1)
 
-	options["tplPath"] = flag.Arg(0)
-	options["appPath"] = flag.Arg(1)
-
-	verboseF(1, "downloading \"%v\"\n", tplPath)
-	verboseF(1, "will make \"%v\"\n", appPath)
-
-	if options["tplPath"] == "" {
+	if options[tplPathKey] == "" {
 		err = fmt.Errorf(errMsgs[0])
 		return options, err
 	}
 
-	if options["appPath"] == "" {
+	if options[appPathKey] == "" {
 		err = fmt.Errorf(errMsgs[1])
 		return options, err
 	}
 
 	if answers != "" {
-		verboseF(1, "answer are located here: \"%v\"", answers)
+		verboseF(1, "will use answers in the file %q", answers)
+		options[answersKey] = answers
 	}
 
 	return options, err
