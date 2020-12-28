@@ -30,7 +30,9 @@ RUN addgroup --system --gid $USER_GID $USER_GROUP \
 USER gitter
 
 RUN go get -u github.com/git-chglog/git-chglog/cmd/git-chglog \
- && go get -u -v golang.org/x/tools/gopls
+ && go get -u -v golang.org/x/tools/gopls \
+ && go get -u -v github.com/go-delve/delve/cmd/dlv \
+ && go get -u -v github.com/ramya-rao-a/go-outline
 
 WORKDIR /home/gitter/src/github.com/kohirens/go-gitter
 
