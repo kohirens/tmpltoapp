@@ -4,7 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+
+	"github.com/kohirens/go-gitter/template"
 )
 
 const (
@@ -32,7 +35,13 @@ func main() {
 		}
 	}()
 
-	_, err = getArgs()
+	options, err := getArgs()
+	if err != nil {
+		return
+	}
+
+	client := http.Client{}
+	err = template.Download(options[tplPathKey], options[appPathKey], &client)
 }
 
 var answers string
