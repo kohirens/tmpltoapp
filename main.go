@@ -39,14 +39,15 @@ var answers string
 
 func init() {
 	flag.StringVar(&answers, "answers", "", "Path to an answer file.")
-	flag.IntVar(&verbosityLevel, "verbosity", 0, "extra detail processing info.")
+	flag.IntVar(&verbosityLevel, "verbose", 0, "extra detail processing info.")
 }
 
 func getArgs() (map[string]string, error) {
 	var err error
 	options := make(map[string]string)
 
-	verboseF(1, "no. arguments passed in: %d\n", len(os.Args))
+	verboseF(0, "verbose level: %v", verbosityLevel)
+	verboseF(1, "number of arguments passed in: %d\n", len(os.Args))
 	verboseF(1, "arguments passed in: %v\n", os.Args)
 
 	flag.Parse()
@@ -75,5 +76,6 @@ func getArgs() (map[string]string, error) {
 func verboseF(lvl int, message string, a ...interface{}) {
 	if verbosityLevel >= lvl {
 		fmt.Printf(message, a...)
+		fmt.Println()
 	}
 }
