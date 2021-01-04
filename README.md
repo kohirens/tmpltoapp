@@ -6,12 +6,27 @@ manifest/blueprint.
 ## TOC
 
 * [Description](#description)
+* [Installation](#installation)
 * [Get Started](#get-started)
 
 ## Description
 
 Copies one directory structure to another then process any files in the
 directoreis as Go templates.
+
+## Installation
+
+### Using Go
+
+```
+go get -u -v github.com/kohirens/go-gitter
+```
+
+### Using Docker
+
+```
+docker pull kohirens/go-gitter:latest
+```
 
 ## Get Started
 
