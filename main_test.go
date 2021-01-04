@@ -80,3 +80,40 @@ func TestInput(t *testing.T) {
 		})
 	}
 }
+
+func TestGetSettings(t *testing.T) {
+	var tests = []struct {
+		name, file, want string
+	}{
+		{"configNotFound", "does-not-exist", "could not open"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// exec code.
+			_, gotErr := settings(tt.file)
+
+			if !strings.Contains(gotErr.Error(), tt.want) {
+				t.Errorf("got %q, want %q", gotErr, tt.want)
+			}
+		})
+	}
+
+	t.Run("canReadConfig", func(t *testing.T) {
+		// exec code.
+		want := "test.com"
+		cfg, err := settings("fixtures/config.json")
+		if err != nil {
+			t.Errorf("got an unexpected error %v", err.Error())
+		}
+
+		got, ok := cfg.Array("urlsAllowed")
+		if !ok {
+			t.Errorf("got %v, want %v", ok, !ok)
+		}
+
+		if got[0] != want {
+			t.Errorf("got %v, want [%v]", got, want)
+		}
+	})
+}
