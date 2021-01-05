@@ -59,7 +59,7 @@ func main() {
 	}()
 
 	configFile := "settings.json"
-	appDataDir, er := stdlib.AppDataDir()
+	appDataDir, er := stdlib.HomeDir()
 	if er == nil {
 		configFile = appDataDir + PS + "settings.json"
 		return
