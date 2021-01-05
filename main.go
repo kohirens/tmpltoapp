@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/kohirens/go-gitter/stdlib"
 	"github.com/kohirens/go-gitter/template"
@@ -25,6 +26,7 @@ var errMsgs = [...]string{
 	"please specify a path (or URL) to a template",
 	"enter a local path to output the app",
 	"the following error occurred trying to get the app data directory: %q",
+	"path/URL to template is not in the allow-list",
 }
 
 type config map[string]interface{}
@@ -77,8 +79,20 @@ func main() {
 		return
 	}
 
-	client := http.Client{}
-	err = template.Download(options[tplPathKey].(string), options[appPathKey].(string), &client)
+	tplLoc := options[tplPathKey].(string)
+	allowedUrls, _ := options.Array("allowedUrls")
+	isUrl, isAllowed := urlIsAllowed(tplLoc, allowedUrls)
+
+	if isUrl && !isAllowed {
+		err = fmt.Errorf(errMsgs[3])
+		return
+	}
+
+	if isUrl {
+		client := http.Client{}
+		err = template.Download(tplLoc, options[appPathKey].(string), &client)
+	}
+	// TODO: local copy.
 }
 
 var answers string
@@ -88,7 +102,7 @@ func init() {
 	flag.IntVar(&verbosityLevel, "verbose", 0, "extra detail processing info.")
 }
 
-func getArgs() (map[string]interface{}, error) {
+func getArgs() (config, error) {
 	var err error
 	options := make(map[string]interface{})
 
@@ -136,6 +150,22 @@ func settings(filename string) (cfg config, err error) {
 
 	// Convert the interface to a map.
 	cfg = data.(map[string]interface{})
+
+	return
+}
+
+func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
+	isUrl = strings.HasPrefix(loc, "https://")
+	isAllowed = false
+
+	if isUrl {
+		for _, url := range urls {
+			if strings.HasPrefix(loc, url) {
+				isAllowed = true
+				break
+			}
+		}
+	}
 
 	return
 }

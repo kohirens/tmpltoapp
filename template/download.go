@@ -7,9 +7,7 @@ import (
 	"os"
 )
 
-var errMsgs = [...]string{
-	"path/URL to template is not in the allow-list",
-}
+var errMsgs = [...]string{}
 
 type Client interface {
 	Get(url string) (*http.Response, error)
@@ -17,11 +15,6 @@ type Client interface {
 
 /* Download a template from a URL. */
 func Download(url, dest string, client Client) error {
-
-	if !urlIsAllowed() {
-		return fmt.Errorf(errMsgs[0])
-	}
-
 	// Request
 	resp, err := client.Get(url)
 	if err != nil {
@@ -53,8 +46,4 @@ func fileExists(filename string) bool {
 
 func GetTempDir() {
 	os.TempDir()
-}
-
-func urlIsAllowed() bool {
-	return true
 }
