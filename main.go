@@ -15,16 +15,12 @@ import (
 )
 
 const (
-	tplPathKey = "templatePath"
-	appPathKey = "applicationPath"
-	answersKey = "applicationPath"
-	PS         = string(os.PathSeparator)
+	PS = string(os.PathSeparator)
 )
 
 var (
-	verbosityLevel int    = 0
-	answers        string = ""
-	errMsgs               = [...]string{
+	verbosityLevel int = 0
+	errMsgs            = [...]string{
 		"please specify a path (or URL) to a template",
 		"enter a local path to output the app",
 		"the following error occurred trying to get the app data directory: %q",
@@ -32,23 +28,12 @@ var (
 	}
 )
 
-type config map[string]interface{}
-
-func (c config) Array(key string) (v []string, ok bool) {
-	x, ok := c[key]
-	if ok {
-		y := x.([]interface{})
-		v = make([]string, len(y))
-		for k, z := range y {
-			v[k] = z.(string)
-		}
-	}
-	// TODO: always return an initialized array
-	return
-}
-
-func (c config) String(key string) string {
-	return fmt.Sprintf("%v", c[key])
+type Config struct {
+	allowedUrls    []string
+	answersPath    string
+	appPath        string
+	tplPath        string
+	verbosityLevel int
 }
 
 //TODO: add verbositry messages array.
@@ -71,22 +56,19 @@ func main() {
 		return
 	}
 
-	verboseF(0, "go-gitter config location %q", configFile)
+	verboseF(0, "config location %q", configFile)
 
 	options, err := settings(configFile)
 	if err != nil {
 		return
 	}
 
-	options, err = getArgs()
+	err = getArgs(os.Args[0], os.Args[1:], &options)
 	if err != nil {
 		return
 	}
 
-	tplLoc := options[tplPathKey].(string)
-	allowedUrls, _ := options.Array("allowedUrls")
-	isUrl, isAllowed := urlIsAllowed(tplLoc, allowedUrls)
-
+	isUrl, isAllowed := urlIsAllowed(options.tplPath, options.allowedUrls)
 	if isUrl && !isAllowed {
 		err = fmt.Errorf(errMsgs[3])
 		return
@@ -94,49 +76,49 @@ func main() {
 
 	if isUrl {
 		client := http.Client{}
-		err = template.Download(tplLoc, options[appPathKey].(string), &client)
+		err = template.Download(options.tplPath, options.appPath, &client)
 	}
 	// TODO: local copy.
 }
 
-func init() {
-	flag.StringVar(&answers, "answers", "", "Path to an answer file.")
-	flag.IntVar(&verbosityLevel, "verbose", 0, "extra detail processing info.")
-}
+// Process any program flags fed into the program.
+func getArgs(progName string, pArgs []string, options *Config) (err error) {
 
-func getArgs() (config, error) {
-	var err error
-	options := make(map[string]interface{})
+	verboseF(1, "running program %q", progName)
+
+	pFlags := flag.NewFlagSet(progName, flag.ExitOnError)
+
+	pFlags.StringVar(&options.answersPath, "answers", "", "Path to an answer file.")
+	pFlags.IntVar(&options.verbosityLevel, "verbose", 0, "extra detail processing info.")
 
 	verboseF(1, "verbose level: %v", verbosityLevel)
 	verboseF(1, "number of arguments passed in: %d\n", len(os.Args))
 	verboseF(1, "arguments passed in: %v\n", os.Args)
 
-	flag.Parse()
+	pFlags.Parse(pArgs)
 
-	options[tplPathKey] = flag.Arg(0)
-	options[appPathKey] = flag.Arg(1)
+	options.tplPath = pFlags.Arg(0)
+	options.appPath = pFlags.Arg(1)
 
-	if options[tplPathKey] == "" {
+	if options.tplPath == "" {
 		err = fmt.Errorf(errMsgs[0])
-		return options, err
+		return
 	}
 
-	if options[appPathKey] == "" {
+	if options.appPath == "" {
 		err = fmt.Errorf(errMsgs[1])
-		return options, err
+		return
 	}
 
-	if answers != "" {
-		verboseF(1, "will use answers in the file %q", answers)
-		options[answersKey] = answers
+	if options.answersPath != "" {
+		verboseF(1, "will use answers in the file %q", options.answersPath)
 	}
 
-	return options, err
+	return
 }
 
-func settings(filename string) (cfg config, err error) {
-	var data interface{}
+func settings(filename string) (cfg Config, err error) {
+	var data map[string]interface{}
 
 	content, err := ioutil.ReadFile(filename)
 
@@ -150,8 +132,13 @@ func settings(filename string) (cfg config, err error) {
 		return
 	}
 
-	// Convert the interface to a map.
-	cfg = data.(map[string]interface{})
+	val, ok := data["allowedUrls"].([]interface{})
+	if ok && len(data) > 0 {
+		cfg.allowedUrls = make([]string, len(data))
+		for i, v := range val {
+			cfg.allowedUrls[i] = v.(string)
+		}
+	}
 
 	return
 }

@@ -56,27 +56,40 @@ func xTestMainOutput(t *testing.T) {
 
 func TestInput(t *testing.T) {
 	var tests = []struct {
-		name, tpl, appName, ans, want string
+		name, want string
+		config     []string
 	}{
-		{"noArgs", "", "", "", errMsgs[0]},
-		{"noAppPath", "test-template-path", "", "", errMsgs[1]},
+		{"noArgs", errMsgs[0], []string{"go-gitter", "", ""}},
+		{"noAppPath", errMsgs[1], []string{"go-gitter", "templatePath", ""}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// backup args and restore after test run.
-			oldArgs := os.Args
-			defer func() { os.Args = oldArgs }()
-			// set args for test.
-			os.Args = []string{"dummyPath", tt.tpl, tt.appName, tt.ans}
 			// exec code.
-			_, gotErr := getArgs()
+			cfg := Config{}
+			gotErr := getArgs(tt.config[0], tt.config[1:], &cfg)
 
 			if !strings.Contains(gotErr.Error(), tt.want) {
 				t.Errorf("got %q, want %q", gotErr, tt.want)
 			}
 		})
 	}
+
+	t.Run("allGood", func(t *testing.T) {
+		cfg := Config{}
+		want := "./fixtures/ans-1.yml"
+		// set args for test.
+		cfgFixture := []string{"go-gitter", "-answers=" + want, "./fixtures/tpl-1", "appPath4"}
+		// exec code.
+		err := getArgs(cfgFixture[0], cfgFixture[1:], &cfg)
+		if err != nil {
+			t.Errorf("got unexpected error: %v", err.Error())
+		}
+
+		if cfg.answersPath != want {
+			t.Errorf("got %q, want %q", cfg.answersPath, want)
+		}
+	})
 }
 
 func TestGetSettings(t *testing.T) {
@@ -100,17 +113,12 @@ func TestGetSettings(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		cfg, err := settings("fixtures/config.json")
+		got, err := settings("fixtures/config.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
 
-		got, ok := cfg.Array("urlsAllowed")
-		if !ok {
-			t.Errorf("got %v, want %v", ok, !ok)
-		}
-
-		if got[0] != want {
+		if got.allowedUrls[0] != want {
 			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})
@@ -142,17 +150,12 @@ func TestUrlIsAllowed(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		cfg, err := settings("fixtures/config.json")
+		got, err := settings("fixtures/config.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
 
-		got, ok := cfg.Array("urlsAllowed")
-		if !ok {
-			t.Errorf("got %v, want %v", ok, !ok)
-		}
-
-		if got[0] != want {
+		if got.allowedUrls[0] != want {
 			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})
