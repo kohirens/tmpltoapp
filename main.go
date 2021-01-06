@@ -21,13 +21,16 @@ const (
 	PS         = string(os.PathSeparator)
 )
 
-var verbosityLevel int = 0
-var errMsgs = [...]string{
-	"please specify a path (or URL) to a template",
-	"enter a local path to output the app",
-	"the following error occurred trying to get the app data directory: %q",
-	"path/URL to template is not in the allow-list",
-}
+var (
+	verbosityLevel int    = 0
+	answers        string = ""
+	errMsgs               = [...]string{
+		"please specify a path (or URL) to a template",
+		"enter a local path to output the app",
+		"the following error occurred trying to get the app data directory: %q",
+		"path/URL to template is not in the allow-list",
+	}
+)
 
 type config map[string]interface{}
 
@@ -40,6 +43,7 @@ func (c config) Array(key string) (v []string, ok bool) {
 			v[k] = z.(string)
 		}
 	}
+	// TODO: always return an initialized array
 	return
 }
 
@@ -94,8 +98,6 @@ func main() {
 	}
 	// TODO: local copy.
 }
-
-var answers string
 
 func init() {
 	flag.StringVar(&answers, "answers", "", "Path to an answer file.")

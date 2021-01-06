@@ -60,8 +60,6 @@ func TestInput(t *testing.T) {
 	}{
 		{"noArgs", "", "", "", errMsgs[0]},
 		{"noAppPath", "test-template-path", "", "", errMsgs[1]},
-		// {"https://example.com/dummy-template", "appPath3", "", "path/URL to template is not in the allow-list"},
-		// {"./fixtures/tpl-1", "", "", "path/URL to template does not exist"},
 	}
 
 	for _, tt := range tests {
