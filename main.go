@@ -63,7 +63,7 @@ func main() {
 		return
 	}
 
-	err = getArgs(os.Args[0], os.Args[1:], &options)
+	err = parseArgs(os.Args[0], os.Args[1:], &options)
 	if err != nil {
 		return
 	}
@@ -82,7 +82,7 @@ func main() {
 }
 
 // Process any program flags fed into the program.
-func getArgs(progName string, pArgs []string, options *Config) (err error) {
+func parseArgs(progName string, pArgs []string, options *Config) (err error) {
 
 	verboseF(1, "running program %q", progName)
 

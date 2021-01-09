@@ -67,7 +67,7 @@ func TestInput(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// exec code.
 			cfg := Config{}
-			gotErr := getArgs(tt.config[0], tt.config[1:], &cfg)
+			gotErr := parseArgs(tt.config[0], tt.config[1:], &cfg)
 
 			if !strings.Contains(gotErr.Error(), tt.want) {
 				t.Errorf("got %q, want %q", gotErr, tt.want)
@@ -81,7 +81,7 @@ func TestInput(t *testing.T) {
 		// set args for test.
 		cfgFixture := []string{"go-gitter", "-answers=" + want, "./fixtures/tpl-1", "appPath4"}
 		// exec code.
-		err := getArgs(cfgFixture[0], cfgFixture[1:], &cfg)
+		err := parseArgs(cfgFixture[0], cfgFixture[1:], &cfg)
 		if err != nil {
 			t.Errorf("got unexpected error: %v", err.Error())
 		}
