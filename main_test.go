@@ -113,7 +113,7 @@ func TestGetSettings(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings("fixtures/config.json")
+		got, err := settings("fixtures/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -150,7 +150,7 @@ func TestUrlIsAllowed(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings("fixtures/config.json")
+		got, err := settings("fixtures/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -159,4 +159,30 @@ func TestUrlIsAllowed(t *testing.T) {
 			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})
+}
+
+func TestInitConfigFile(t *testing.T) {
+	var tests = []struct {
+		name, file string
+		want       error
+	}{
+		{"NotExist", testTmp + "config-fix-01.json", nil},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// exec code.
+			got := initConfigFile(tt.file)
+
+			if tt.want != got {
+				t.Errorf("got %v; want %v", got, tt.want)
+			}
+
+			_, err := os.Stat(tt.file)
+
+			if err != nil {
+				t.Errorf("got %v; want %v", got, tt.want)
+			}
+		})
+	}
 }

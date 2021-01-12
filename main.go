@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	PS = string(os.PathSeparator)
+	PS   = string(os.PathSeparator)
+	CONF = "config.json"
 )
 
 var (
@@ -49,14 +50,19 @@ func main() {
 		}
 	}()
 
-	configFile := "settings.json"
-	appDataDir, er := stdlib.HomeDir()
-	if er == nil {
-		configFile = appDataDir + PS + "settings.json"
+	configFile := "config.json"
+	appDataDir, err := stdlib.HomeDir()
+	if err == nil {
+		configFile = appDataDir + PS + "config.json"
 		return
 	}
 
 	verboseF(0, "config location %q", configFile)
+
+	err = initConfigFile(configFile)
+	if err != nil {
+		return
+	}
 
 	options, err := settings(configFile)
 	if err != nil {
@@ -79,6 +85,28 @@ func main() {
 		err = template.Download(options.tplPath, options.appPath, &client)
 	}
 	// TODO: local copy.
+}
+
+func initConfigFile(file string) (err error) {
+
+	_, er := os.Stat(file)
+
+	if err != nil {
+		if !os.IsNotExist(er) {
+			verboseF(1, "config file exist %v", er.Error())
+			return
+		}
+
+		err = er
+	}
+
+	f, err := os.Create(file)
+
+	defer f.Close()
+
+	f.WriteString(DEFAULT_CFG)
+
+	return
 }
 
 // Process any program flags fed into the program.
