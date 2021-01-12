@@ -54,10 +54,7 @@ func main() {
 	appDataDir, err := stdlib.HomeDir()
 	if err == nil {
 		configFile = appDataDir + PS + "config.json"
-		return
 	}
-
-	verboseF(0, "config location %q", configFile)
 
 	err = initConfigFile(configFile)
 	if err != nil {
@@ -74,11 +71,14 @@ func main() {
 		return
 	}
 
+	verboseF(1, "config location %q", configFile)
+
 	isUrl, isAllowed := urlIsAllowed(options.tplPath, options.allowedUrls)
 	if isUrl && !isAllowed {
 		err = fmt.Errorf(errMsgs[3])
 		return
 	}
+	verboseF(1, "isUrl %v", isUrl)
 
 	if isUrl {
 		client := http.Client{}
@@ -112,21 +112,21 @@ func initConfigFile(file string) (err error) {
 // Process any program flags fed into the program.
 func parseArgs(progName string, pArgs []string, options *Config) (err error) {
 
-	verboseF(1, "running program %q", progName)
-
 	pFlags := flag.NewFlagSet(progName, flag.ExitOnError)
 
 	pFlags.StringVar(&options.answersPath, "answers", "", "Path to an answer file.")
-	pFlags.IntVar(&options.verbosityLevel, "verbose", 0, "extra detail processing info.")
-
-	verboseF(1, "verbose level: %v", verbosityLevel)
-	verboseF(1, "number of arguments passed in: %d\n", len(os.Args))
-	verboseF(1, "arguments passed in: %v\n", os.Args)
+	pFlags.IntVar(&verbosityLevel, "verbose", 0, "extra detail processing info.")
 
 	pFlags.Parse(pArgs)
 
+	verboseF(2, "running program %q", progName)
+	verboseF(1, "verbose level: %v", verbosityLevel)
+	verboseF(1, "number of arguments passed in: %d", len(os.Args))
+	verboseF(1, "arguments passed in: %v", os.Args)
+
 	options.tplPath = pFlags.Arg(0)
 	options.appPath = pFlags.Arg(1)
+	options.verbosityLevel = verbosityLevel
 
 	if options.tplPath == "" {
 		err = fmt.Errorf(errMsgs[0])
