@@ -16,8 +16,8 @@ services:
         volumes:
            - '../:/home/gitter/src/github.com/kohirens/go-gitter'
            - 'vscode_ext:/home/gitter/.vscode-server/extensions'
-           - 'vscodei_ext:/home/gitter/.vscode-server-insiders/extensions'
+           - 'vscode_i_ext:/home/gitter/.vscode-server-insiders/extensions'
 
 volumes:
     vscode_ext: null
-    vscodei_ext: null
+    vscode_i_ext: null

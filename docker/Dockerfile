@@ -1,4 +1,4 @@
-FROM golang:1.15.4-alpine3.12 AS dev
+FROM golang:1.15.6-alpine3.12 AS dev
 
 ARG USER_NAME='gitter'
 ARG USER_UID='1000'
@@ -31,10 +31,14 @@ RUN addgroup --system --gid $USER_GID $USER_GROUP \
 
 USER gitter
 
-RUN go get -u github.com/git-chglog/git-chglog/cmd/git-chglog \
- && go get -u -v golang.org/x/tools/gopls \
- && go get -u -v github.com/go-delve/delve/cmd/dlv \
- && go get -u -v github.com/ramya-rao-a/go-outline
+RUN mkdir -p ~/bin \
+ && curl -L -o ~/bin/git-chglog https://github.com/git-chglog/git-chglog/releases/download/0.9.1/git-chglog_linux_amd64 \
+ && chmod +x ~/bin/git-chglog
+
+RUN go get -u -v golang.org/x/tools/gopls \
+    github.com/go-delve/delve/cmd/dlv \
+    github.com/ramya-rao-a/go-outline \
+    github.com/cweill/gotests/...
 
 # VSCode Requirements for pre-installing extensions
 RUN mkdir -p /home/$USER_NAME/.vscode-server/extensions /home/$USER_NAME/.vscode-server-insiders/extensions
@@ -58,8 +62,8 @@ RUN go build
 
 FROM alpine3.12 AS release
 
-COPY  --chown=$USER_NAME:$USER_GROUP --from=build /home/$USER/bin /usr/local/bin
+COPY  --chown=$USER_NAME:$USER_GROUP --from=build /home/$USER_NAME/bin /usr/local/bin
 
-ENTRYPOINT [ "gitter" ]
+ENTRYPOINT [ "go-gitter" ]
 
 CMD [ "-h" ]
