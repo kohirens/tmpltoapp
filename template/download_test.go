@@ -17,8 +17,21 @@ func (h HttpMock) Get(url string) (*http.Response, error) {
 	return h.Resp, h.Err
 }
 
-func TestDownload(t *testing.T) {
+const TEST_TMP = "go_gitter_test_tmp"
 
+func TestMain(m *testing.M) {
+	// call flag.Parse() here if TestMain uses flags
+	os.Mkdir(TEST_TMP, 0774) // set up a temporary dir for generate files
+
+	// Create whatever test files are needed.
+
+	// Run all tests and clean up
+	exitcode := m.Run()
+	os.RemoveAll(TEST_TMP) // remove the directory and its contents.
+	os.Exit(exitcode)
+}
+
+func TestDownload(t *testing.T) {
 	var err error
 	c := HttpMock{
 		&http.Response{
@@ -27,32 +40,11 @@ func TestDownload(t *testing.T) {
 		err,
 	}
 
-	got := Download("fake_path", "fixture_path", &c)
+	t.Run("canDownload", func(t *testing.T) {
+		got := Download("fake_path", TEST_TMP+"/fixture_path", &c)
 
-	if got != nil {
-		t.Errorf("got %q, want nil", got)
-	}
-}
-
-func xTestInput(t *testing.T) {
-	var tests = []struct {
-		name, tpl, appName, ans, want string
-	}{
-		{"notInAllowList", "https://example.com/dummy-template", "appPath3", "", "path/URL to template is not in the allow-list"},
-		// {"./fixtures/tpl-1", "", "", "path/URL to template does not exist"},
-	}
-	c := HttpMock{}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// set args for test.
-			os.Args = []string{"dummyPath", tt.tpl, tt.appName, tt.ans}
-			// exec code.
-			gotErr := Download(tt.tpl, tt.appName, &c)
-
-			if !strings.Contains(gotErr.Error(), tt.want) {
-				t.Errorf("got %q, want %q", gotErr, tt.want)
-			}
-		})
-	}
+		if got != nil {
+			t.Errorf("got %q, want nil", got)
+		}
+	})
 }

@@ -166,7 +166,7 @@ func TestInitConfigFile(t *testing.T) {
 		name, file string
 		want       error
 	}{
-		{"NotExist", testTmp + "config-fix-01.json", nil},
+		{"NotExist", testTmp + PS + "config-fix-01.json", nil},
 	}
 
 	for _, tt := range tests {
