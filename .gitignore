@@ -17,3 +17,6 @@ vendor/
 
 # Jetbrain IDE file
 .idea/
+
+# Test coverage file
+...

@@ -1,0 +1,9 @@
+{
+    "go.useLanguageServer": true,
+    "go.coverOnSave": true,
+    "go.coverageDecorator": {
+        "type": "gutter",
+        "coveredGutterStyle": "blockgreen",
+        "uncoveredGutterStyle": "blockred",
+    }
+}
