@@ -9,17 +9,25 @@ ENV GOPATH /home/$USER_NAME
 ENV GOFLAGS -mod=vendor
 ENV CGO_ENABLED=0
 
-# VSCode Requirements: "openssh"
+# VS Code Requirements: openssh, musl, libgcc, libstdc++
 RUN apk --no-progress --purge --no-cache upgrade \
  && apk --no-progress --purge --no-cache add --upgrade \
     curl \
     git \
+    gnupg \
+    libgcc \
+    libstdc++ \
     openssh \
     tini \
  && apk --no-progress --purge --no-cache upgrade \
  && rm -vrf /var/cache/apk/* \
  && curl --version \
  && git --version
+
+# Install vanilla GLibC: https://github.com/sgerrand/alpine-pkg-glibc
+RUN curl -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+ && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk \
+ && apk add glibc-2.32-r0.apk
 
 # Add a non-root group and user, helpful if you dev on Linux.
 RUN addgroup --system --gid $USER_GID $USER_GROUP \
@@ -31,6 +39,7 @@ RUN addgroup --system --gid $USER_GID $USER_GROUP \
 
 USER gitter
 
+# Install Go helpful dev tools.
 RUN mkdir -p ~/bin \
  && curl -L -o ~/bin/git-chglog https://github.com/git-chglog/git-chglog/releases/download/0.9.1/git-chglog_linux_amd64 \
  && chmod +x ~/bin/git-chglog
