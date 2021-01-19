@@ -13,13 +13,11 @@
 		"terminal.integrated.shell.linux": "/bin/sh",
 		"go.toolsManagement.checkForUpdates": "off",
 		"go.useLanguageServer": true,
-		"go.gopath": "/home/gitter",
-		"go.goroot": "/usr/local/go",
 	},
 	
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"golang.Go"
+		"golang.go"
 	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
