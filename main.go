@@ -82,7 +82,7 @@ func main() {
 
 	if isUrl {
 		client := http.Client{}
-		err = template.Download(options.tplPath, options.appPath, &client)
+		err = template.Download(options.tplPath, &client)
 	}
 	// TODO: local copy.
 }

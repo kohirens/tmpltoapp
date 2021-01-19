@@ -5,21 +5,32 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 )
 
-var errMsgs = [...]string{}
+var errMsgs = [...]string{
+	"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
+}
 
 type Client interface {
 	Get(url string) (*http.Response, error)
+	Head(url string) (*http.Response, error)
 }
 
 /* Download a template from a URL. */
-func Download(url, dest string, client Client) error {
+func Download(url string, client Client) error {
+
+	dest := path.Base(url)
 	// Request
 	resp, err := client.Get(url)
 	if err != nil {
 		return err
 	}
+
+	if resp.StatusCode > 300 || resp.StatusCode < 200 {
+		return fmt.Errorf(errMsgs[0], resp.Status, resp.StatusCode)
+	}
+
 	defer resp.Body.Close()
 
 	// make handle to the file.

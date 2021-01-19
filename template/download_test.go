@@ -17,6 +17,10 @@ func (h HttpMock) Get(url string) (*http.Response, error) {
 	return h.Resp, h.Err
 }
 
+func (h HttpMock) Head(url string) (*http.Response, error) {
+	return h.Resp, h.Err
+}
+
 const TEST_TMP = "go_gitter_test_tmp"
 
 func TestMain(m *testing.M) {
@@ -41,10 +45,22 @@ func TestDownload(t *testing.T) {
 	}
 
 	t.Run("canDownload", func(t *testing.T) {
-		got := Download("fake_path", TEST_TMP+"/fixture_path", &c)
+		got := Download("fake_path", &c)
 
 		if got != nil {
 			t.Errorf("got %q, want nil", got)
 		}
 	})
+}
+
+func ExampleDownload() {
+	client := http.Client{}
+	err := Download(
+		"https://github.com/kohirens/go-gitter-test-tpl/archive/main.zip",
+		&client,
+	)
+
+	if err != nil {
+		return
+	}
 }
