@@ -38,13 +38,14 @@ func TestDownload(t *testing.T) {
 	var err error
 	c := HttpMock{
 		&http.Response{
-			Body: ioutil.NopCloser(strings.NewReader("200 OK")),
+			Body:       ioutil.NopCloser(strings.NewReader("200 OK")),
+			StatusCode: 200,
 		},
 		err,
 	}
 
 	t.Run("canDownload", func(t *testing.T) {
-		got := Download("fake_path", &c)
+		got := Download(TEST_TMP+"/fake_dl", &c)
 
 		if got != nil {
 			t.Errorf("got %q, want nil", got)
