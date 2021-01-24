@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+const TEST_TMP = "go_gitter_test_tmp"
+
 type HttpMock struct {
 	Resp *http.Response
 	Err  error
@@ -21,17 +23,14 @@ func (h HttpMock) Head(url string) (*http.Response, error) {
 	return h.Resp, h.Err
 }
 
-const TEST_TMP = "go_gitter_test_tmp"
-
 func TestMain(m *testing.M) {
-	// call flag.Parse() here if TestMain uses flags
 	os.Mkdir(TEST_TMP, 0774) // set up a temporary dir for generate files
 
 	// Create whatever test files are needed.
 
-	// Run all tests and clean up
+	// Run all tests and clean up.
 	exitcode := m.Run()
-	os.RemoveAll(TEST_TMP) // remove the directory and its contents.
+	os.RemoveAll(TEST_TMP)
 	os.Exit(exitcode)
 }
 

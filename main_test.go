@@ -7,17 +7,17 @@ import (
 	"testing"
 )
 
-const testTmp = "go_gitter_test_tmp"
+const TEST_TMP = "go_gitter_test_tmp"
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
-	os.Mkdir(testTmp, 0774) // set up a temporary dir for generate files
+	os.Mkdir(TEST_TMP, 0774) // set up a temporary dir for generate files
 
 	// Create whatever test files are needed.
 
 	// Run all tests and clean up
 	exitcode := m.Run()
-	os.RemoveAll(testTmp) // remove the directory and its contents.
+	os.RemoveAll(TEST_TMP) // remove the directory and its contents.
 	os.Exit(exitcode)
 }
 
@@ -166,7 +166,7 @@ func TestInitConfigFile(t *testing.T) {
 		name, file string
 		want       error
 	}{
-		{"NotExist", testTmp + PS + "config-fix-01.json", nil},
+		{"NotExist", TEST_TMP + PS + "config-fix-01.json", nil},
 	}
 
 	for _, tt := range tests {
