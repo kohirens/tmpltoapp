@@ -18,7 +18,7 @@ func HomeDir() (homeDir string, err error) {
 	homeDir = os.Getenv("HOME")
 
 	if runtime.GOOS == "windows" {
-		homeDir = fmt.Sprintf("%s%v%s", os.Getenv("HOMEDRIVE"), os.PathSeparator, os.Getenv("HOMEPATH"))
+		homeDir = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
 		if homeDir == "" {
 			homeDir = os.Getenv("USERPROFILE")
 		}

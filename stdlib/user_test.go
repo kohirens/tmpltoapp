@@ -7,7 +7,7 @@ import (
 )
 
 func TestHomeDir(t *testing.T) {
-	nonWindowsWant, windowsWant := "/home/gitter", "C:\\Users\\"+os.Getenv("USERNAME")
+	nonWindowsWant, windowsWant := "/home/"+os.Getenv("USER"), "C:\\Users\\"+os.Getenv("USERNAME")
 
 	t.Run("success", func(t *testing.T) {
 		// exec code.
@@ -24,7 +24,7 @@ func TestHomeDir(t *testing.T) {
 }
 
 func TestAppDataDir(t *testing.T) {
-	nonWindowsWant, windowsWant := "/home/gitter", "C:\\Users\\gitter\\AppData\\Local"
+	nonWindowsWant, windowsWant := "/home/"+os.Getenv("USER"), "C:\\Users\\"+os.Getenv("USERNAME")+"\\AppData\\Local"
 
 	t.Run("success", func(t *testing.T) {
 		got, err := AppDataDir()
