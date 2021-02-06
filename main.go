@@ -33,6 +33,7 @@ type Config struct {
 	allowedUrls    []string
 	answersPath    string
 	appPath        string
+	cacheDir       string
 	tplPath        string
 	verbosityLevel int
 }
@@ -80,9 +81,15 @@ func main() {
 	}
 	verboseF(1, "isUrl %v", isUrl)
 
+	options.cacheDir = appDataDir + PS + "cache"
+	err = os.MkdirAll(options.cacheDir, os.ModeDir)
+	if err != nil {
+		err = fmt.Errorf("could not make cache directory, error: %s", err.Error())
+		return
+	}
 	if isUrl {
 		client := http.Client{}
-		err = template.Download(options.tplPath, &client)
+		err = template.Download(options.tplPath, options.cacheDir, &client)
 	}
 	// TODO: local copy.
 }

@@ -20,3 +20,6 @@ vendor/
 
 # Test coverage file
 ...
+
+# Test temporary output
+testtmp/
