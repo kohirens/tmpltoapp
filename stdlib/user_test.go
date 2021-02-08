@@ -24,7 +24,7 @@ func TestHomeDir(t *testing.T) {
 }
 
 func TestAppDataDir(t *testing.T) {
-	nonWindowsWant, windowsWant := "/home/"+os.Getenv("USER"), "C:\\Users\\"+os.Getenv("USERNAME")+"\\AppData\\Local"
+	nonWindowsWant, windowsWant := os.Getenv("HOME"), "C:\\Users\\"+os.Getenv("USERNAME")+"\\AppData\\Local"
 
 	t.Run("success", func(t *testing.T) {
 		got, err := AppDataDir()
