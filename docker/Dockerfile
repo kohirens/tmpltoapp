@@ -1,4 +1,4 @@
-FROM golang:1.15.6-alpine3.12 AS dev
+FROM golang:1.15.8-alpine3.13 AS dev
 
 ARG USER_NAME='gitter'
 ARG USER_UID='1000'
@@ -8,6 +8,8 @@ ARG USER_GROUP='app_users'
 ENV GOPATH /home/$USER_NAME
 ENV GOFLAGS -mod=vendor
 ENV CGO_ENABLED=0
+
+COPY docker/download-vs-code-server.sh .
 
 # VS Code Requirements: openssh, musl, libgcc, libstdc++
 RUN apk --no-progress --purge --no-cache upgrade \
@@ -38,6 +40,9 @@ RUN addgroup --system --gid $USER_GID $USER_GROUP \
     $USER_NAME
 
 USER gitter
+
+# Install VS Code Server.
+RUN ls -la && ./download-vs-code-server.sh
 
 # Install Go helpful dev tools.
 RUN mkdir -p ~/bin \
