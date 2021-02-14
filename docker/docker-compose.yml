@@ -17,6 +17,7 @@ services:
            - '../:/home/gitter/src/github.com/kohirens/go-gitter'
            - 'vscode_ext:/home/gitter/.vscode-server'
            - 'vscode_i_ext:/home/gitter/.vscode-server-insiders/extensions'
+           - '${HOME}:/home/gitter/.ssh/known_hosts'
 
 volumes:
     vscode_ext: null
