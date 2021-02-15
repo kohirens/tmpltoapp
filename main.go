@@ -87,11 +87,14 @@ func main() {
 		err = fmt.Errorf("could not make cache directory, error: %s", err.Error())
 		return
 	}
+
 	if isUrl {
 		client := http.Client{}
 		err = template.Download(options.tplPath, options.cacheDir, &client)
 	}
 	// TODO: local copy.
+
+	// Parse
 }
 
 func initConfigFile(file string) (err error) {

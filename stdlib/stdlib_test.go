@@ -1,8 +1,13 @@
 package stdlib
 
-import "testing"
+import (
+	"testing"
+)
 
-const FIXTURES_DIR = "testdata"
+const (
+	FIXTURES_DIR = "testdata"
+	TEST_TMP     = "testtmp"
+)
 
 func TestPathexists(t *testing.T) {
 

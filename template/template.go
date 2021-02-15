@@ -4,15 +4,20 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"text/template"
+
+	"github.com/kohirens/go-gitter/stdlib"
 )
 
 const (
-	PS = string(os.PathSeparator)
+	PS           = string(os.PathSeparator)
+	MAX_TPL_SIZE = 1e+7
 )
 
 var errMsgs = [...]string{
@@ -22,6 +27,73 @@ var errMsgs = [...]string{
 type Client interface {
 	Get(url string) (*http.Response, error)
 	Head(url string) (*http.Response, error)
+}
+
+// Copy a source directory to another destination directory.
+func CopyDir(srcDir, dstDir string) (err error) {
+	// TODO: Why not just use the OS to copy the files over!?
+	files, err := ioutil.ReadDir(srcDir)
+	if err != nil {
+		return
+	}
+
+	err = os.MkdirAll(dstDir, 0774)
+	if err != nil {
+		return
+	}
+
+	for _, file := range files {
+		srcPath := srcDir + PS + file.Name()
+
+		if file.IsDir() {
+			ferr := CopyDir(srcPath, dstDir+PS+file.Name())
+			if ferr != nil {
+				err = ferr
+				return
+			}
+
+			continue
+		}
+
+		srcR, ferr := os.Open(srcPath)
+		if ferr != nil {
+			err = ferr
+			break
+		}
+
+		dstPath := dstDir + PS + file.Name()
+		fmt.Printf("copy %q  to %q ", srcPath, dstPath)
+		dstW, ferr := os.OpenFile(dstPath, os.O_CREATE|os.O_WRONLY, file.Mode())
+		if ferr != nil {
+			err = ferr
+			break
+		}
+
+		written, ferr := io.Copy(dstW, srcR)
+		if ferr != nil {
+			err = ferr
+			break
+		}
+
+		// check file written matches the original file size.
+		if written != file.Size() {
+			err = fmt.Errorf("failed to copy file correctly, wrote %v, should have written %v", written, file.Size())
+		}
+
+		ferr = srcR.Close()
+		if ferr != nil {
+			err = fmt.Errorf("CopyDir could not close the source file: %q", srcPath)
+			break
+		}
+
+		ferr = dstW.Close()
+		if ferr != nil {
+			err = fmt.Errorf("CopyDir could not close the destination file: %q", dstPath)
+			break
+		}
+	}
+
+	return
 }
 
 // Download a template from a URL to a local directory.
@@ -118,13 +190,62 @@ func Extract(archivePath, dest string) (err error) {
 	return
 }
 
-func fileExists(filename string) bool {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return false
+type tplVars map[string]string
+
+func Parse(tplFile, dstDir string, vars tplVars) (err error) {
+
+	parser, err := template.ParseFiles(tplFile)
+
+	if err != nil {
+		return
 	}
-	return true
+
+	fileStats, err := os.Stat(tplFile)
+
+	if err != nil {
+		return
+	}
+
+	dstFile := dstDir + PS + fileStats.Name()
+	file, err := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY, fileStats.Mode())
+
+	if err != nil {
+		return
+	}
+
+	err = parser.Execute(file, vars)
+
+	return
 }
 
-func GetTempDir() {
-	os.TempDir()
+func ParseDir(tplDir, outDir string, vars tplVars) (err error) {
+	// Recursively walk the template directory.
+	filepath.Walk(tplDir, func(path string, fi os.FileInfo, wErr error) (rErr error) {
+		if wErr != nil {
+			rErr = wErr
+			return
+		}
+
+		// Skip directories.
+		if fi.IsDir() {
+			return
+		}
+
+		// Stop processing files if a template file is too big.
+		if fi.Size() > MAX_TPL_SIZE {
+			rErr = fmt.Errorf("Template file too big to parse, must be less thatn %v bytes.", MAX_TPL_SIZE)
+			return
+		}
+
+		// Skip non-text files.
+		if stdlib.IsTextFile(path, fi) {
+			rErr = fmt.Errorf("could not detect file type for %v", path)
+			return
+		}
+
+		rErr = Parse(path, outDir, vars)
+		return
+	})
+
+	return
 }

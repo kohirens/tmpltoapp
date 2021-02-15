@@ -1,11 +1,14 @@
 package template
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/kohirens/go-gitter/stdlib"
 )
 
 const (
@@ -82,6 +85,7 @@ func TestExtract(t *testing.T) {
 		}
 	})
 }
+
 func ExampleExtract() {
 	err := Extract(
 		TEST_TMP+"/001.zip",
@@ -90,5 +94,64 @@ func ExampleExtract() {
 
 	if err != nil {
 		return
+	}
+}
+
+func TestCopyFiles(t *testing.T) {
+	err := CopyDir(FIXTURES_DIR+"/template-01/tt.tpl", TEST_TMP+"/tt.app")
+	if err == nil {
+		t.Errorf("CopyDir did nit err")
+	}
+}
+
+func TestCopyDirSuccess(test *testing.T) {
+	cases := []struct {
+		dstDir, name, srcDir string
+		want                 error
+		IsVerified           func(string) bool
+	}{
+		{TEST_TMP + "/template-01-out", "success", FIXTURES_DIR + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
+	}
+
+	for _, sbj := range cases {
+		test.Run(sbj.name, func(t *testing.T) {
+			err := CopyDir(sbj.srcDir, sbj.dstDir)
+			isAllGood := sbj.IsVerified(sbj.dstDir)
+
+			if err != sbj.want {
+				t.Errorf("Could not copy dir, err: %s", err.Error())
+			}
+
+			if isAllGood {
+				t.Errorf("all is not good: %v", isAllGood)
+			}
+		})
+	}
+}
+
+func TestParse(test *testing.T) {
+	cases := []struct {
+		name, tplFile, appDir string
+		vars                  tplVars
+		err                   error
+		want                  string
+	}{
+		{"emptyInput", "", "", tplVars{"var1": "1234"}, fmt.Errorf("no good"), "testing 1234"},
+		{"validInput", FIXTURES_DIR + "/template-02/file-01.tpl", TEST_TMP + "/appDirParse-01", tplVars{"var1": "1234"}, nil, "testing 1234"},
+	}
+
+	err := os.MkdirAll(TEST_TMP+"/appDirParse-01", os.FileMode(0774))
+	if err != nil {
+		test.Errorf("Could not copy dir, err: %s", err.Error())
+	}
+
+	for _, sbj := range cases {
+		test.Run(sbj.name, func(t *testing.T) {
+			err := Parse(sbj.tplFile, sbj.appDir, sbj.vars)
+
+			if err != nil && sbj.err != nil {
+				t.Errorf("Could not copy dir, err: %s", err.Error())
+			}
+		})
 	}
 }
