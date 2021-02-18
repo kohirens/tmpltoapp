@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # You can get the latest commit ID by looking at the latest tagged commit here: https://github.com/repos/microsoft/vscode/releases/latest
-commit_id=8490d3dde47c57ba65ec40dd192d014fd2113496
+commit_id=622cb03f7e070a9670c94bae1a45d78d7181fbd4
 hash=1612749334253
 archive=vscode-server-linux-x64.tar.gz
 
