@@ -1,7 +1,6 @@
 package template
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -130,14 +129,34 @@ func TestCopyDirSuccess(test *testing.T) {
 }
 
 func TestParse(test *testing.T) {
+	type wanted func(error) bool
+
 	cases := []struct {
 		name, tplFile, appDir string
 		vars                  tplVars
-		err                   error
-		want                  string
+		gotWhatIWant          wanted
+		failMsg               string
 	}{
-		{"emptyInput", "", "", tplVars{"var1": "1234"}, fmt.Errorf("no good"), "testing 1234"},
-		{"validInput", FIXTURES_DIR + "/template-02/file-01.tpl", TEST_TMP + "/appDirParse-01", tplVars{"var1": "1234"}, nil, "testing 1234"},
+		{
+			"emptyInput",
+			"",
+			"",
+			tplVars{"var1": "1234"},
+			func(err error) bool { return err != nil },
+			"failed with no input.",
+		},
+		{
+			"validInput",
+			FIXTURES_DIR + "/template-02/file-01.tpl",
+			TEST_TMP + "/appDirParse-01",
+			tplVars{"var1": "1234"},
+			func(err error) bool {
+				f, _ := ioutil.ReadFile(TEST_TMP + "/appDirParse-01/file-01.tpl")
+				s := string(f)
+				return s == "testings 1234"
+			},
+			"failed with valid input",
+		},
 	}
 
 	err := os.MkdirAll(TEST_TMP+"/appDirParse-01", os.FileMode(0774))
@@ -149,8 +168,8 @@ func TestParse(test *testing.T) {
 		test.Run(sbj.name, func(t *testing.T) {
 			err := Parse(sbj.tplFile, sbj.appDir, sbj.vars)
 
-			if err != nil && sbj.err != nil {
-				t.Errorf("Could not copy dir, err: %s", err.Error())
+			if !sbj.gotWhatIWant(err) {
+				t.Error(sbj.failMsg)
 			}
 		})
 	}
