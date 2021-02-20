@@ -238,7 +238,7 @@ func ParseDir(tplDir, outDir string, vars tplVars) (err error) {
 		}
 
 		// Skip non-text files.
-		if stdlib.IsTextFile(path, fi) {
+		if stdlib.IsTextFile(path) {
 			rErr = fmt.Errorf("could not detect file type for %v", path)
 			return
 		}

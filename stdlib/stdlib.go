@@ -2,31 +2,37 @@ package stdlib
 
 import (
 	"os"
-
-	"golang.org/x/tools/godoc/util"
+	"path"
 )
 
 const (
 	PS = string(os.PathSeparator)
 )
 
-// Try to detect if a file is a text file.
-func IsTextFile(tplDir string, fi os.FileInfo) (ret bool) {
-	file, err := os.OpenFile(tplDir, os.O_RDONLY, fi.Mode())
+var textFileTypes = [4]string{
+	".json",
+	".md",
+	".txt",
+	".xml",
+}
+
+//  Returns true for files that match the text extensions.
+func IsTextFile(file string) (ret bool) {
 	ret = false
 
-	if err != nil {
-		return
+	ext := path.Ext(file)
+
+	if ext != "" {
+	txtcompare: // sorry, I just wanted to play with this so I get used to it. Even though this is single loop or I could just use return. I like to be explicit.
+		for _, t := range textFileTypes {
+			if t == ext {
+				ret = true
+				break txtcompare
+			}
+		}
 	}
 
-	buffer := make([]byte, 512)
-	_, err = file.Read(buffer)
-
-	if err != nil {
-		return
-	}
-
-	return util.IsText(buffer)
+	return
 }
 
 func PathExist(filename string) bool {
