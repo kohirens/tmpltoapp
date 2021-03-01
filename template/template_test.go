@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kohirens/go-gitter/stdlib"
+	"github.com/kohirens/stdlib"
 )
 
 const (

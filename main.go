@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kohirens/go-gitter/stdlib"
 	"github.com/kohirens/go-gitter/template"
+	"github.com/kohirens/stdlib"
 )
 
 const (
@@ -41,10 +41,8 @@ type Config struct {
 //TODO: add verbositry messages array.
 
 func main() {
-	// Ensure we exit with an error code and log message
-	// when needed after deferred cleanups have run.
-	// Credit: https://medium.com/@matryer/golang-advent-calendar-day-three-fatally-exiting-a-command-line-tool-with-grace-874befeb64a4
 	var err error
+
 	defer func() {
 		if err != nil {
 			log.Fatalln(err)
@@ -97,6 +95,7 @@ func main() {
 	// Parse
 }
 
+// Load configuration file.
 func initConfigFile(file string) (err error) {
 
 	_, er := os.Stat(file)
@@ -181,6 +180,7 @@ func settings(filename string) (cfg Config, err error) {
 	return
 }
 
+// Check to see if a URL is in the allowed list to download template from.
 func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
 	isUrl = strings.HasPrefix(loc, "https://")
 	isAllowed = false
@@ -197,6 +197,7 @@ func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
 	return
 }
 
+// Show additional logging based on the verbosity level. Prints a newline after every message.
 func verboseF(lvl int, message string, a ...interface{}) {
 	if verbosityLevel >= lvl {
 		fmt.Printf(message, a...)

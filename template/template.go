@@ -12,7 +12,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/kohirens/go-gitter/stdlib"
+	"github.com/kohirens/stdlib"
 )
 
 const (
