@@ -1,12 +1,11 @@
-FROM golang:1.15.8-alpine3.13 AS dev
+FROM golang:1.16-alpine3.13 AS dev
 
 ARG USER_NAME='gitter'
 ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 
-ENV GOPATH /home/$USER_NAME
-ENV GOFLAGS -mod=vendor
+ENV GOPATH /home/${USER_NAME}
 ENV CGO_ENABLED=0
 
 COPY docker/download-vs-code-server.sh .
@@ -32,17 +31,17 @@ RUN curl -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sger
  && apk add glibc-2.32-r0.apk
 
 # Add a non-root group and user, helpful if you dev on Linux.
-RUN addgroup --system --gid $USER_GID $USER_GROUP \
+RUN addgroup --system --gid $USER_GID ${USER_GROUP} \
  && adduser --system \
     --disabled-password \
-    --ingroup $USER_GROUP \
-    --uid $USER_UID \
-    $USER_NAME
+    --ingroup ${USER_GROUP} \
+    --uid ${USER_UID} \
+    ${USER_NAME}
 
 USER gitter
 
 # Install VS Code Server.
-RUN ls -la && ./download-vs-code-server.sh
+RUN ./download-vs-code-server.sh
 
 # Install Go helpful dev tools.
 RUN mkdir -p ~/bin \
@@ -52,31 +51,33 @@ RUN mkdir -p ~/bin \
 RUN go get -u -v golang.org/x/tools/gopls \
     github.com/go-delve/delve/cmd/dlv \
     github.com/ramya-rao-a/go-outline \
-    github.com/cweill/gotests/...
+    github.com/cweill/gotests/... \
+    github.com/uudashr/gopkgs/v2/cmd/gopkgs \
+    honnef.co/go/tools/cmd/staticcheck
 
 # VSCode Requirements for pre-installing extensions
-RUN mkdir -p /home/$USER_NAME/.vscode-server/extensions /home/$USER_NAME/.vscode-server-insiders/extensions
-#  && chown -R $USER_NAME /home/$USER_NAME/.vscode-server /home/$USER_NAME/.vscode-server-insiders
+RUN mkdir -p /home/${USER_NAME}/.vscode-server/extensions \
+        /home/${USER_NAME}/.vscode-server-insiders/extensions
+
+ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
 WORKDIR /home/gitter/src/github.com/kohirens/go-gitter
 
 ENTRYPOINT [ "tini", "--" ]
 
-CMD [ "tail", "-f", "/dev/null" ]
+CMD [ "sh" ]
 
 FROM dev AS build
 
 ENV GOPATH /home/$USER
 
 COPY ./ /home/$USER/src
-RUN whoami \
- && ls -la .
 
 RUN go build
 
-FROM alpine3.12 AS release
+FROM alpine3.13 AS release
 
-COPY  --chown=$USER_NAME:$USER_GROUP --from=build /home/$USER_NAME/bin /usr/local/bin
+COPY --chown=$USER_NAME:$USER_GROUP --from=build /home/$USER_NAME/src/bin /usr/local/bin
 
 ENTRYPOINT [ "go-gitter" ]
 
