@@ -1,4 +1,4 @@
-package template
+package main
 
 import (
 	"io/ioutil"
@@ -12,7 +12,6 @@ import (
 
 const (
 	FIXTURES_DIR = "testdata"
-	TEST_TMP     = "testtmp"
 )
 
 type HttpMock struct {
@@ -26,16 +25,6 @@ func (h HttpMock) Get(url string) (*http.Response, error) {
 
 func (h HttpMock) Head(url string) (*http.Response, error) {
 	return h.Resp, h.Err
-}
-
-func TestMain(m *testing.M) {
-	os.RemoveAll(TEST_TMP)
-	// Set up a temporary dir for generate files
-	os.Mkdir(TEST_TMP, 0774)
-	// Run all tests
-	exitcode := m.Run()
-	// Clean up
-	os.Exit(exitcode)
 }
 
 func TestDownload(t *testing.T) {

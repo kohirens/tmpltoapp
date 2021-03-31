@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kohirens/go-gitter/template"
 	"github.com/kohirens/stdlib"
 )
 
@@ -26,6 +25,7 @@ var (
 		"enter a local path to output the app",
 		"the following error occurred trying to get the app data directory: %q",
 		"path/URL to template is not in the allow-list",
+		"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
 	}
 )
 
@@ -37,8 +37,6 @@ type Config struct {
 	tplPath        string
 	verbosityLevel int
 }
-
-//TODO: add verbositry messages array.
 
 func main() {
 	var err error
@@ -88,7 +86,7 @@ func main() {
 
 	if isUrl {
 		client := http.Client{}
-		err = template.Download(options.tplPath, options.cacheDir, &client)
+		err = Download(options.tplPath, options.cacheDir, &client)
 	}
 	// TODO: local copy.
 

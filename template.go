@@ -1,4 +1,4 @@
-package template
+package main
 
 import (
 	"archive/zip"
@@ -16,13 +16,8 @@ import (
 )
 
 const (
-	PS           = string(os.PathSeparator)
 	MAX_TPL_SIZE = 1e+7
 )
-
-var errMsgs = [...]string{
-	"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
-}
 
 type Client interface {
 	Get(url string) (*http.Response, error)
@@ -97,16 +92,17 @@ func CopyDir(srcDir, dstDir string) (err error) {
 }
 
 // Download a template from a URL to a local directory.
-func Download(url, dstDir string, client Client) error {
+func Download(url, dstDir string, client Client) (err error) {
 	dest := path.Base(url)
 	// HTTP Request
 	resp, err := client.Get(url)
 	if err != nil {
-		return err
+		return
 	}
 
 	if resp.StatusCode > 300 || resp.StatusCode < 200 {
-		return fmt.Errorf(errMsgs[0], resp.Status, resp.StatusCode)
+		err = fmt.Errorf(errMsgs[0], resp.Status, resp.StatusCode)
+		return
 	}
 
 	defer resp.Body.Close()
@@ -114,7 +110,7 @@ func Download(url, dstDir string, client Client) error {
 	// make handle to the file.
 	out, err := os.Create(dstDir + PS + dest)
 	if err != nil {
-		return err
+		return
 	}
 	defer out.Close()
 
@@ -123,7 +119,7 @@ func Download(url, dstDir string, client Client) error {
 
 	fmt.Printf("downloading %v to %v\n", url, dest)
 
-	return err
+	return
 }
 
 func Extract(archivePath, dest string) (err error) {
@@ -142,9 +138,9 @@ func Extract(archivePath, dest string) (err error) {
 	}
 
 	for _, file := range archive.File {
-		sourceFile, err := file.Open()
+		sourceFile, ferr := file.Open()
 
-		if err != nil {
+		if ferr != nil {
 			err = fmt.Errorf("failed to extract archive %q to dest %q, error: %v", archivePath, dest, file.Name)
 			break
 		}
@@ -153,35 +149,39 @@ func Extract(archivePath, dest string) (err error) {
 
 		// Check for ZipSlip (Directory traversal)
 		if !strings.HasPrefix(deflateFilePath, filepath.Clean(dest)+PS) {
-			return fmt.Errorf("illegal file path: %s", deflateFilePath)
+			err = fmt.Errorf("illegal file path: %s", deflateFilePath)
+			return
 		}
 
 		if file.FileInfo().IsDir() {
-			err = os.MkdirAll(deflateFilePath, file.Mode())
-			if err != nil {
-				return err
+			ferr := os.MkdirAll(deflateFilePath, file.Mode())
+			if ferr != nil {
+				err = ferr
+				return
 			}
 		} else {
-			dh, err := os.OpenFile(deflateFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+			dh, ferr := os.OpenFile(deflateFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 
-			if err != nil {
-				return err
+			if ferr != nil {
+				err = ferr
+				return
 			}
 
-			_, err = io.Copy(dh, sourceFile)
-			if err != nil {
-				return err
+			_, ferr = io.Copy(dh, sourceFile)
+			if ferr != nil {
+				err = ferr
+				return
 			}
 
-			err = dh.Close()
-			if err != nil {
-				panic(err)
+			ferr = dh.Close()
+			if ferr != nil {
+				panic(ferr)
 			}
 		}
 
-		sourceFile.Close()
-		if err != nil {
-			err = fmt.Errorf("unsuccessful extracting archive %q, error: %v", archivePath, err.Error())
+		ferr = sourceFile.Close()
+		if ferr != nil {
+			err = fmt.Errorf("unsuccessful extracting archive %q, error: %v", archivePath, ferr.Error())
 		}
 	}
 

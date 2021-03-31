@@ -1,57 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
 )
 
-const TEST_TMP = "go_gitter_test_tmp"
+const TEST_TMP = "tmp"
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
+	os.RemoveAll(TEST_TMP)
+	// Set up a temporary dir for generate files
 	os.Mkdir(TEST_TMP, 0774) // set up a temporary dir for generate files
-
-	// Create whatever test files are needed.
-
-	// Run all tests and clean up
+	// Run all tests
 	exitcode := m.Run()
-	os.RemoveAll(TEST_TMP) // remove the directory and its contents.
+	// Clean up
 	os.Exit(exitcode)
-}
-
-func xTestMainOutput(t *testing.T) {
-	var tests = []struct {
-		tpl, appname, ans, want string
-	}{
-		{"", "", "", "help"},
-		// {"non-existent", "", "", "The new application path is required."},
-		// {"non-existent", "", "", "path/URL to template does not exist"},
-		// {"./fixtures/tpl-1", "", "", "path/URL to template does not exist"},
-	}
-
-	for _, tt := range tests {
-
-		testName := fmt.Sprintf("%s,%s,%s", tt.tpl, tt.appname, tt.ans)
-		t.Run(testName, func(t *testing.T) {
-			oldArgs := os.Args
-			defer func() { os.Args = oldArgs }()
-			os.Args = []string{tt.tpl, tt.appname, tt.ans}
-			main()
-			//cmd := exec.Command("go-gitter", tt.tpl, tt.appName, tt.ans)
-			//bGot, err := cmd.CombinedOutput()
-			//got := string(bGot)
-			//
-			//if err != nil {
-			//   t.Errorf("%v", err)
-			//}
-			//fmt.Printf("%v", got)
-			//if got != tt.want {
-			//	t.Errorf("got %s, want %s", got, tt.want)
-			//}
-		})
-	}
 }
 
 func TestInput(t *testing.T) {
@@ -77,9 +42,9 @@ func TestInput(t *testing.T) {
 
 	t.Run("allGood", func(t *testing.T) {
 		cfg := Config{}
-		want := "./fixtures/ans-1.yml"
+		want := FIXTURES_DIR + "/ans-1.yml"
 		// set args for test.
-		cfgFixture := []string{"go-gitter", "-answers=" + want, "./fixtures/tpl-1", "appPath4"}
+		cfgFixture := []string{"go-gitter", "-answers=" + want, FIXTURES_DIR + "/tpl-1", "appPath4"}
 		// exec code.
 		err := parseArgs(cfgFixture[0], cfgFixture[1:], &cfg)
 		if err != nil {
@@ -113,7 +78,7 @@ func TestGetSettings(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings("fixtures/config-01.json")
+		got, err := settings(FIXTURES_DIR + "/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -150,7 +115,7 @@ func TestUrlIsAllowed(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings("fixtures/config-01.json")
+		got, err := settings(FIXTURES_DIR + "/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
