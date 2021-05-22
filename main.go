@@ -75,13 +75,13 @@ func main() {
 
 	if isUrl {
 		client := http.Client{}
-		zipFile, iErr := Download(options.tplPath, options.cacheDir, &client)
+		zipFile, iErr := download(options.tplPath, options.cacheDir, &client)
         if iErr != nil {
             err = iErr
             return
         }
 
-        iErr = Extract(zipFile, os.TempDir())
+        iErr = extract(zipFile, os.TempDir())
         if iErr != nil {
             err = iErr
             return

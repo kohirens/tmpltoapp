@@ -38,7 +38,7 @@ func TestDownload(t *testing.T) {
 	}
 
 	t.Run("canDownload", func(t *testing.T) {
-		got, err := Download("/fake_dl", TEST_TMP, &c)
+		got, err := download("/fake_dl", TEST_TMP, &c)
         if err != nil {
 			t.Errorf("got %q, want nil", err.Error())
 		}
@@ -52,7 +52,7 @@ func TestDownload(t *testing.T) {
 
 func ExampleDownload() {
 	client := http.Client{}
-	_, err := Download(
+	_, err := download(
 		"https://github.com/kohirens/go-gitter-test-tpl/archive/main.zip",
 		TEST_TMP,
 		&client,
@@ -68,7 +68,7 @@ func TestExtract(t *testing.T) {
 		wd, _ := os.Getwd()
 		fixture := wd + "/" + FIXTURES_DIR + "/001.zip"
 		want := TEST_TMP + "/sample_main"
-		err := Extract(fixture, want)
+		err := extract(fixture, want)
 
 		if err != nil {
 			t.Errorf("could not extract %s, error: %v", want, err.Error())
@@ -77,7 +77,7 @@ func TestExtract(t *testing.T) {
 }
 
 func ExampleExtract() {
-	err := Extract(
+	err := extract(
 		TEST_TMP+"/001.zip",
 		TEST_TMP+"/sample",
 	)
@@ -88,9 +88,9 @@ func ExampleExtract() {
 }
 
 func TestCopyFiles(t *testing.T) {
-	err := CopyDir(FIXTURES_DIR+"/template-01/tt.tpl", TEST_TMP+"/tt.app")
+	err := copyDir(FIXTURES_DIR+"/template-01/tt.tpl", TEST_TMP+"/tt.app")
 	if err == nil {
-		t.Errorf("CopyDir did nit err")
+		t.Errorf("copyDir did nit err")
 	}
 }
 
@@ -105,7 +105,7 @@ func TestCopyDirSuccess(test *testing.T) {
 
 	for _, sbj := range cases {
 		test.Run(sbj.name, func(t *testing.T) {
-			err := CopyDir(sbj.srcDir, sbj.dstDir)
+			err := copyDir(sbj.srcDir, sbj.dstDir)
 			isAllGood := sbj.IsVerified(sbj.dstDir)
 
 			if err != sbj.want {
@@ -157,7 +157,7 @@ func TestParse(test *testing.T) {
 
 	for _, sbj := range cases {
 		test.Run(sbj.name, func(t *testing.T) {
-			err := Parse(sbj.tplFile, sbj.appDir, sbj.vars)
+			err := parse(sbj.tplFile, sbj.appDir, sbj.vars)
 
 			if !sbj.gotWhatIWant(err) {
 				t.Error(sbj.failMsg)

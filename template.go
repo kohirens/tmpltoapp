@@ -24,8 +24,8 @@ type Client interface {
 	Head(url string) (*http.Response, error)
 }
 
-// Copy a source directory to another destination directory.
-func CopyDir(srcDir, dstDir string) (err error) {
+// copyDir copies a source directory to another destination directory.
+func copyDir(srcDir, dstDir string) (err error) {
 	// TODO: Why not just use the OS to copy the files over!?
 	files, err := ioutil.ReadDir(srcDir)
 	if err != nil {
@@ -41,7 +41,7 @@ func CopyDir(srcDir, dstDir string) (err error) {
 		srcPath := srcDir + PS + file.Name()
 
 		if file.IsDir() {
-			ferr := CopyDir(srcPath, dstDir+PS+file.Name())
+			ferr := copyDir(srcPath, dstDir+PS+file.Name())
 			if ferr != nil {
 				err = ferr
 				return
@@ -77,13 +77,13 @@ func CopyDir(srcDir, dstDir string) (err error) {
 
 		ferr = srcR.Close()
 		if ferr != nil {
-			err = fmt.Errorf("CopyDir could not close the source file: %q", srcPath)
+			err = fmt.Errorf("copyDir could not close the source file: %q", srcPath)
 			break
 		}
 
 		ferr = dstW.Close()
 		if ferr != nil {
-			err = fmt.Errorf("CopyDir could not close the destination file: %q", dstPath)
+			err = fmt.Errorf("copyDir could not close the destination file: %q", dstPath)
 			break
 		}
 	}
@@ -91,8 +91,8 @@ func CopyDir(srcDir, dstDir string) (err error) {
 	return
 }
 
-// Download a template from a URL to a local directory.
-func Download(url, dstDir string, client Client) (zipFile string, err error) {
+// download a template from a URL to a local directory.
+func download(url, dstDir string, client Client) (zipFile string, err error) {
 	// TODO: extract path from URL, after domain, and mkdirall.
     dest := path.Base(url)
 	// HTTP Request
@@ -124,7 +124,7 @@ func Download(url, dstDir string, client Client) (zipFile string, err error) {
 	return
 }
 
-func Extract(archivePath, dest string) (err error) {
+func extract(archivePath, dest string) (err error) {
 	// Get resource to zip archive.
 	archive, err := zip.OpenReader(archivePath)
 
@@ -195,7 +195,7 @@ func Extract(archivePath, dest string) (err error) {
 
 type tplVars map[string]string
 
-func Parse(tplFile, dstDir string, vars tplVars) (err error) {
+func parse(tplFile, dstDir string, vars tplVars) (err error) {
 
 	parser, err := template.ParseFiles(tplFile)
 
@@ -246,7 +246,7 @@ func ParseDir(tplDir, outDir string, vars tplVars) (err error) {
 			return
 		}
 
-		rErr = Parse(path, outDir, vars)
+		rErr = parse(path, outDir, vars)
 		return
 	})
 
