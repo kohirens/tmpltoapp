@@ -94,7 +94,7 @@ func copyDir(srcDir, dstDir string) (err error) {
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (zipFile string, err error) {
 	// TODO: extract path from URL, after domain, and mkdirall.
-    dest := path.Base(url)
+	dest := path.Base(url)
 	// HTTP Request
 	resp, err := client.Get(url)
 	if err != nil {
@@ -108,7 +108,7 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 
 	defer resp.Body.Close()
 
-    zipFile = dstDir + PS + dest
+	zipFile = dstDir + PS + dest
 	// make handle to the file.
 	out, err := os.Create(zipFile)
 	if err != nil {

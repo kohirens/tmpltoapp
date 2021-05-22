@@ -76,16 +76,16 @@ func main() {
 	if isUrl {
 		client := http.Client{}
 		zipFile, iErr := download(options.tplPath, options.cacheDir, &client)
-        if iErr != nil {
-            err = iErr
-            return
-        }
+		if iErr != nil {
+			err = iErr
+			return
+		}
 
-        iErr = extract(zipFile, os.TempDir())
-        if iErr != nil {
-            err = iErr
-            return
-        }
+		iErr = extract(zipFile, os.TempDir())
+		if iErr != nil {
+			err = iErr
+			return
+		}
 	}
 	// TODO: local copy.
 

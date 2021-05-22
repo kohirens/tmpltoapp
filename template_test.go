@@ -39,7 +39,7 @@ func TestDownload(t *testing.T) {
 
 	t.Run("canDownload", func(t *testing.T) {
 		got, err := download("/fake_dl", TEST_TMP, &c)
-        if err != nil {
+		if err != nil {
 			t.Errorf("got %q, want nil", err.Error())
 		}
 		_, err = os.Stat(got)
