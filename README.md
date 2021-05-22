@@ -1,18 +1,21 @@
-# go-gitter
+* [Go-Gitter](#go-gitter)
+    * [Description](#description)
+    * [Installation](#installation)
+        * [Using Go](#using-go)
+        * [Using Docker](#using-docker)
+    * [Get Started](#get-started)
+        * [Making a Template](#making-a-template)
+        * [Using a Template](#using-a-template)
+
+# Go-Gitter
 
 Start a new project using an existing directory structure as a
 manifest/blueprint.
 
-## TOC
-
-* [Description](#description)
-* [Installation](#installation)
-* [Get Started](#get-started)
-
 ## Description
 
 Copies one directory structure to another then process any files in the
-directoreis as Go templates.
+directories as Go templates.
 
 ## Installation
 
@@ -64,6 +67,6 @@ new project.
   files, and that do not have an answer in the optional YAML "answer" file.
 * Empty directories will be placed without the "empty.dir" file.
 
---
+---
 
 [Golang text/template]: https://golang.org/pkg/text/template/

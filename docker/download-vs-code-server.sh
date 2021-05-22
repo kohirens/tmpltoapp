@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # You can get the latest commit ID by looking at the latest tagged commit here: https://github.com/repos/microsoft/vscode/releases/latest
-commit_id=622cb03f7e070a9670c94bae1a45d78d7181fbd4
-hash=1612749334253
+commit_id=c185983a683d14c396952dd432459097bc7f757f
+hash=1617271453411
 archive=vscode-server-linux-x64.tar.gz
 
 # TODO: Find a way to get the latest commit ID via command line: https://api.github.com/repos/microsoft/vscode/releases/latest

@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,13 +12,13 @@ import (
 )
 
 const (
-	PS   = string(os.PathSeparator)
-	CONF = "config.json"
+	PS       = string(os.PathSeparator)
+	CONF     = "config.json"
+	DIR_MODE = 0774
 )
 
 var (
-	verbosityLevel int = 0
-	errMsgs            = [...]string{
+	errMsgs = [...]string{
 		"please specify a path (or URL) to a template",
 		"enter a local path to output the app",
 		"the following error occurred trying to get the app data directory: %q",
@@ -28,15 +26,6 @@ var (
 		"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
 	}
 )
-
-type Config struct {
-	allowedUrls    []string
-	answersPath    string
-	appPath        string
-	cacheDir       string
-	tplPath        string
-	verbosityLevel int
-}
 
 func main() {
 	var err error
@@ -78,7 +67,7 @@ func main() {
 	verboseF(1, "isUrl %v", isUrl)
 
 	options.cacheDir = appDataDir + PS + "cache"
-	err = os.MkdirAll(options.cacheDir, os.ModeDir)
+	err = os.MkdirAll(options.cacheDir, DIR_MODE)
 	if err != nil {
 		err = fmt.Errorf("could not make cache directory, error: %s", err.Error())
 		return
@@ -86,34 +75,21 @@ func main() {
 
 	if isUrl {
 		client := http.Client{}
-		err = Download(options.tplPath, options.cacheDir, &client)
+		zipFile, iErr := Download(options.tplPath, options.cacheDir, &client)
+        if iErr != nil {
+            err = iErr
+            return
+        }
+
+        iErr = Extract(zipFile, os.TempDir())
+        if iErr != nil {
+            err = iErr
+            return
+        }
 	}
 	// TODO: local copy.
 
 	// Parse
-}
-
-// Load configuration file.
-func initConfigFile(file string) (err error) {
-
-	_, er := os.Stat(file)
-
-	if err != nil {
-		if !os.IsNotExist(er) {
-			verboseF(1, "config file exist %v", er.Error())
-			return
-		}
-
-		err = er
-	}
-
-	f, err := os.Create(file)
-
-	defer f.Close()
-
-	f.WriteString(DEFAULT_CFG)
-
-	return
 }
 
 // Process any program flags fed into the program.
@@ -152,32 +128,6 @@ func parseArgs(progName string, pArgs []string, options *Config) (err error) {
 	return
 }
 
-func settings(filename string) (cfg Config, err error) {
-	var data map[string]interface{}
-
-	content, err := ioutil.ReadFile(filename)
-
-	if os.IsNotExist(err) {
-		err = fmt.Errorf("could not %s", err.Error())
-		return
-	}
-
-	err = json.Unmarshal(content, &data)
-	if err != nil {
-		return
-	}
-
-	val, ok := data["allowedUrls"].([]interface{})
-	if ok && len(data) > 0 {
-		cfg.allowedUrls = make([]string, len(data))
-		for i, v := range val {
-			cfg.allowedUrls[i] = v.(string)
-		}
-	}
-
-	return
-}
-
 // Check to see if a URL is in the allowed list to download template from.
 func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
 	isUrl = strings.HasPrefix(loc, "https://")
@@ -193,12 +143,4 @@ func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
 	}
 
 	return
-}
-
-// Show additional logging based on the verbosity level. Prints a newline after every message.
-func verboseF(lvl int, message string, a ...interface{}) {
-	if verbosityLevel >= lvl {
-		fmt.Printf(message, a...)
-		fmt.Println()
-	}
 }

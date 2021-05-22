@@ -38,11 +38,13 @@ func TestDownload(t *testing.T) {
 	}
 
 	t.Run("canDownload", func(t *testing.T) {
-		got := Download("/fake_dl", TEST_TMP, &c)
+		got, err := Download("/fake_dl", TEST_TMP, &c)
+        if err != nil {
+			t.Errorf("got %q, want nil", err.Error())
+		}
+		_, err = os.Stat(got)
 
-		_, err := os.Stat(TEST_TMP + "/fake_dl")
-
-		if got != nil || os.IsNotExist(err) {
+		if os.IsNotExist(err) {
 			t.Errorf("got %q, want nil", got)
 		}
 	})
@@ -50,7 +52,7 @@ func TestDownload(t *testing.T) {
 
 func ExampleDownload() {
 	client := http.Client{}
-	err := Download(
+	_, err := Download(
 		"https://github.com/kohirens/go-gitter-test-tpl/archive/main.zip",
 		TEST_TMP,
 		&client,

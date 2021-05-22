@@ -92,8 +92,9 @@ func CopyDir(srcDir, dstDir string) (err error) {
 }
 
 // Download a template from a URL to a local directory.
-func Download(url, dstDir string, client Client) (err error) {
-	dest := path.Base(url)
+func Download(url, dstDir string, client Client) (zipFile string, err error) {
+	// TODO: extract path from URL, after domain, and mkdirall.
+    dest := path.Base(url)
 	// HTTP Request
 	resp, err := client.Get(url)
 	if err != nil {
@@ -107,8 +108,9 @@ func Download(url, dstDir string, client Client) (err error) {
 
 	defer resp.Body.Close()
 
+    zipFile = dstDir + PS + dest
 	// make handle to the file.
-	out, err := os.Create(dstDir + PS + dest)
+	out, err := os.Create(zipFile)
 	if err != nil {
 		return
 	}
@@ -137,6 +139,7 @@ func Extract(archivePath, dest string) (err error) {
 		return
 	}
 
+	fmt.Printf("extracting %v to %v\n", archivePath, dest)
 	for _, file := range archive.File {
 		sourceFile, ferr := file.Open()
 
