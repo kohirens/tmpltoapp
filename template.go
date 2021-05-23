@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -22,6 +23,22 @@ const (
 type Client interface {
 	Get(url string) (*http.Response, error)
 	Head(url string) (*http.Response, error)
+}
+
+var regExpTmplLocation = regexp.MustCompile(`^https?://.+$`)
+
+// getPathType Check if the path is an HTTP or local directory URL.
+func getPathType(tplPath string) (pathType string) {
+	if regExpTmplLocation.MatchString(tplPath) {
+		pathType = "http"
+	}
+
+	// Check if local dir also exists.
+	if pathType == "" && stdlib.DirExist(tplPath) {
+		pathType = "local"
+	}
+
+	return
 }
 
 // copyDir copies a source directory to another destination directory.

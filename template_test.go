@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -161,6 +162,29 @@ func TestParse(test *testing.T) {
 
 			if !sbj.gotWhatIWant(err) {
 				t.Error(sbj.failMsg)
+			}
+		})
+	}
+}
+
+func TestGetPathType(test *testing.T) {
+	fixturePath1, _ := filepath.Abs(FIXTURES_DIR + "/template-01")
+
+	cases := []struct {
+		name, tmplPath, want string
+	}{
+		{"localAbsolutePath", fixturePath1, "local"},
+		{"localRelativePath", FIXTURES_DIR + "/template-01", "local"},
+		{"httpPath", "http://example.com", "http"},
+		{"httpSecurePath", "https://example.com", "http"},
+	}
+
+	for _, sbj := range cases {
+		test.Run(sbj.name, func(t *testing.T) {
+			got := getPathType(sbj.tmplPath)
+
+			if got != sbj.want {
+				t.Errorf("got %q, want %q", got, sbj.want)
 			}
 		})
 	}
