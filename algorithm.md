@@ -1,5 +1,5 @@
 
-# Algorith Outline
+# Algorithm Outline
 
 1. Load settings from a file:
    1. Yes, then go to the next step.
