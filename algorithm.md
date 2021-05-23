@@ -17,7 +17,7 @@
 5. Download template zip from URL:
    1. Download template zip to the download cache.
    2. Perform a checksum on the template zip.
-   2. Extract the tempalte zip to temp cache.
+   2. Extract the template zip to temp cache.
 6. Copy template to the destination local path:
    1. Yes, go to the next step.
    2. No, stop and output error.
