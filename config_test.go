@@ -100,3 +100,30 @@ func TestInitConfigFile(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadAnswers(test *testing.T) {
+	var fixtures = []struct {
+		name, file, want string
+	}{
+		{"goodJson", FIXTURES_DIR + PS + "answers-01.json", "value1"},
+		{"badJson", FIXTURES_DIR + PS + "answers-02.json", ""},
+	}
+
+	fxtr := fixtures[0]
+	test.Run(fxtr.name, func(t *testing.T) {
+		got, err := loadAnswers(fxtr.file)
+
+		if err == nil && got["var1"] != fxtr.want {
+			t.Errorf("got %q, want %q", got["var1"], fxtr.want)
+		}
+	})
+
+	fxtr = fixtures[1]
+	test.Run(fxtr.name, func(t *testing.T) {
+		_, err := loadAnswers(fxtr.file)
+
+		if err == nil {
+			t.Error("did not get an error")
+		}
+	})
+}

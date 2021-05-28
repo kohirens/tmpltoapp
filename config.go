@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	answers tplVars
 	allowedUrls    []string
 	answersPath    string
 	appPath        string
@@ -60,6 +61,28 @@ func settings(filename string) (cfg Config, err error) {
 		for i, v := range val {
 			cfg.allowedUrls[i] = v.(string)
 		}
+	}
+
+	return
+}
+//func (s *tplVars) UnmarshallJSON(bytes []byte) (err error) {
+//
+//	return
+//}
+//func (s *tplVars) MarshallJSON() (err error) {
+//
+//}
+func loadAnswers(filename string) (answers tplVars, err error) {
+	content, err := ioutil.ReadFile(filename)
+
+	if os.IsNotExist(err) {
+		err = fmt.Errorf("could not %s", err.Error())
+		return
+	}
+
+	err = json.Unmarshal(content, &answers)
+	if err != nil {
+		return
 	}
 
 	return
