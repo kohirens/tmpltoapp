@@ -73,7 +73,9 @@ func main() {
 		return
 	}
 
-	if isUrl {
+	tmplPathType := getPathType(options.tplPath)
+
+	if tmplPathType == "http" {
 		client := http.Client{}
 		zipFile, iErr := download(options.tplPath, options.cacheDir, &client)
 		if iErr != nil {
