@@ -25,6 +25,8 @@ type Client interface {
 	Head(url string) (*http.Response, error)
 }
 
+type tplVars map[string]string
+
 var regExpTmplLocation = regexp.MustCompile(`^https?://.+$`)
 
 // getPathType Check if the path is an HTTP or local directory URL.
@@ -210,8 +212,7 @@ func extract(archivePath, dest string) (err error) {
 	return
 }
 
-type tplVars map[string]string
-
+// parse a a file as a Go template.
 func parse(tplFile, dstDir string, vars tplVars) (err error) {
 
 	parser, err := template.ParseFiles(tplFile)
@@ -238,7 +239,8 @@ func parse(tplFile, dstDir string, vars tplVars) (err error) {
 	return
 }
 
-func ParseDir(tplDir, outDir string, vars tplVars) (err error) {
+// parseDir Recursively walk a directory parsing all files along the way as Go templates.
+func parseDir(tplDir, outDir string, vars tplVars) (err error) {
 	// Recursively walk the template directory.
 	filepath.Walk(tplDir, func(path string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
@@ -246,7 +248,7 @@ func ParseDir(tplDir, outDir string, vars tplVars) (err error) {
 			return
 		}
 
-		// Skip directories.
+		// Do not parse directories.
 		if fi.IsDir() {
 			return
 		}
