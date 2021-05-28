@@ -66,6 +66,7 @@ func settings(filename string) (cfg Config, err error) {
 	return
 }
 
+// loadAnswers Loan answers from a JSON file to be used to fill in placeholders when processing Go templates.
 func loadAnswers(filename string) (answers tplVars, err error) {
 	content, err := ioutil.ReadFile(filename)
 
