@@ -65,13 +65,7 @@ func settings(filename string) (cfg Config, err error) {
 
 	return
 }
-//func (s *tplVars) UnmarshallJSON(bytes []byte) (err error) {
-//
-//	return
-//}
-//func (s *tplVars) MarshallJSON() (err error) {
-//
-//}
+
 func loadAnswers(filename string) (answers tplVars, err error) {
 	content, err := ioutil.ReadFile(filename)
 
