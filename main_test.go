@@ -6,17 +6,21 @@ import (
 	"testing"
 )
 
-const TEST_TMP = "tmp"
+const (
+	fixturesDir = "testdata"
+	testTmp     = "tmp"
+)
+
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
-	os.RemoveAll(TEST_TMP)
+	os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
-	os.Mkdir(TEST_TMP, DIR_MODE) // set up a temporary dir for generate files
+	os.Mkdir(testTmp, DIR_MODE) // set up a temporary dir for generate files
 	// Run all tests
-	exitcode := m.Run()
+	exitCode := m.Run()
 	// Clean up
-	os.Exit(exitcode)
+	os.Exit(exitCode)
 }
 
 func TestInput(t *testing.T) {
@@ -42,9 +46,9 @@ func TestInput(t *testing.T) {
 
 	t.Run("allGood", func(t *testing.T) {
 		cfg := Config{}
-		want := FIXTURES_DIR + "/ans-1.yml"
+		want := fixturesDir + "/ans-1.yml"
 		// set args for test.
-		cfgFixture := []string{"go-gitter", "-answers=" + want, FIXTURES_DIR + "/tpl-1", "appPath4"}
+		cfgFixture := []string{"go-gitter", "-answers=" + want, fixturesDir + "/tpl-1", "appPath4"}
 		// exec code.
 		err := parseArgs(cfgFixture[0], cfgFixture[1:], &cfg)
 		if err != nil {

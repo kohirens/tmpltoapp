@@ -11,10 +11,6 @@ import (
 	"github.com/kohirens/stdlib"
 )
 
-const (
-	FIXTURES_DIR = "testdata"
-)
-
 type HttpMock struct {
 	Resp *http.Response
 	Err  error
@@ -28,9 +24,9 @@ func (h HttpMock) Head(url string) (*http.Response, error) {
 	return h.Resp, h.Err
 }
 
-func TestDownload(t *testing.T) {
+func TestDownload(tester *testing.T) {
 	var err error
-	c := HttpMock{
+	fixtures := HttpMock{
 		&http.Response{
 			Body:       ioutil.NopCloser(strings.NewReader("200 OK")),
 			StatusCode: 200,
@@ -38,15 +34,15 @@ func TestDownload(t *testing.T) {
 		err,
 	}
 
-	t.Run("canDownload", func(t *testing.T) {
-		got, err := download("/fake_dl", TEST_TMP, &c)
+	tester.Run("canDownload", func(test *testing.T) {
+		got, err := download("/fake_dl", testTmp, &fixtures)
 		if err != nil {
-			t.Errorf("got %q, want nil", err.Error())
+			test.Errorf("got %q, want nil", err.Error())
 		}
 		_, err = os.Stat(got)
 
 		if os.IsNotExist(err) {
-			t.Errorf("got %q, want nil", got)
+			test.Errorf("got %q, want nil", got)
 		}
 	})
 }
@@ -55,7 +51,7 @@ func ExampleDownload() {
 	client := http.Client{}
 	_, err := download(
 		"https://github.com/kohirens/go-gitter-test-tpl/archive/main.zip",
-		TEST_TMP,
+		testTmp,
 		&client,
 	)
 
@@ -64,11 +60,11 @@ func ExampleDownload() {
 	}
 }
 
-func TestExtract(t *testing.T) {
-	t.Run("canExtractDownload", func(t *testing.T) {
+func TestExtract(test *testing.T) {
+	test.Run("canExtractDownload", func(t *testing.T) {
 		wd, _ := os.Getwd()
-		fixture := wd + "/" + FIXTURES_DIR + "/001.zip"
-		want := TEST_TMP + "/sample_main"
+		fixture := wd + "/" + fixturesDir + "/001.zip"
+		want := testTmp + "/sample_main"
 		err := extract(fixture, want)
 
 		if err != nil {
@@ -79,8 +75,8 @@ func TestExtract(t *testing.T) {
 
 func ExampleExtract() {
 	err := extract(
-		TEST_TMP+"/001.zip",
-		TEST_TMP+"/sample",
+		testTmp+"/001.zip",
+		testTmp+"/sample",
 	)
 
 	if err != nil {
@@ -88,42 +84,42 @@ func ExampleExtract() {
 	}
 }
 
-func TestCopyFiles(t *testing.T) {
-	err := copyDir(FIXTURES_DIR+"/template-01/tt.tpl", TEST_TMP+"/tt.app")
+func TestCopyFiles(test *testing.T) {
+	err := copyDir(fixturesDir+"/template-01/tt.tpl", testTmp+"/tt.app")
 	if err == nil {
-		t.Errorf("copyDir did nit err")
+		test.Errorf("copyDir did not err")
 	}
 }
 
-func TestCopyDirSuccess(test *testing.T) {
-	cases := []struct {
+func TestCopyDirSuccess(tester *testing.T) {
+	fixtures := []struct {
 		dstDir, name, srcDir string
 		want                 error
 		IsVerified           func(string) bool
 	}{
-		{TEST_TMP + "/template-01-out", "success", FIXTURES_DIR + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
+		{testTmp + "/template-01-out", "success", fixturesDir + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
 	}
 
-	for _, sbj := range cases {
-		test.Run(sbj.name, func(t *testing.T) {
-			err := copyDir(sbj.srcDir, sbj.dstDir)
-			isAllGood := sbj.IsVerified(sbj.dstDir)
+	for _, fxtr := range fixtures {
+		tester.Run(fxtr.name, func(test *testing.T) {
+			err := copyDir(fxtr.srcDir, fxtr.dstDir)
+			isAllGood := fxtr.IsVerified(fxtr.dstDir)
 
-			if err != sbj.want {
-				t.Errorf("Could not copy dir, err: %s", err.Error())
+			if err != fxtr.want {
+				test.Errorf("Could not copy dir, err: %s", err.Error())
 			}
 
 			if isAllGood {
-				t.Errorf("all is not good: %v", isAllGood)
+				test.Errorf("all is not good: %v", isAllGood)
 			}
 		})
 	}
 }
 
-func TestParse(test *testing.T) {
+func TestParse(tester *testing.T) {
 	type wanted func(error) bool
 
-	cases := []struct {
+	fixtures := []struct {
 		name, tplFile, appDir string
 		vars                  tplVars
 		gotWhatIWant          wanted
@@ -139,11 +135,11 @@ func TestParse(test *testing.T) {
 		},
 		{
 			"validInput",
-			FIXTURES_DIR + "/template-02/file-01.tpl",
-			TEST_TMP + "/appDirParse-01",
+			fixturesDir + "/template-02/file-01.tpl",
+			testTmp + "/appDirParse-01",
 			tplVars{"var1": "1234"},
 			func(err error) bool {
-				f, _ := ioutil.ReadFile(TEST_TMP + "/appDirParse-01/file-01.tpl")
+				f, _ := ioutil.ReadFile(testTmp + "/appDirParse-01/file-01.tpl")
 				s := string(f)
 				return s == "testings 1234"
 			},
@@ -151,48 +147,48 @@ func TestParse(test *testing.T) {
 		},
 	}
 
-	err := os.MkdirAll(TEST_TMP+"/appDirParse-01", os.FileMode(DIR_MODE))
+	err := os.MkdirAll(testTmp+"/appDirParse-01", os.FileMode(DIR_MODE))
 	if err != nil {
-		test.Errorf("Could not copy dir, err: %s", err.Error())
+		tester.Errorf("Could not copy dir, err: %s", err.Error())
 	}
 
-	for _, sbj := range cases {
-		test.Run(sbj.name, func(t *testing.T) {
-			err := parse(sbj.tplFile, sbj.appDir, sbj.vars)
+	for _, fxtr := range fixtures {
+		tester.Run(fxtr.name, func(test *testing.T) {
+			err := parse(fxtr.tplFile, fxtr.appDir, fxtr.vars)
 
-			if !sbj.gotWhatIWant(err) {
-				t.Error(sbj.failMsg)
+			if !fxtr.gotWhatIWant(err) {
+				test.Error(fxtr.failMsg)
 			}
 		})
 	}
 }
 
-func TestGetPathType(test *testing.T) {
-	fixturePath1, _ := filepath.Abs(FIXTURES_DIR + "/template-01")
+func TestGetPathType(tester *testing.T) {
+	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-01")
 
-	cases := []struct {
+	fixtures := []struct {
 		name, tmplPath, want string
 	}{
 		{"localAbsolutePath", fixturePath1, "local"},
-		{"localRelativePath", FIXTURES_DIR + "/template-01", "local"},
+		{"localRelativePath", fixturesDir + "/template-01", "local"},
 		{"httpPath", "http://example.com", "http"},
 		{"httpSecurePath", "https://example.com", "http"},
 	}
 
-	for _, sbj := range cases {
-		test.Run(sbj.name, func(t *testing.T) {
-			got := getPathType(sbj.tmplPath)
+	for _, fxtr := range fixtures {
+		tester.Run(fxtr.name, func(test *testing.T) {
+			got := getPathType(fxtr.tmplPath)
 
-			if got != sbj.want {
-				t.Errorf("got %q, want %q", got, sbj.want)
+			if got != fxtr.want {
+				test.Errorf("got %q, want %q", got, fxtr.want)
 			}
 		})
 	}
 }
 
 func TestParseDir(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(FIXTURES_DIR + "/parse-dir-01")
-	tmpDir, _ := filepath.Abs(TEST_TMP)
+	fixturePath1, _ := filepath.Abs(fixturesDir + "/parse-dir-01")
+	tmpDir, _ := filepath.Abs(testTmp)
 
 	fixtures := []struct {
 		name, tmplPath, outPath string

@@ -27,7 +27,7 @@ func TestGetSettings(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings(FIXTURES_DIR + "/config-01.json")
+		got, err := settings(fixturesDir + "/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -64,7 +64,7 @@ func TestUrlIsAllowed(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings(FIXTURES_DIR + "/config-01.json")
+		got, err := settings(fixturesDir + "/config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -80,7 +80,7 @@ func TestInitConfigFile(t *testing.T) {
 		name, file string
 		want       error
 	}{
-		{"NotExist", TEST_TMP + PS + "config-fix-01.json", nil},
+		{"NotExist", testTmp + PS + "config-fix-01.json", nil},
 	}
 
 	for _, tt := range tests {
@@ -105,8 +105,8 @@ func TestLoadAnswers(test *testing.T) {
 	var fixtures = []struct {
 		name, file, want string
 	}{
-		{"goodJson", FIXTURES_DIR + PS + "answers-01.json", "value1"},
-		{"badJson", FIXTURES_DIR + PS + "answers-02.json", ""},
+		{"goodJson", fixturesDir + PS + "answers-01.json", "value1"},
+		{"badJson", fixturesDir + PS + "answers-02.json", ""},
 	}
 
 	fxtr := fixtures[0]
