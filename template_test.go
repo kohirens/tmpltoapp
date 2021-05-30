@@ -151,7 +151,7 @@ func TestParse(test *testing.T) {
 		},
 	}
 
-	err := os.MkdirAll(TEST_TMP+"/appDirParse-01", os.FileMode(0774))
+	err := os.MkdirAll(TEST_TMP+"/appDirParse-01", os.FileMode(DIR_MODE))
 	if err != nil {
 		test.Errorf("Could not copy dir, err: %s", err.Error())
 	}

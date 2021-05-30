@@ -51,7 +51,7 @@ func copyDir(srcDir, dstDir string) (err error) {
 		return
 	}
 
-	err = os.MkdirAll(dstDir, 0774)
+	err = os.MkdirAll(dstDir, DIR_MODE)
 	if err != nil {
 		return
 	}
@@ -152,7 +152,7 @@ func extract(archivePath, dest string) (err error) {
 		return
 	}
 
-	err = os.MkdirAll(dest, 0774)
+	err = os.MkdirAll(dest, DIR_MODE)
 	if err != nil {
 		err = fmt.Errorf("could not write dest %q, error: %v", dest, err.Error())
 		return

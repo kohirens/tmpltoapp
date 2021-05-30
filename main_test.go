@@ -12,7 +12,7 @@ func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
 	os.RemoveAll(TEST_TMP)
 	// Set up a temporary dir for generate files
-	os.Mkdir(TEST_TMP, 0774) // set up a temporary dir for generate files
+	os.Mkdir(TEST_TMP, DIR_MODE) // set up a temporary dir for generate files
 	// Run all tests
 	exitcode := m.Run()
 	// Clean up
