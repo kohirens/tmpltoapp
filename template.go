@@ -242,7 +242,7 @@ func parse(tplFile, dstDir string, vars tplVars) (err error) {
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
 func parseDir(tplDir, outDir string, vars tplVars) (err error) {
 	// Recursively walk the template directory.
-	err = filepath.Walk(tplDir, func(path string, fi os.FileInfo, wErr error) (rErr error) {
+	err = filepath.Walk(tplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
 			rErr = wErr
 			return
@@ -260,12 +260,23 @@ func parseDir(tplDir, outDir string, vars tplVars) (err error) {
 		}
 
 		// Skip non-text files.
-		if stdlib.IsTextFile(path) {
-			rErr = fmt.Errorf("could not detect file type for %v", path)
+		if !stdlib.IsTextFile(sourcePath) { // TODO: Change to use an exclude list, include every file by default.
+			rErr = fmt.Errorf("could not detect file type for %v", sourcePath)
+			return
+		}
+		// TODO: Update outDir to append any subdirectories we are walking from tplDir.
+		partial := strings.ReplaceAll(sourcePath, tplDir, "")
+		partial = strings.ReplaceAll(partial, PS, "/")
+		saveDir := path.Clean(outDir + path.Dir(partial))
+
+		// TODO: Make the subdirectories in the new savePath.
+		err = os.MkdirAll(saveDir, DIR_MODE)
+		if err != nil {
 			return
 		}
 
-		rErr = parse(path, outDir, vars)
+		rErr = parse(sourcePath, saveDir, vars)
+
 		return
 	})
 

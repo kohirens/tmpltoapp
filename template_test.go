@@ -189,3 +189,41 @@ func TestGetPathType(test *testing.T) {
 		})
 	}
 }
+
+func TestParseDir(tester *testing.T) {
+	fixturePath1, _ := filepath.Abs(FIXTURES_DIR + "/parse-dir-01")
+	tmpDir, _ := filepath.Abs(TEST_TMP)
+
+	fixtures := []struct {
+		name, tmplPath, outPath string
+		tplVars tplVars
+		fileToCheck, want string
+	}{
+		{
+			"parse-dir-01", fixturePath1, tmpDir + "/parse-dir-01",
+			tplVars{"APP_NAME": "SolarPolar"},
+			tmpDir + "/parse-dir-01/dir1/README.md", "SolarPolar\n",
+		},
+	}
+
+	fxtr := fixtures[0]
+	tester.Run(fxtr.name, func(test *testing.T) {
+		err := parseDir(fxtr.tmplPath, fxtr.outPath, fxtr.tplVars)
+
+		if err != nil {
+			test.Errorf("got an error %q", err.Error())
+			return
+		}
+
+		got, err := ioutil.ReadFile(tmpDir + "/parse-dir-01/dir1/README.md")
+
+		if err != nil {
+			test.Errorf("got an error %q", err.Error())
+		}
+
+		//TODO: Verify the files in the parsed dir was processed
+		if string(got) != fxtr.want {
+			test.Errorf("got %q, but want %q", string(got), fxtr.want)
+		}
+	})
+}
