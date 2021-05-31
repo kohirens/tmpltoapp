@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kohirens/stdlib"
 	"io/ioutil"
 	"os"
 )
@@ -20,22 +21,25 @@ type Config struct {
 // Load configuration file.
 func initConfigFile(file string) (err error) {
 
-	_, er := os.Stat(file)
-
-	if err != nil {
-		if !os.IsNotExist(er) {
-			verboseF(1, "config file exist %v", er.Error())
-			return
-		}
-
-		err = er
+	if stdlib.PathExist(file) {
+		verboseF(1, "config file %q exist", file)
+		return
 	}
 
-	f, err := os.Create(file)
+	f, er := os.Create(file)
 
-	defer f.Close()
+	if er != nil {
+		err = er
+		return
+	}
 
-	f.WriteString(DEFAULT_CFG)
+	defer func () {
+		err = f.Close()
+	}()
+
+	_, err = f.WriteString(DEFAULT_CFG)
+
+	verboseF(1, "made a new config file %q exist", file)
 
 	return
 }
