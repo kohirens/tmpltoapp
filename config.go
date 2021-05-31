@@ -47,15 +47,16 @@ func initConfigFile(file string) (err error) {
 func settings(filename string) (cfg Config, err error) {
 	var data map[string]interface{}
 
-	content, err := ioutil.ReadFile(filename)
+	content, er := ioutil.ReadFile(filename)
 
-	if os.IsNotExist(err) {
-		err = fmt.Errorf("could not %s", err.Error())
+	if os.IsNotExist(er) {
+		err = fmt.Errorf("could not %s", er.Error())
 		return
 	}
 
-	err = json.Unmarshal(content, &data)
-	if err != nil {
+	er = json.Unmarshal(content, &data)
+	if er != nil {
+		err = fmt.Errorf("could not decode %q, error: %s", filename, er.Error())
 		return
 	}
 
