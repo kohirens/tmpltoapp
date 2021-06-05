@@ -80,11 +80,18 @@ func main() {
 	verboseF(2, "running program %q", programName)
 	verboseF(1, "verbose level: %v", verbosityLevel)
 
-	configFile := "config.json"
-	appDataDir, err := stdlib.HomeDir()
-	if err == nil {
-		configFile = appDataDir + PS + "config.json"
+	appDataDir, err := stdlib.AppDataDir()
+	if err != nil {
+		return
 	}
+
+	appDataDir = appDataDir + PS + "go-gitter"
+	err = os.MkdirAll(appDataDir, DIR_MODE)
+	if err != nil {
+		return
+	}
+
+	configFile := appDataDir + PS + "config.json"
 
 	err = initConfigFile(configFile)
 	if err != nil {
