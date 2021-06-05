@@ -9,13 +9,19 @@
 
 # Go-Gitter
 
-Start a new project using an existing directory structure as a
-manifest/blueprint.
+Start a new project from a template. A template is simply a folder with files,
+with each file processed as a Go template.
 
 ## Description
 
-Copies one directory structure to another then process any files in the
-directories as Go templates.
+A template is just a folder with files. Each file will be processed as a Go
+template. Data can be passed to the template/context through a JSON file that
+you supply.
+
+Templates can be local folders or URLs (to zip files). See an examples:
+
+[test.tmpl](https://github.com/kohirens/go-gitter-test.tmpl)
+[web.go.tmpl](https://github.com/kohirens/web.go.tmpl)
 
 ## Installation
 
@@ -35,8 +41,9 @@ docker pull kohirens/go-gitter:latest
 
 ### Making a Template
 
-Directories/repos are called templates, because they serve as a template for a
-new project.
+Templates are just directories containing files, which can contain Go template
+syntax that will be processed to fill in placeholders. The output will serve as
+a new project.
 
 1. Make a new directory.
 2. Add folders, and if a directory should be empty, then place a file named
@@ -53,18 +60,25 @@ new project.
 
 ### Using a Template
 
-1. Run this application with 2-3 parameters:
-   1. the first parameter is a path to a template, it can also be an HTTP URL.
-   2. the second parameter is the path to where you want to place the project.
-   3. you can pass in the local path to an asnswer file with the flags
-      `-a, --answers` the path to an optional YAML file with answers for common
-      placeholders, for example your name for an
-      `{{ .author }}` placeholder.
+1. Run this application with 3 parameters:
+   1. a path to a template, it can also be an HTTP URL.
+   2. a path to where you want to place the project (it should not exist).
+   3. a path to an answer (JSON) file containing key/value pairs that will
+      serve as variables. For example, an `{{ .author }}`
+      placeholder would take a file that has:
+      ```
+      {
+        "author": "your name"
+      }
+      ```
+
+NOTE: There a long/short flags you can use should you need to place the values
+      out of order, run the program with `-h` or `--help` for options.
 
 ### Notes About Template Processing
 
-* You will be asked for values for any unique placeholders found in the template
-  files, and that do not have an answer in the optional YAML "answer" file.
+* You can provide a list of keys, in the `answer` file, that you want a user to
+  supply when they run the template.
 * Empty directories will be placed without the "empty.dir" file.
 
 ---
