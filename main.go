@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/kohirens/stdlib"
@@ -18,14 +19,30 @@ const (
 )
 
 var (
+	appConfig = &Config{}
+	buildVersion string
+	flagStore *flagStorage
 	errMsgs = [...]string{
 		"please specify a path (or URL) to a template",
 		"enter a local path to output the app",
 		"the following error occurred trying to get the app data directory: %q",
 		"path/URL to template is not in the allow-list",
 		"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
+		"please specify a path to an answer file",
 	}
+	programName string
 )
+
+func init() {
+	// Use `path/filepath.Base` for cross-platform compatibility.
+	programName = filepath.Base(os.Args[0])
+	fs, err := defineFlags(programName, flag.ContinueOnError)
+	if err != nil {
+		return
+	}
+
+	flagStore = fs
+}
 
 func main() {
 	var err error
@@ -35,6 +52,33 @@ func main() {
 			log.Fatalln(err)
 		}
 	}()
+
+	err = flagStore.Flags.Parse(os.Args[1:])
+	if err != nil {
+		return
+	}
+
+	help, _ := flagStore.GetBool("help")
+	if help {
+		flagStore.Flags.SetOutput(os.Stdout)
+		flagStore.Flags.Usage()
+		os.Exit(0)
+	}
+
+	version, _ := flagStore.GetBool("version")
+	if version {
+		flagStore.Flags.SetOutput(os.Stdout)
+		fmt.Printf("\n%v\n", buildVersion)
+		os.Exit(0)
+	}
+
+	err = extractParsedFlags(flagStore, os.Args, appConfig)
+	if err != nil {
+		return
+	}
+
+	verboseF(2, "running program %q", programName)
+	verboseF(1, "verbose level: %v", verbosityLevel)
 
 	configFile := "config.json"
 	appDataDir, err := stdlib.HomeDir()
@@ -48,11 +92,6 @@ func main() {
 	}
 
 	options, err := settings(configFile)
-	if err != nil {
-		return
-	}
-
-	err = parseArgs(os.Args[0], os.Args[1:], &options)
 	if err != nil {
 		return
 	}
@@ -92,42 +131,6 @@ func main() {
 	// TODO: local copy.
 
 	// Parse
-}
-
-// Process any program flags fed into the program.
-func parseArgs(progName string, pArgs []string, options *Config) (err error) {
-
-	pFlags := flag.NewFlagSet(progName, flag.ExitOnError)
-
-	pFlags.StringVar(&options.answersPath, "answers", "", "Path to an answer file.")
-	pFlags.IntVar(&verbosityLevel, "verbose", 0, "extra detail processing info.")
-
-	pFlags.Parse(pArgs)
-
-	verboseF(2, "running program %q", progName)
-	verboseF(1, "verbose level: %v", verbosityLevel)
-	verboseF(1, "number of arguments passed in: %d", len(os.Args))
-	verboseF(1, "arguments passed in: %v", os.Args)
-
-	options.tplPath = pFlags.Arg(0)
-	options.appPath = pFlags.Arg(1)
-	options.verbosityLevel = verbosityLevel
-
-	if options.tplPath == "" {
-		err = fmt.Errorf(errMsgs[0])
-		return
-	}
-
-	if options.appPath == "" {
-		err = fmt.Errorf(errMsgs[1])
-		return
-	}
-
-	if options.answersPath != "" {
-		verboseF(1, "will use answers in the file %q", options.answersPath)
-	}
-
-	return
 }
 
 // Check to see if a URL is in the allowed list to download template from.

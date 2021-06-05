@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -11,8 +14,8 @@ const (
 	testTmp     = "tmp"
 )
 
-
 func TestMain(m *testing.M) {
+	programName = filepath.Base(os.Args[0])
 	// call flag.Parse() here if TestMain uses flags
 	os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
@@ -23,40 +26,68 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-func TestInput(t *testing.T) {
-	var tests = []struct {
-		name, want string
-		config     []string
-	}{
-		{"noArgs", errMsgs[0], []string{"go-gitter", "", ""}},
-		{"noAppPath", errMsgs[1], []string{"go-gitter", "templatePath", ""}},
+// SubCmdFlags space separated list of command line flags.
+const SubCmdFlags = "SUB_CMD_FLAGS"
+
+func TestCallingMain(tester *testing.T) {
+	// This was adapted from https://golang.org/src/flag/flag_test.go; line 596-657 at the time.
+	// This is called recursively, because we will have this test call itself
+	// in a sub-command with the environment variable `GO_CHILD_FLAG` set.
+	// Note that a call to `main()` MUST exit or you'll spin out of control.
+	if os.Getenv(SubCmdFlags) != "" {
+		// We're in the test binary, so test flags are set, lets reset it so
+		// so that only the program is set
+		// and whatever flags we want.
+		args := strings.Split(os.Getenv(SubCmdFlags), " ")
+		os.Args = append([]string{os.Args[0]}, args...)
+
+		// Anything you print here will be passed back to the cmd.Stderr and
+		// cmd.Stdout below, for example:
+		fmt.Printf("os args = %v\n", os.Args)
+
+		// Strange, I was expecting a need to manually call the conde in
+		// `init()`,but that seem to happen automatically. So yet more I have learn.
+		main()
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// exec code.
-			cfg := Config{}
-			gotErr := parseArgs(tt.config[0], tt.config[1:], &cfg)
+	var tests = []struct {
+		name string
+		want int
+		args []string
+	}{
+		{"noArgs", 0, []string{"-v"}},
+		{"noAppPath", 0, []string{"-h"}},
+		{"allGood", 0, []string{"-a", fixturesDir + "/answers-01.json", "-t", fixturesDir + "/tpl-1", "-p", "appPath4"}},
+	}
 
-			if !strings.Contains(gotErr.Error(), tt.want) {
-				t.Errorf("got %q, want %q", gotErr, tt.want)
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+			cmd := runMain(tester.Name(), test.args)
+
+			out, sce := cmd.CombinedOutput()
+
+			// exec code.
+			got := cmd.ProcessState.ExitCode()
+
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+
+			if sce != nil {
+				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n\n", string(out))
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
 			}
 		})
 	}
+}
 
-	t.Run("allGood", func(t *testing.T) {
-		cfg := Config{}
-		want := fixturesDir + "/ans-1.yml"
-		// set args for test.
-		cfgFixture := []string{"go-gitter", "-answers=" + want, fixturesDir + "/tpl-1", "appPath4"}
-		// exec code.
-		err := parseArgs(cfgFixture[0], cfgFixture[1:], &cfg)
-		if err != nil {
-			t.Errorf("got unexpected error: %v", err.Error())
-		}
+func runMain(testFunc string, args []string) *exec.Cmd {
+	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
 
-		if cfg.answersPath != want {
-			t.Errorf("got %q, want %q", cfg.answersPath, want)
-		}
-	})
+	// Run the test binary and tell it to run just this test with environment set.
+	cmd := exec.Command(os.Args[0], "-test.run", testFunc)
+	cmd.Env = append(os.Environ(), subEnvVar)
+
+	return cmd
 }
