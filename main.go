@@ -14,7 +14,6 @@ import (
 
 const (
 	PS       = string(os.PathSeparator)
-	CONF     = "config.json"
 	DIR_MODE = 0774
 )
 
@@ -45,10 +44,12 @@ func init() {
 }
 
 func main() {
+	// TODO change to mainErr
 	var err error
 
 	defer func() {
 		if err != nil {
+			fmt.Print("\nfatal error detected: ")
 			log.Fatalln(err)
 		}
 	}()
@@ -85,14 +86,15 @@ func main() {
 		return
 	}
 
+	// Make a directory for go-gitter to store data.
 	appDataDir = appDataDir + PS + "go-gitter"
 	err = os.MkdirAll(appDataDir, DIR_MODE)
 	if err != nil {
 		return
 	}
 
+	// Make a configuration file when there is not one.
 	configFile := appDataDir + PS + "config.json"
-
 	err = initConfigFile(configFile)
 	if err != nil {
 		return
@@ -102,8 +104,6 @@ func main() {
 	if err != nil {
 		return
 	}
-
-	verboseF(1, "config location %q", configFile)
 
 	isUrl, isAllowed := urlIsAllowed(options.tplPath, options.allowedUrls)
 	if isUrl && !isAllowed {

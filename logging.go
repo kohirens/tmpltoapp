@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-var verbosityLevel int = 0
+var verbosityLevel = 0
 
 // Show additional logging based on the verbosity level. Prints a newline after every message.
 func verboseF(lvl int, message string, a ...interface{}) {

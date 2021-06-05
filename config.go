@@ -10,8 +10,8 @@ import (
 
 type Config struct {
 	answers tplVars
-	allowedUrls    []string
-	answersPath    string
+	allowedUrls    []string // URLs allowed to download from.
+	answersPath    string //
 	appPath        string
 	cacheDir       string
 	tplPath        string
@@ -44,6 +44,7 @@ func initConfigFile(file string) (err error) {
 	return
 }
 
+// settings runtime options are a mix of config and command line arguments.
 func settings(filename string) (cfg Config, err error) {
 	var data map[string]interface{}
 
