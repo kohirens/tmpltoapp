@@ -128,9 +128,6 @@ func main() {
 			return
 		}
 	}
-	// TODO: local copy.
-
-	// Parse
 }
 
 // Check to see if a URL is in the allowed list to download template from.

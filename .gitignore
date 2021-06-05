@@ -5,6 +5,8 @@
 
 # Files
 # -----
-go-gitter
-
+/go-gitter
+/go-gitter.exe
+/go-gitter.test
+/go-gitter.test.exe
 ...
