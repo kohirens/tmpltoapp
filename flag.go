@@ -187,7 +187,7 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 		return
 	}
 
-	if options.answersPath != "" {
+	if options.answersPath == "" {
 		err = fmt.Errorf(errMsgs[5])
 		return
 	}
