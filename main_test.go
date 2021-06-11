@@ -57,7 +57,7 @@ func TestCallingMain(tester *testing.T) {
 	}{
 		{"noArgs", 0, []string{"-v"}},
 		{"noAppPath", 0, []string{"-h"}},
-		{"allGood", 0, []string{"-a", fixturesDir + "/answers-01.json", "-t", fixturesDir + "/tpl-1", "-p", "appPath4"}},
+		{"allGood", 0, []string{"-a", fixturesDir + PS + "answers-parse-dir-02.json", "-t", fixturesDir + PS + "parse-dir-02", "-p", testTmp + PS + "app-parse-dir-02"}},
 	}
 
 	for _, test := range tests {
