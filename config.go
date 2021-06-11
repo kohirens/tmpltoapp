@@ -15,7 +15,7 @@ type Config struct {
 	appPath        string
 	cacheDir       string
 	tplPath        string
-	verbosityLevel int
+	tmpl string
 }
 
 // Load configuration file.
