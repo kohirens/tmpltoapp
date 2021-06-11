@@ -36,6 +36,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/kohirens/stdlib"
 )
 
 type cliFlag struct{
@@ -187,7 +188,12 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 		return
 	}
 
-	if options.answersPath == "" {
+	if stdlib.DirExist(options.appPath) {
+		err = fmt.Errorf("appPath already exits %q", options.appPath)
+		return
+	}
+
+	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
 		err = fmt.Errorf(errMsgs[5])
 		return
 	}
