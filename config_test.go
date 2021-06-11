@@ -16,7 +16,8 @@ func TestGetSettings(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// exec code.
-			_, gotErr := settings(tt.file)
+			got := &Config{}
+			gotErr := settings(tt.file, got)
 
 			if !strings.Contains(gotErr.Error(), tt.want) {
 				t.Errorf("got %q, want %q", gotErr, tt.want)
@@ -27,7 +28,8 @@ func TestGetSettings(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings(fixturesDir + "/config-01.json")
+		got := &Config{}
+		err := settings(fixturesDir + "/config-01.json", got)
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -64,7 +66,10 @@ func TestUrlIsAllowed(t *testing.T) {
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
 		want := "test.com"
-		got, err := settings(fixturesDir + "/config-01.json")
+		got := &Config{}
+
+		err := settings(fixturesDir + "/config-01.json", got)
+
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}

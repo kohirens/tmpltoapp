@@ -45,7 +45,7 @@ func initConfigFile(file string) (err error) {
 }
 
 // settings runtime options are a mix of config and command line arguments.
-func settings(filename string) (cfg Config, err error) {
+func settings(filename string, cfg *Config) (err error) {
 	var data map[string]interface{}
 
 	content, er := ioutil.ReadFile(filename)

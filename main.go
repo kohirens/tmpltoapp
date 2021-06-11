@@ -27,7 +27,7 @@ var (
 		"the following error occurred trying to get the app data directory: %q",
 		"path/URL to template is not in the allow-list",
 		"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
-		"please specify a path to an answer file",
+		"please specify a path to an answer file that exist",
 	}
 	programName string
 )
@@ -101,30 +101,33 @@ func main() {
 		return
 	}
 
-	options, err := settings(configFile)
+	err = settings(configFile, appConfig)
+
+	verboseF(3, "configured runtime options %v", appConfig)
+
 	if err != nil {
 		return
 	}
 
-	isUrl, isAllowed := urlIsAllowed(options.tplPath, options.allowedUrls)
+	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.allowedUrls)
 	if isUrl && !isAllowed {
 		err = fmt.Errorf(errMsgs[3])
 		return
 	}
 	verboseF(1, "isUrl %v", isUrl)
 
-	options.cacheDir = appDataDir + PS + "cache"
-	err = os.MkdirAll(options.cacheDir, DIR_MODE)
+	appConfig.cacheDir = appDataDir + PS + "cache"
+	err = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
 	if err != nil {
 		err = fmt.Errorf("could not make cache directory, error: %s", err.Error())
 		return
 	}
 
-	tmplPathType := getPathType(options.tplPath)
+	tmplPathType := getPathType(appConfig.tplPath)
 
 	if tmplPathType == "http" {
 		client := http.Client{}
-		zipFile, iErr := download(options.tplPath, options.cacheDir, &client)
+		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
 		if iErr != nil {
 			err = iErr
 			return
