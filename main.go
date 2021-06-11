@@ -52,6 +52,7 @@ func main() {
 			fmt.Print("\nfatal error detected: ")
 			log.Fatalln(err)
 		}
+		os.Exit(0)
 	}()
 
 	err = flagStore.Flags.Parse(os.Args[1:])
