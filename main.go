@@ -139,6 +139,12 @@ func main() {
 			return
 		}
 	}
+
+	if tmplPathType == "local" {
+		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
+	}
+
+	verboseF(3, "appConfig = %v", appConfig)
 }
 
 // Check to see if a URL is in the allowed list to download template from.
