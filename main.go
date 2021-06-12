@@ -109,7 +109,7 @@ func main() {
 		return
 	}
 
-	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.allowedUrls)
+	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.AllowedUrls)
 	if isUrl && !isAllowed {
 		err = fmt.Errorf(errMsgs[3])
 		return

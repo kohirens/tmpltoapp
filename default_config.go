@@ -2,7 +2,7 @@ package main
 
 const (
 	DEFAULT_CFG = `{
-    "allowedUrls": [
+    "AllowedUrls": [
         "https://github.com/"
     ]
 }`

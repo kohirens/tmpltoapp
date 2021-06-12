@@ -34,7 +34,7 @@ func TestGetSettings(t *testing.T) {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
 
-		if got.allowedUrls[0] != want {
+		if got.AllowedUrls[0] != want {
 			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})
@@ -74,7 +74,7 @@ func TestUrlIsAllowed(t *testing.T) {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
 
-		if got.allowedUrls[0] != want {
+		if got.AllowedUrls[0] != want {
 			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})

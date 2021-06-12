@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	answers tplVars
-	allowedUrls    []string // URLs allowed to download from.
+	AllowedUrls    []string // URLs allowed to download from.
 	answersPath    string //
 	appPath        string
 	cacheDir       string
@@ -46,8 +46,6 @@ func initConfigFile(file string) (err error) {
 
 // settings runtime options are a mix of config and command line arguments.
 func settings(filename string, cfg *Config) (err error) {
-	var data map[string]interface{}
-
 	content, er := ioutil.ReadFile(filename)
 
 	if os.IsNotExist(er) {
@@ -55,18 +53,10 @@ func settings(filename string, cfg *Config) (err error) {
 		return
 	}
 
-	er = json.Unmarshal(content, &data)
+	er = json.Unmarshal(content, cfg)
 	if er != nil {
 		err = fmt.Errorf("could not decode %q, error: %s", filename, er.Error())
 		return
-	}
-
-	val, ok := data["allowedUrls"].([]interface{})
-	if ok && len(data) > 0 {
-		cfg.allowedUrls = make([]string, len(data))
-		for i, v := range val {
-			cfg.allowedUrls[i] = v.(string)
-		}
 	}
 
 	return
