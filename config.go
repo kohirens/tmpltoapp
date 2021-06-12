@@ -16,6 +16,8 @@ type Config struct {
 	cacheDir       string
 	tplPath        string
 	tmpl string
+	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
+	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
 }
 
 // Load configuration file.

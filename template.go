@@ -240,7 +240,7 @@ func parse(tplFile, dstDir string, vars tplVars) (err error) {
 }
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
-func parseDir(tplDir, outDir string, vars tplVars) (err error) {
+func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (err error) {
 	// Recursively walk the template directory.
 	err = filepath.Walk(tplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
@@ -260,7 +260,7 @@ func parseDir(tplDir, outDir string, vars tplVars) (err error) {
 		}
 
 		// Skip non-text files.
-		if !stdlib.IsTextFile(sourcePath) { // TODO: Change to use an exclude list, include every file by default.
+		if !fec.IsValid(sourcePath) { // Use an exclude list, include every file by default.
 			rErr = fmt.Errorf("could not detect file type for %v", sourcePath)
 			return
 		}

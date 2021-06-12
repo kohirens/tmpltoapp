@@ -204,7 +204,9 @@ func TestParseDir(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		err := parseDir(fxtr.tmplPath, fxtr.outPath, fxtr.tplVars)
+		fec, _ := stdlib.NewFileExtChecker(nil, &[]string{"md", "yml"})
+
+		err := parseDir(fxtr.tmplPath, fxtr.outPath, fxtr.tplVars, fec)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())
