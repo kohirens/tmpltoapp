@@ -12,6 +12,8 @@ import (
 const (
 	fixturesDir = "testdata"
 	testTmp     = "tmp"
+	// SubCmdFlags space separated list of command line flags.
+	SubCmdFlags = "SUB_CMD_FLAGS"
 )
 
 func TestMain(m *testing.M) {
@@ -25,9 +27,6 @@ func TestMain(m *testing.M) {
 	// Clean up
 	os.Exit(exitCode)
 }
-
-// SubCmdFlags space separated list of command line flags.
-const SubCmdFlags = "SUB_CMD_FLAGS"
 
 func TestCallingMain(tester *testing.T) {
 	// This was adapted from https://golang.org/src/flag/flag_test.go; line 596-657 at the time.
@@ -55,9 +54,9 @@ func TestCallingMain(tester *testing.T) {
 		want int
 		args []string
 	}{
-		{"noArgs", 0, []string{"-v"}},
-		{"noAppPath", 0, []string{"-h"}},
-		{"allGood", 0, []string{"-a", fixturesDir + PS + "answers-parse-dir-02.json", "-t", fixturesDir + PS + "parse-dir-02", "-p", testTmp + PS + "app-parse-dir-02"}},
+		{"versionFlag", 0, []string{"-v"}},
+		{"helpFlag", 0, []string{"-h"}},
+		{"minRequiredFlags", 0, []string{"-a", fixturesDir + PS + "answers-parse-dir-02.json", "-t", fixturesDir + PS + "parse-dir-02", "-p", testTmp + PS + "app-parse-dir-02"}},
 	}
 
 	for _, test := range tests {
@@ -66,7 +65,7 @@ func TestCallingMain(tester *testing.T) {
 
 			out, sce := cmd.CombinedOutput()
 
-			// exec code.
+			// get exit code.
 			got := cmd.ProcessState.ExitCode()
 
 			if got != test.want {
@@ -83,10 +82,10 @@ func TestCallingMain(tester *testing.T) {
 }
 
 func runMain(testFunc string, args []string) *exec.Cmd {
-	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
-
 	// Run the test binary and tell it to run just this test with environment set.
 	cmd := exec.Command(os.Args[0], "-test.run", testFunc)
+
+	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd

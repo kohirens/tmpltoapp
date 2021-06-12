@@ -81,3 +81,61 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 
 	return
 }
+
+// extractParsedFlags parses command line flags into program options.
+func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err error) {
+	flags := fs.Flags
+	verboseF(3, "number of arguments passed in: %d", len(pArgs))
+	verboseF(3, "arguments passed in: %v", pArgs)
+
+	numArgs := len(flags.Args())
+	if numArgs > 0 {
+		options.tplPath = flags.Arg(0)
+	}
+	if numArgs > 1 {
+		options.appPath = flags.Arg(1)
+	}
+	if numArgs > 2 {
+		options.answersPath = flags.Arg(1)
+	}
+
+	// flags override arguments.
+	tmplPath, err := fs.GetString("tmplPath")
+	if err == nil {
+		options.tplPath = tmplPath
+	}
+
+	appPath, err := fs.GetString("appPath")
+	if err == nil {
+		options.appPath = appPath
+	}
+
+	answersPath, err := fs.GetString("answers")
+	if err == nil {
+		options.answersPath = answersPath
+	}
+
+	verbosityLevel, _ = fs.GetInt("verbosity")
+
+	if options.tplPath == "" {
+		err = fmt.Errorf(errMsgs[0])
+		return
+	}
+
+	if options.appPath == "" {
+		err = fmt.Errorf(errMsgs[1])
+		return
+	}
+
+	if stdlib.DirExist(options.appPath) {
+		err = fmt.Errorf("appPath already exits %q", options.appPath)
+		return
+	}
+
+	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
+		err = fmt.Errorf(errMsgs[5])
+		return
+	}
+
+	return
+}

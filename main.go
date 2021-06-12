@@ -44,19 +44,18 @@ func init() {
 }
 
 func main() {
-	// TODO change to mainErr
-	var err error
+	var mainErr error
 
 	defer func() {
-		if err != nil {
+		if mainErr != nil {
 			fmt.Print("\nfatal error detected: ")
-			log.Fatalln(err)
+			log.Fatalln(mainErr)
 		}
 		os.Exit(0)
 	}()
 
-	err = flagStore.Flags.Parse(os.Args[1:])
-	if err != nil {
+	mainErr = flagStore.Flags.Parse(os.Args[1:])
+	if mainErr != nil {
 		return
 	}
 
@@ -74,52 +73,52 @@ func main() {
 		os.Exit(0)
 	}
 
-	err = extractParsedFlags(flagStore, os.Args, appConfig)
-	if err != nil {
+	mainErr = extractParsedFlags(flagStore, os.Args, appConfig)
+	if mainErr != nil {
 		return
 	}
 
 	verboseF(2, "running program %q", programName)
 	verboseF(1, "verbose level: %v", verbosityLevel)
 
-	appDataDir, err := stdlib.AppDataDir()
-	if err != nil {
+	appDataDir, mainErr := stdlib.AppDataDir()
+	if mainErr != nil {
 		return
 	}
 
 	// Make a directory for go-gitter to store data.
 	appDataDir = appDataDir + PS + "go-gitter"
-	err = os.MkdirAll(appDataDir, DIR_MODE)
-	if err != nil {
+	mainErr = os.MkdirAll(appDataDir, DIR_MODE)
+	if mainErr != nil {
 		return
 	}
 
 	// Make a configuration file when there is not one.
 	configFile := appDataDir + PS + "config.json"
-	err = initConfigFile(configFile)
-	if err != nil {
+	mainErr = initConfigFile(configFile)
+	if mainErr != nil {
 		return
 	}
 
-	err = settings(configFile, appConfig)
+	mainErr = settings(configFile, appConfig)
 
 	verboseF(3, "configured runtime options %v", appConfig)
 
-	if err != nil {
+	if mainErr != nil {
 		return
 	}
 
 	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.AllowedUrls)
 	if isUrl && !isAllowed {
-		err = fmt.Errorf(errMsgs[3])
+		mainErr = fmt.Errorf(errMsgs[3])
 		return
 	}
 	verboseF(1, "isUrl %v", isUrl)
 
 	appConfig.cacheDir = appDataDir + PS + "cache"
-	err = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
-	if err != nil {
-		err = fmt.Errorf("could not make cache directory, error: %s", err.Error())
+	mainErr = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
+	if mainErr != nil {
+		mainErr = fmt.Errorf("could not make cache directory, error: %s", mainErr.Error())
 		return
 	}
 
@@ -129,15 +128,16 @@ func main() {
 		client := http.Client{}
 		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
 		if iErr != nil {
-			err = iErr
+			mainErr = iErr
 			return
 		}
 
 		iErr = extract(zipFile, os.TempDir())
 		if iErr != nil {
-			err = iErr
+			mainErr = iErr
 			return
 		}
+		// TODO: Require template directories to have a specific file in order to be processed to prevent process directories unintentionally.
 	}
 
 	if tmplPathType == "local" {
@@ -147,23 +147,21 @@ func main() {
 	verboseF(3, "appConfig = %v", appConfig)
 
 	if !stdlib.DirExist(appConfig.tmpl) {
-		err = fmt.Errorf("invalid template directory %q", appConfig.tmpl)
+		mainErr = fmt.Errorf("invalid template directory %q", appConfig.tmpl)
 		return
 	}
 
-	// TODO: Require template directories to have a specific file in order to be processed to prevent process directories unintentionally.
-	// TODO: require the answer file to fill in all the variables (JSON please).
 	fec, err1 := stdlib.NewFileExtChecker(&appConfig.ExcludeFileExtensions, &appConfig.IncludeFileExtensions)
 	if err1 != nil {
-		err = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
+		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
 	}
 
-	appConfig.answers, err = loadAnswers(appConfig.answersPath)
-	if err != nil {
+	appConfig.answers, mainErr = loadAnswers(appConfig.answersPath)
+	if mainErr != nil {
 		return
 	}
 
-	err = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec)
+	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec)
 }
 
 // Check to see if a URL is in the allowed list to download template from.
