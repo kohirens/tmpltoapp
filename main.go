@@ -145,6 +145,25 @@ func main() {
 	}
 
 	verboseF(3, "appConfig = %v", appConfig)
+
+	if !stdlib.DirExist(appConfig.tmpl) {
+		err = fmt.Errorf("invalid template directory %q", appConfig.tmpl)
+		return
+	}
+
+	// TODO: Require template directories to have a specific file in order to be processed to prevent process directories unintentionally.
+	// TODO: require the answer file to fill in all the variables (JSON please).
+	fec, err1 := stdlib.NewFileExtChecker(&appConfig.ExcludeFileExtensions, &appConfig.IncludeFileExtensions)
+	if err1 != nil {
+		err = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
+	}
+
+	appConfig.answers, err = loadAnswers(appConfig.answersPath)
+	if err != nil {
+		return
+	}
+
+	err = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec)
 }
 
 // Check to see if a URL is in the allowed list to download template from.

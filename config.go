@@ -64,7 +64,7 @@ func settings(filename string, cfg *Config) (err error) {
 	return
 }
 
-// loadAnswers Loan answers from a JSON file to be used to fill in placeholders when processing Go templates.
+// loadAnswers Load key/value pairs from a JSON file to fill in placeholders when processing Go templates.
 func loadAnswers(filename string) (answers tplVars, err error) {
 	content, err := ioutil.ReadFile(filename)
 
@@ -75,6 +75,7 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 
 	err = json.Unmarshal(content, &answers)
 	if err != nil {
+		err = fmt.Errorf("could not decode JSON file %q, because of error: %s", filename, err.Error())
 		return
 	}
 
