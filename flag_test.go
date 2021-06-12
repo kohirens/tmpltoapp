@@ -93,28 +93,28 @@ func TestFlagExitCode(t *testing.T) {
 	}
 
 	tests := []struct {
-			flag       string
-			flagHandle string
-			expectExit int
-		}{
+		flag       string
+		flagHandle string
+		expectExit int
+	}{
 		{
-			flag: "-h",
+			flag:       "-h",
 			expectExit: 0,
 		},
 		{
-			flag: "-v",
+			flag:       "-v",
 			expectExit: 0,
 		},
 		{
-			flag: "-version",
+			flag:       "-version",
 			expectExit: 0,
 		},
 		{
-			flag: "-undefined",
+			flag:       "-undefined",
 			expectExit: 1,
 		},
 		{
-			flag: "-t",
+			flag:       "-t",
 			expectExit: 1,
 		},
 	}

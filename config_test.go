@@ -29,7 +29,7 @@ func TestGetSettings(t *testing.T) {
 		// exec code.
 		want := "test.com"
 		got := &Config{}
-		err := settings(fixturesDir + "/config-01.json", got)
+		err := settings(fixturesDir+"/config-01.json", got)
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -68,7 +68,7 @@ func TestUrlIsAllowed(t *testing.T) {
 		want := "test.com"
 		got := &Config{}
 
-		err := settings(fixturesDir + "/config-01.json", got)
+		err := settings(fixturesDir+"/config-01.json", got)
 
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())

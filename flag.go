@@ -39,11 +39,11 @@ import (
 	"github.com/kohirens/stdlib"
 )
 
-type cliFlag struct{
-	name string
-	short string
+type cliFlag struct {
+	name        string
+	short       string
 	description string
-	valueType string
+	valueType   string
 }
 
 type cliFlags []cliFlag
@@ -57,11 +57,11 @@ var appFlags = cliFlags{
 	cliFlag{"version", "v", "print build version information and exit 0.", "bool"},
 }
 
-type flagStorage struct{
+type flagStorage struct {
 	Flags *flag.FlagSet
-	ints map[string]*int
+	ints  map[string]*int
 	bools map[string]*bool
-	strs map[string]*string
+	strs  map[string]*string
 }
 
 // GetInt Get a flag parsed as an integer.
@@ -133,9 +133,9 @@ func defineFlags(programName string, handling flag.ErrorHandling) (flagStore *fl
 
 	flagStore = &flagStorage{
 		Flags: flags,
-		ints: ints,
+		ints:  ints,
 		bools: bools,
-		strs: strs,
+		strs:  strs,
 	}
 
 	return
@@ -150,28 +150,28 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 
 	// TODO: Moved to loadSettings.
 	numArgs := len(flags.Args())
-	if  numArgs > 0 {
+	if numArgs > 0 {
 		options.tplPath = flags.Arg(0)
 	}
-	if  numArgs > 1 {
+	if numArgs > 1 {
 		options.appPath = flags.Arg(1)
 	}
-	if  numArgs > 2 {
+	if numArgs > 2 {
 		options.answersPath = flags.Arg(1)
 	}
 
 	// flags override arguments.
-	tmplPath , err := fs.GetString("tmplPath")
+	tmplPath, err := fs.GetString("tmplPath")
 	if err == nil {
 		options.tplPath = tmplPath
 	}
 
-	appPath , err := fs.GetString("appPath")
+	appPath, err := fs.GetString("appPath")
 	if err == nil {
 		options.appPath = appPath
 	}
 
-	answersPath , err := fs.GetString("answers")
+	answersPath, err := fs.GetString("answers")
 	if err == nil {
 		options.answersPath = answersPath
 	}

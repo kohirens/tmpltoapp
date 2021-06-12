@@ -18,10 +18,10 @@ const (
 )
 
 var (
-	appConfig = &Config{}
+	appConfig    = &Config{}
 	buildVersion string
-	flagStore *flagStorage
-	errMsgs = [...]string{
+	flagStore    *flagStorage
+	errMsgs      = [...]string{
 		"please specify a path (or URL) to a template",
 		"enter a local path to output the app",
 		"the following error occurred trying to get the app data directory: %q",

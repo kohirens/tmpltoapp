@@ -9,13 +9,13 @@ import (
 )
 
 type Config struct {
-	answers tplVars
-	AllowedUrls    []string // URLs allowed to download from.
-	answersPath    string //
-	appPath        string
-	cacheDir       string
-	tplPath        string
-	tmpl string
+	answers               tplVars
+	AllowedUrls           []string // URLs allowed to download from.
+	answersPath           string   //
+	appPath               string
+	cacheDir              string
+	tplPath               string
+	tmpl                  string
 	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
 }
@@ -35,7 +35,7 @@ func initConfigFile(file string) (err error) {
 		return
 	}
 
-	defer func () {
+	defer func() {
 		err = f.Close()
 	}()
 

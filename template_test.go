@@ -192,8 +192,8 @@ func TestParseDir(tester *testing.T) {
 
 	fixtures := []struct {
 		name, tmplPath, outPath string
-		tplVars tplVars
-		fileToCheck, want string
+		tplVars                 tplVars
+		fileToCheck, want       string
 	}{
 		{
 			"parse-dir-01", fixturePath1, tmpDir + "/parse-dir-01",
