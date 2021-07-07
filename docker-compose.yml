@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+    # docker run -it --entrypoint sh --rm -v  "${PWS}/:/go/src/github.com/kohirens/go-gitter/" --name gitter go_gitter_app
+    app:
+        build:
+            args:
+                USER_NAME: '${USER_NAME}'
+                REPO: '${REPO}'
+            dockerfile: '.docker/Dockerfile'
+            context: '.'
+            target: 'dev'
+        cap_add:
+            - 'SYS_PTRACE'
+            - 'SYSLOG'
+        tty: true
+        security_opt:
+            - 'seccomp:unconfined'
+        volumes:
+            - './:/home/${USER_NAME}/src/${REPO}/'
+            - '${HOME}/.ssh/known_hosts:/home/${USER_NAME}/.ssh/known_hosts'
+            - 'vscode_ext:/home/${USER_NAME}/.vscode-server'
+            - 'vscode_i_ext:/home/${USER_NAME}/.vscode-server-insiders'
+
+volumes:
+    vscode_ext: null
+    vscode_i_ext: null

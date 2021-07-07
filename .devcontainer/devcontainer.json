@@ -1,6 +1,6 @@
 {
 	"name": "Go Gitter",
-	"dockerComposeFile": "../docker/docker-compose.yml",
+	"dockerComposeFile": "../docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/home/gitter/src/github.com/kohirens/go-gitter",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
@@ -9,8 +9,7 @@
 	},
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/sh",
+	"settings": {
 		"go.toolsManagement.checkForUpdates": "proxy",
 		"go.useLanguageServer": true,
 	},
@@ -22,5 +21,6 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "go version",
-	"shutdownAction": "stopCompose"
+	"shutdownAction": "stopCompose",
+    "remoteUser": "app"
 }
