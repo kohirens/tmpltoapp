@@ -112,7 +112,6 @@ func copyDir(srcDir, dstDir string) (err error) {
 
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (zipFile string, err error) {
-	// TODO: extract path from URL, after domain, and mkdirall.
 	dest := path.Base(url)
 	// HTTP Request
 	resp, err := client.Get(url)
@@ -143,56 +142,55 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 	return
 }
 
-func extract(archivePath, dest string) (err error) {
+func extract(archivePath, dest string) (string, error) {
+	tmplDir := ""
+	zipParentDir := ""
+
 	// Get resource to zip archive.
 	archive, err := zip.OpenReader(archivePath)
-
 	if err != nil {
-		err = fmt.Errorf("could not open archive %q, error: %v", archivePath, err.Error())
-		return
+		return tmplDir, fmt.Errorf("could not open archive %q, error: %v", archivePath, err.Error())
 	}
 
 	err = os.MkdirAll(dest, DIR_MODE)
 	if err != nil {
-		err = fmt.Errorf("could not write dest %q, error: %v", dest, err.Error())
-		return
+		return tmplDir, fmt.Errorf("could not write dest %q, error: %v", dest, err.Error())
 	}
 
-	fmt.Printf("extracting %v to %v\n", archivePath, dest)
+	verboseF(verboseLvlInfo, "extracting %v to %v\n", archivePath, dest)
 	for _, file := range archive.File {
-		sourceFile, ferr := file.Open()
-
-		if ferr != nil {
-			err = fmt.Errorf("failed to extract archive %q to dest %q, error: %v", archivePath, dest, file.Name)
-			break
+		sourceFile, fErr := file.Open()
+		if fErr != nil {
+			return tmplDir, fmt.Errorf("failed to extract archive %q to dest %q, error: %v", archivePath, dest, file.Name)
 		}
 
-		deflateFilePath := filepath.Join(dest, file.Name)
+		extractionDir := filepath.Join(dest, file.Name)
+		// trying to figure out the
+		if zipParentDir == "" {
+			// TODO: Document the fact that template archives MUST be zip format and contain all template files in a single directory at the root of the zip.
+			zipParentDir = extractionDir
+		}
 
 		// Check for ZipSlip (Directory traversal)
-		if !strings.HasPrefix(deflateFilePath, filepath.Clean(dest)+PS) {
-			err = fmt.Errorf("illegal file path: %s", deflateFilePath)
-			return
+		if !strings.HasPrefix(extractionDir, filepath.Clean(dest)+PS) {
+			return tmplDir, fmt.Errorf("illegal file path: %s", extractionDir)
 		}
 
 		if file.FileInfo().IsDir() {
-			ferr := os.MkdirAll(deflateFilePath, file.Mode())
+			ferr := os.MkdirAll(extractionDir, file.Mode())
 			if ferr != nil {
-				err = ferr
-				return
+				return tmplDir, ferr
 			}
 		} else {
-			dh, ferr := os.OpenFile(deflateFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+			dh, ferr := os.OpenFile(extractionDir, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 
 			if ferr != nil {
-				err = ferr
-				return
+				return tmplDir, ferr
 			}
 
 			_, ferr = io.Copy(dh, sourceFile)
 			if ferr != nil {
-				err = ferr
-				return
+				return tmplDir, ferr
 			}
 
 			ferr = dh.Close()
@@ -201,15 +199,17 @@ func extract(archivePath, dest string) (err error) {
 			}
 		}
 
-		ferr = sourceFile.Close()
-		if ferr != nil {
-			err = fmt.Errorf("unsuccessful extracting archive %q, error: %v", archivePath, ferr.Error())
+		fErr = sourceFile.Close()
+		if fErr != nil {
+			return tmplDir, fmt.Errorf("unsuccessful extracting archive %q, error: %v", archivePath, fErr.Error())
 		}
 	}
 
-	archive.Close()
+	err = archive.Close()
+	tmplDir = zipParentDir
+	fmt.Printf("zipParentDir = %v", zipParentDir)
 
-	return
+	return tmplDir, nil
 }
 
 // parse a a file as a Go template.

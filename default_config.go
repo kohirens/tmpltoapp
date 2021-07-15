@@ -6,7 +6,7 @@ const (
         "https://github.com/"
     ],
     "ExcludeFileExtensions": [
-        "gif", "exe", "jpg", "mp3", "pdf", "png" , "tiff", "wmv"
+       ".empty", "exe", "gif", "jpg", "mp3", "pdf", "png" , "tiff", "wmv"
     ],
     "IncludeFileExtensions": []
 }`

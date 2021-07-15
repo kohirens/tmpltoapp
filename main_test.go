@@ -44,19 +44,36 @@ func TestCallingMain(tester *testing.T) {
 		// cmd.Stdout below, for example:
 		fmt.Printf("os args = %v\n", os.Args)
 
-		// Strange, I was expecting a need to manually call the conde in
+		// Strange, I was expecting a need to manually call the code in
 		// `init()`,but that seem to happen automatically. So yet more I have learn.
 		main()
 	}
 
 	var tests = []struct {
 		name string
-		want int
+		wantCode int
 		args []string
 	}{
 		{"versionFlag", 0, []string{"-v"}},
 		{"helpFlag", 0, []string{"-h"}},
-		{"minRequiredFlags", 0, []string{"-a", fixturesDir + PS + "answers-parse-dir-02.json", "-t", fixturesDir + PS + "parse-dir-02", "-p", testTmp + PS + "app-parse-dir-02"}},
+		{
+			"minRequiredFlags",
+			0,
+			[]string{
+				"-a", fixturesDir + PS + "answers-parse-dir-02.json",
+				"-t", fixturesDir + PS + "parse-dir-02",
+				"-p", testTmp + PS + "app-parse-dir-02",
+			},
+		},
+		{
+			"downloadTemplate",
+			0,
+			[]string{
+				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/heads/main.zip",
+				"-appPath", testTmp + PS + "tmpl-go-web",
+				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -68,8 +85,8 @@ func TestCallingMain(tester *testing.T) {
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
 
-			if got != test.want {
-				t.Errorf("got %q, want %q", got, test.want)
+			if got != test.wantCode {
+				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
 
 			if sce != nil {

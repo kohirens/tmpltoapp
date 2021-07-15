@@ -65,7 +65,7 @@ func TestExtract(test *testing.T) {
 		wd, _ := os.Getwd()
 		fixture := wd + "/" + fixturesDir + "/001.zip"
 		want := testTmp + "/sample_main"
-		err := extract(fixture, want)
+		_, err := extract(fixture, want)
 
 		if err != nil {
 			t.Errorf("could not extract %s, error: %v", want, err.Error())
@@ -74,7 +74,7 @@ func TestExtract(test *testing.T) {
 }
 
 func ExampleExtract() {
-	err := extract(
+	_, err := extract(
 		testTmp+"/001.zip",
 		testTmp+"/sample",
 	)
