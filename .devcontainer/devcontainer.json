@@ -2,7 +2,7 @@
 	"name": "Go Gitter",
 	"dockerComposeFile": "../docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/home/gitter/src/github.com/kohirens/go-gitter",
+	"workspaceFolder": "/home/app/src/github.com/kohirens/go-gitter",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"

@@ -4,7 +4,7 @@ ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 ARG REPO='github.com/kohirens/go-gitter'
 
-FROM golang:1.16-alpine3.13 AS dev
+FROM golang:1.16-alpine3.14 AS dev
 
 ARG USER_NAME
 ARG USER_UID
@@ -15,6 +15,7 @@ ARG REPO
 ENV GOPATH /home/${USER_NAME}
 ENV CGO_ENABLED=0
 ENV WORK_DIR=/home/${USER_NAME}/src/${REPO}
+ENV SHELL=/bin/sh
 
 COPY .devcontainer/download-vs-code-server.sh .
 
@@ -86,7 +87,7 @@ ENV CGO_ENABLED=0
 
 COPY . .
 
-RUN pwd && go build && go install && ls -la ~/bin
+RUN go build && go install
 
 FROM alpine:3.13 AS release
 
@@ -116,5 +117,5 @@ ENTRYPOINT [ "go-gitter" ]
 
 CMD [ "-h" ]
 
-# docker build -t go_gitter --rm -f .docker/Dockerfile .
-# docker run go_gitter
+# docker build -t go_gitter --rm -f .docker/Dockerfile --progress plain .
+# docker run --rm go_gitter
