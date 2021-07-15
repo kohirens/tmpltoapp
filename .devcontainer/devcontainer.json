@@ -1,4 +1,4 @@
-{
+{ // ref: https://code.visualstudio.com/docs/remote/devcontainerjson-reference
 	"name": "Go Gitter",
 	"dockerComposeFile": "../docker-compose.yml",
 	"service": "app",
