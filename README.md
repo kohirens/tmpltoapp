@@ -1,4 +1,4 @@
-* [Go-Gitter](#go-gitter)
+* [Bootup](#bootup)
     * [Description](#description)
     * [Installation](#installation)
         * [Using Go](#using-go)
@@ -7,7 +7,7 @@
         * [Making a Template](#making-a-template)
         * [Using a Template](#using-a-template)
 
-# Go-Gitter
+# Bootup
 
 Start a new project from a template. A template is simply a folder with files,
 with each file processed as a Go template.
@@ -20,7 +20,7 @@ you supply.
 
 Templates can be local folders or URLs (to zip files). See an examples:
 
-[test.tmpl](https://github.com/kohirens/go-gitter-test.tmpl)
+[test.tmpl](https://github.com/kohirens/bootup-test.tmpl)
 [web.go.tmpl](https://github.com/kohirens/web.go.tmpl)
 
 ## Installation
@@ -28,13 +28,13 @@ Templates can be local folders or URLs (to zip files). See an examples:
 ### Using Go
 
 ```
-go get -u -v github.com/kohirens/go-gitter
+go get -u -v github.com/kohirens/bootup
 ```
 
 ### Using Docker
 
 ```
-docker pull kohirens/go-gitter:latest
+docker pull kohirens/bootup:latest
 ```
 
 ## Get Started

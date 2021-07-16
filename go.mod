@@ -1,4 +1,4 @@
-module github.com/kohirens/go-gitter
+module github.com/kohirens/bootup
 
 go 1.15
 

@@ -50,7 +50,7 @@ func TestDownload(tester *testing.T) {
 func ExampleDownload() {
 	client := http.Client{}
 	_, err := download(
-		"https://github.com/kohirens/go-gitter-test-tpl/archive/main.zip",
+		"https://github.com/kohirens/bootup-test-tpl/archive/main.zip",
 		testTmp,
 		&client,
 	)

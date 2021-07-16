@@ -86,8 +86,8 @@ func main() {
 		return
 	}
 
-	// Make a directory for go-gitter to store data.
-	appDataDir = appDataDir + PS + "go-gitter"
+	// Make a directory for bootup to store data.
+	appDataDir = appDataDir + PS + "bootup"
 	mainErr = os.MkdirAll(appDataDir, DIR_MODE)
 	if mainErr != nil {
 		return

@@ -3,7 +3,7 @@
 ## Overview
 
 ```shell
-go-gitter [options] "<dir/url>" "<outputDir>" "<answers>"
+bootup [options] "<dir/url>" "<outputDir>" "<answers>"
 ```
 
 ## Description

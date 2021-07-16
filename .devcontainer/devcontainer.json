@@ -1,8 +1,8 @@
 { // ref: https://code.visualstudio.com/docs/remote/devcontainerjson-reference
-	"name": "Go Gitter",
+	"name": "Bootup",
 	"dockerComposeFile": "../docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/home/app/src/github.com/kohirens/go-gitter",
+	"workspaceFolder": "/home/app/src/github.com/kohirens/bootup",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
@@ -21,6 +21,5 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "go version",
-	"shutdownAction": "stopCompose",
     "remoteUser": "app"
 }

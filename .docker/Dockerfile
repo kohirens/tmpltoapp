@@ -2,7 +2,7 @@ ARG USER_NAME='app'
 ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
-ARG REPO='github.com/kohirens/go-gitter'
+ARG REPO='github.com/kohirens/bootup'
 
 FROM golang:1.16-alpine3.14 AS dev
 
@@ -109,13 +109,13 @@ USER ${USER_NAME}
 # Make directories with correct permissions
 RUN mkdir -p ~/bin
 
-COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/go-gitter /home/${USER_NAME}/bin
+COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/bootup /home/${USER_NAME}/bin
 
 ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
-ENTRYPOINT [ "go-gitter" ]
+ENTRYPOINT [ "bootup" ]
 
 CMD [ "-h" ]
 
-# docker build -t go_gitter --rm -f .docker/Dockerfile --progress plain .
-# docker run --rm go_gitter
+# docker build -t bootup --rm -f .docker/Dockerfile --progress plain .
+# docker run --rm bootup
