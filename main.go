@@ -119,6 +119,7 @@ func main() {
 			return
 		}
 		// TODO: Require template directories to have a specific file in order to be processed to prevent process directories unintentionally.
+		readTemplateJson(appConfig)
 	}
 
 	if tmplPathType == "local" {

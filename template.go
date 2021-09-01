@@ -282,3 +282,16 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 
 	return
 }
+
+// readTemplateJson read variables needed from the template.json file.
+func readTemplateJson(appConfig *Config) error {
+	aFilePath := appConfig.tplPath + PS + "template.json"
+
+	fmt.Printf("\ntemplate.json path: %q\n", aFilePath)
+	// Verify the template.json file is present.
+	if !stdlib.PathExist(aFilePath) {
+		return fmt.Errorf("no template.json found")
+	}
+
+	return nil
+}

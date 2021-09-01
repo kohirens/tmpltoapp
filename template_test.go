@@ -225,3 +225,29 @@ func TestParseDir(tester *testing.T) {
 		}
 	})
 }
+
+func TestReadTemplateJson(tester *testing.T) {
+	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
+
+	fixtures := []struct {
+		name string
+		app *Config
+	}{
+		{
+			"parse-dir-01",
+			&Config{
+				tplPath: fixturePath1,
+			},
+		},
+	}
+
+	fxtr := fixtures[0]
+	tester.Run(fxtr.name, func(test *testing.T) {
+		err1 := readTemplateJson(fxtr.app)
+
+		if err1 != nil {
+			test.Errorf("got an error %q", err1.Error())
+			return
+		}
+	})
+}
