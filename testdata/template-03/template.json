@@ -1,0 +1,7 @@
+{
+    "version": "0.1.0",
+    "variables": {
+        "appName": "app",
+        "REPO": "example.com/org/app"
+    }
+}
