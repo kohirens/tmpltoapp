@@ -36,6 +36,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 type cliFlag struct {
@@ -138,4 +139,33 @@ func defineFlags(programName string, handling flag.ErrorHandling) (flagStore *fl
 	}
 
 	return
+}
+
+// flagMain This is code refactored from main to help keep main readable.
+func flagMain() error {
+	err1 := flagStore.Flags.Parse(os.Args[1:])
+	if err1 != nil {
+		return err1
+	}
+
+	help, _ := flagStore.GetBool("help")
+	if help {
+		flagStore.Flags.SetOutput(os.Stdout)
+		flagStore.Flags.Usage()
+		os.Exit(0)
+	}
+
+	version, _ := flagStore.GetBool("version")
+	if version {
+		flagStore.Flags.SetOutput(os.Stdout)
+		fmt.Printf("\n%v\n", buildVersion)
+		os.Exit(0)
+	}
+
+	err2 := extractParsedFlags(flagStore, os.Args, appConfig)
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }
