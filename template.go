@@ -260,8 +260,8 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 		}
 
 		// Skip non-text files.
-		if !fec.IsValid(sourcePath) { // Use an exclude list, include every file by default.
-			rErr = fmt.Errorf("could not detect file type for %v", sourcePath)
+		if !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
+			verboseF(verboseLvlInfo, "will skipp and not process through template engine; could not detect file type for %v", sourcePath)
 			return
 		}
 		// TODO: Update outDir to append any subdirectories we are walking from tplDir.
