@@ -54,26 +54,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	mainErr = flagStore.Flags.Parse(os.Args[1:])
-	if mainErr != nil {
-		return
-	}
-
-	help, _ := flagStore.GetBool("help")
-	if help {
-		flagStore.Flags.SetOutput(os.Stdout)
-		flagStore.Flags.Usage()
-		os.Exit(0)
-	}
-
-	version, _ := flagStore.GetBool("version")
-	if version {
-		flagStore.Flags.SetOutput(os.Stdout)
-		fmt.Printf("\n%v\n", buildVersion)
-		os.Exit(0)
-	}
-
-	mainErr = extractParsedFlags(flagStore, os.Args, appConfig)
+	mainErr = flagMain()
 	if mainErr != nil {
 		return
 	}
