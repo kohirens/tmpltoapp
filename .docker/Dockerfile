@@ -18,6 +18,7 @@ ENV WORK_DIR=/home/${USER_NAME}/src/${REPO}
 ENV SHELL=/bin/sh
 
 COPY .devcontainer/download-vs-code-server.sh .
+COPY .docker/start.sh /usr/local/bin/start.sh
 
 # VS Code Requirements: openssh, musl, libgcc, libstdc++
 RUN apk --no-progress --purge --no-cache upgrade \
@@ -28,9 +29,9 @@ RUN apk --no-progress --purge --no-cache upgrade \
     libgcc \
     libstdc++ \
     openssh \
-    tini \
  && apk --no-progress --purge --no-cache upgrade \
  && rm -vrf /var/cache/apk/* \
+ && rm -rf /tmp/* \
  && curl --version \
  && git --version
 
@@ -70,9 +71,9 @@ ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
 WORKDIR "/home/${USER_NAME}/src/${REPO}"
 
-ENTRYPOINT [ "tini", "--" ]
+ENTRYPOINT [ "sh" ]
 
-CMD [ "sh" ]
+CMD [ "/usr/local/bin/start.sh" ]
 
 FROM dev AS build
 
