@@ -255,7 +255,7 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 
 		// Stop processing files if a template file is too big.
 		if fi.Size() > MAX_TPL_SIZE {
-			rErr = fmt.Errorf("Template file too big to parse, must be less thatn %v bytes.", MAX_TPL_SIZE)
+			rErr = fmt.Errorf("template file too big to parse, must be less thatn %v bytes", MAX_TPL_SIZE)
 			return
 		}
 
