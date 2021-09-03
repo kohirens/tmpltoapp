@@ -1,7 +1,7 @@
 { // ref: https://code.visualstudio.com/docs/remote/devcontainerjson-reference
 	"name": "Bootup",
 	"dockerComposeFile": "../docker-compose.yml",
-	"service": "app",
+	"service": "cli",
 	"workspaceFolder": "/home/app/src/github.com/kohirens/bootup",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	"remoteEnv": {
