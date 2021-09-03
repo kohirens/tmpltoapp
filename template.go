@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -283,15 +284,35 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 	return
 }
 
+type questions struct {
+	Version string`json:"version"`
+	Variables tplVars`json:"variables"`
+}
+
 // readTemplateJson read variables needed from the template.json file.
 func readTemplateJson(appConfig *Config) error {
-	aFilePath := appConfig.tplPath + PS + "template.json"
+	filePath := appConfig.tplPath + PS + "template.json"
 
-	fmt.Printf("\ntemplate.json path: %q\n", aFilePath)
+	fmt.Printf("\ntemplate.json path: %q\n", filePath)
 	// Verify the template.json file is present.
-	if !stdlib.PathExist(aFilePath) {
+	if !stdlib.PathExist(filePath) {
 		return fmt.Errorf("no template.json found")
 	}
+
+	content, err1 := ioutil.ReadFile(filePath)
+
+	if os.IsNotExist(err1) {
+		return err1
+	}
+
+	q := questions{}
+	err2 := json.Unmarshal(content, &q)
+
+	if err2 != nil {
+		return err2
+	}
+
+	appConfig.Questions = q
 
 	return nil
 }

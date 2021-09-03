@@ -18,6 +18,7 @@ type Config struct {
 	tmpl                  string
 	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
+	Questions             questions
 }
 
 // Load configuration file.

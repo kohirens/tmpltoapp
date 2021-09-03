@@ -231,7 +231,7 @@ func TestReadTemplateJson(tester *testing.T) {
 
 	fixtures := []struct {
 		name string
-		app *Config
+		config *Config
 	}{
 		{
 			"parse-dir-01",
@@ -243,10 +243,14 @@ func TestReadTemplateJson(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		err1 := readTemplateJson(fxtr.app)
+		err := readTemplateJson(fxtr.config)
 
-		if err1 != nil {
-			test.Errorf("got an error %q", err1.Error())
+		if err != nil {
+			test.Errorf("got an error %q", err.Error())
+		}
+
+		if fxtr.config.Questions.Version != "0.1.0" {
+			test.Error("could not get version from template.json")
 			return
 		}
 	})
