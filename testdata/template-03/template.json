@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
     "variables": {
-        "appName": "app",
-        "REPO": "example.com/org/app"
+        "appName": "enter your application name",
+        "REPO": "enter a repository name/path (example.com/org/appName)"
     }
 }
