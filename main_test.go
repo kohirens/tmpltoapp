@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -106,4 +107,19 @@ func runMain(testFunc string, args []string) *exec.Cmd {
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd
+}
+
+func quiet() func() {
+	null, _ := os.Open(os.DevNull)
+	sout := os.Stdout
+	serr := os.Stderr
+	os.Stdout = null
+	os.Stderr = null
+	log.SetOutput(null)
+	return func() {
+		defer null.Close()
+		os.Stdout = sout
+		os.Stderr = serr
+		log.SetOutput(os.Stderr)
+	}
 }
