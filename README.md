@@ -9,16 +9,21 @@
 
 # Bootup
 
-Start a new project from a template. A template is simply a folder with files,
-with each file processed as a Go template.
+Start a project from a template.
+
+NOTICE: Name change pending... "start-from-tmpl" to make it obvious what this
+tool does.
+
 
 ## Description
 
-A template is just a folder with files. Each file will be processed as a Go
-template. Data can be passed to the template/context through a JSON file that
-you supply.
+Use this tool to start a new project from a template. A template is a folder
+with files, with each file processed as a Go template. Data for the template
+can be passed to the template/context by passing the path to a JSON file,
+where the keys will be used to fill in placeholders. Placeholders refer to the
+values that need to be filled in when a file is process as a Go template.
 
-Templates can be local folders or URLs (to zip files). See an examples:
+Templates can be supplied as a local folder or URL to zip file. See an examples:
 
 [test.tmpl](https://github.com/kohirens/bootup-test.tmpl)
 [web.go.tmpl](https://github.com/kohirens/web.go.tmpl)
