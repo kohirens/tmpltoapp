@@ -25,6 +25,8 @@ func (h HttpMock) Head(url string) (*http.Response, error) {
 }
 
 func TestDownload(tester *testing.T) {
+	defer quiet()()
+
 	var err error
 	fixtures := HttpMock{
 		&http.Response{
@@ -85,6 +87,7 @@ func ExampleExtract() {
 }
 
 func TestCopyFiles(test *testing.T) {
+
 	err := copyDir(fixturesDir+"/template-01/tt.tpl", testTmp+"/tt.app")
 	if err == nil {
 		test.Errorf("copyDir did not err")
@@ -92,6 +95,8 @@ func TestCopyFiles(test *testing.T) {
 }
 
 func TestCopyDirSuccess(tester *testing.T) {
+	defer quiet()()
+
 	fixtures := []struct {
 		dstDir, name, srcDir string
 		want                 error
@@ -257,6 +262,7 @@ func TestReadTemplateJson(tester *testing.T) {
 }
 
 func TestQuestionsInput(tester *testing.T) {
+	defer quiet()()
 	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
 
 	tmpFile, err := ioutil.TempFile(testTmp, "qi")
