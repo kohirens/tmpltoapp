@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -208,7 +209,7 @@ func extract(archivePath, dest string) (string, error) {
 
 	err = archive.Close()
 	tmplDir = zipParentDir
-	fmt.Printf("zipParentDir = %v", zipParentDir)
+	verboseF(verboseLvlDgb, "zipParentDir = %v", zipParentDir)
 
 	return tmplDir, nil
 }
@@ -293,7 +294,7 @@ type questions struct {
 func readTemplateJson(appConfig *Config) error {
 	filePath := appConfig.tplPath + PS + "template.json"
 
-	fmt.Printf("\ntemplate.json path: %q\n", filePath)
+	verboseF(verboseLvlDgb, "\ntemplate.json path: %q\n", filePath)
 	// Verify the template.json file is present.
 	if !stdlib.PathExist(filePath) {
 		return fmt.Errorf("no template.json found")
@@ -313,6 +314,19 @@ func readTemplateJson(appConfig *Config) error {
 	}
 
 	appConfig.Questions = q
+
+	return nil
+}
+
+// questionsInput Take user input for template variables.
+func questionsInput(appConfig *Config, r *os.File, ) error {
+	nPut := bufio.NewScanner(r)
+
+	for v, q := range appConfig.Questions.Variables {
+		fmt.Printf("\n%v: ", q)
+		nPut.Scan()
+		appConfig.answers[v] = nPut.Text()
+	}
 
 	return nil
 }

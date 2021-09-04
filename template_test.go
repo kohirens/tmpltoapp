@@ -255,3 +255,54 @@ func TestReadTemplateJson(tester *testing.T) {
 		}
 	})
 }
+
+func TestQuestionsInput(tester *testing.T) {
+	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
+
+	tmpFile, err := ioutil.TempFile(testTmp, "qi")
+	if err != nil {
+		tester.Errorf("failed to make temp file %v", err.Error())
+	}
+
+	defer os.Remove(tmpFile.Name())
+
+	if _, e := tmpFile.Write([]byte("hi\nrepoName")); e != nil {
+		tester.Errorf("failed to write content to temp file %v, error: %v", tmpFile.Name(), e.Error())
+	}
+
+	if _, e := tmpFile.Seek(0, 0); e != nil {
+		tester.Errorf("failed to reset to beginning of temp file %v, error: %v", tmpFile.Name(), e.Error())
+	}
+
+	fixtures := []struct {
+		name string
+		config *Config
+	}{
+		{
+			"questions-input-01",
+			&Config{
+				tplPath: fixturePath1,
+				answers: tplVars{},
+			},
+		},
+	}
+
+	fxtr := fixtures[0]
+	tester.Run(fxtr.name, func(test *testing.T) {
+
+		if e := readTemplateJson(fxtr.config); e != nil {
+			test.Errorf("got an error %q", e.Error())
+		}
+
+		err := questionsInput(fxtr.config, tmpFile)
+
+		if err != nil {
+			test.Errorf("got an error %q", err.Error())
+		}
+
+		if fxtr.config.answers["appName"] != "hi" {
+			test.Error("could not get version from template.json")
+			return
+		}
+	})
+}
