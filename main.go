@@ -59,8 +59,8 @@ func main() {
 		return
 	}
 
-	verboseF(2, "running program %q", programName)
-	verboseF(1, "verbose level: %v", verbosityLevel)
+	verboseF(verboseLvlWarn, "running program %q", programName)
+	verboseF(verboseLvlInfo, "verbose level: %v", verbosityLevel)
 
 	appDataDir, mainErr := stdlib.AppDataDir()
 	if mainErr != nil {
@@ -106,6 +106,7 @@ func main() {
 	tmplPathType := getPathType(appConfig.tplPath)
 
 	if tmplPathType == "http" {
+		// TODO: Change or add option to use `git clone`.
 		client := http.Client{}
 		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
 		if iErr != nil {

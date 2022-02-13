@@ -10,11 +10,11 @@ import (
 
 type Config struct {
 	answers               tplVars
-	AllowedUrls           []string // URLs allowed to download from.
-	answersPath           string   //
+	AllowedUrls           []string // URLs you are allowed to download from.
+	answersPath           string   // path to a file containing values to variables to be parsed.
 	appPath               string
 	cacheDir              string
-	tplPath               string
+	tplPath               string // TODO: Rename to tmplPath for consistency.
 	tmpl                  string
 	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.

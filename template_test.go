@@ -281,7 +281,7 @@ func TestQuestionsInput(tester *testing.T) {
 	}
 
 	fixtures := []struct {
-		name string
+		name   string
 		config *Config
 	}{
 		{
