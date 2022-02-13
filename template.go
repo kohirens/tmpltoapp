@@ -19,7 +19,8 @@ import (
 )
 
 const (
-	MAX_TPL_SIZE = 1e+7
+	MAX_TPL_SIZE  = 1e+7
+	TMPL_MANIFEST = "template.json"
 )
 
 type Client interface {
@@ -293,31 +294,29 @@ type questions struct {
 }
 
 // readTemplateJson read variables needed from the template.json file.
-func readTemplateJson(appConfig *Config) error {
-	filePath := appConfig.tplPath + PS + "template.json"
+func readTemplateJson(filePath string) (*questions, error) {
+	verboseF(verboseLvlDgb, "\ntemplate manifest path: %q\n", filePath)
 
-	verboseF(verboseLvlDgb, "\ntemplate.json path: %q\n", filePath)
-	// Verify the template.json file is present.
+	// Verify the TMPL_MANIFEST file is present.
 	if !stdlib.PathExist(filePath) {
-		return fmt.Errorf("no template.json found")
+		return nil, fmt.Errorf(errs.tmplManifest404, TMPL_MANIFEST)
 	}
 
 	content, err1 := ioutil.ReadFile(filePath)
-
-	if os.IsNotExist(err1) {
-		return err1
+	if err1 != nil {
+		return nil, err1
 	}
+
+	verboseF(verboseLvlInfo, "content = %s \n", content)
 
 	q := questions{}
-	err2 := json.Unmarshal(content, &q)
-
-	if err2 != nil {
-		return err2
+	if err2 := json.Unmarshal(content, &q); err2 != nil {
+		return nil, err2
 	}
 
-	appConfig.Questions = q
+	verboseF(verboseLvlInfo, "content = %v \n", content)
 
-	return nil
+	return &q, nil
 }
 
 // questionsInput Take user input for template variables.

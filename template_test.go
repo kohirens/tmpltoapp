@@ -234,26 +234,28 @@ func TestReadTemplateJson(tester *testing.T) {
 	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
 
 	fixtures := []struct {
-		name string
-		config *Config
+		name      string
+		config    *Config
+		shouldErr bool
 	}{
 		{
-			"parse-dir-01",
+			"canBeFound",
 			&Config{
 				tplPath: fixturePath1,
 			},
+			false,
 		},
 	}
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		err := readTemplateJson(fxtr.config)
+		got, err := readTemplateJson(fxtr.config.tplPath + PS + TMPL_MANIFEST)
 
-		if err != nil {
-			test.Errorf("got an error %q", err.Error())
+		if fxtr.shouldErr && err == nil {
+			test.Errorf("expected an error, but got nil")
 		}
 
-		if fxtr.config.Questions.Version != "0.1.0" {
+		if got.Version != "0.1.0" {
 			test.Error("could not get version from template.json")
 			return
 		}
@@ -294,8 +296,8 @@ func TestQuestionsInput(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-
-		if e := readTemplateJson(fxtr.config); e != nil {
+		_, e := readTemplateJson(fxtr.config.tplPath + PS + TMPL_MANIFEST)
+		if e != nil {
 			test.Errorf("got an error %q", e.Error())
 		}
 

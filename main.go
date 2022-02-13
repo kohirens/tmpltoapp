@@ -119,8 +119,6 @@ func main() {
 			mainErr = iErr
 			return
 		}
-		// TODO: Require template directories to have a specific file in order to be processed to prevent process directories unintentionally.
-		readTemplateJson(appConfig)
 	}
 
 	if tmplPathType == "local" {
@@ -139,6 +137,15 @@ func main() {
 		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
 	}
 
+	// Require template directories to have a specific file in order to be processed to prevent processing directories unintentionally.
+	tmplManifestFile := appConfig.tmpl + PS + TMPL_MANIFEST
+	tmplManifest, errX := readTemplateJson(tmplManifestFile)
+	if errX != nil {
+		mainErr = fmt.Errorf(errs.missingTmplJson, TMPL_MANIFEST, tmplManifestFile, errX.Error())
+		return
+	}
+
+	appConfig.Questions = *tmplManifest
 	appConfig.answers, mainErr = loadAnswers(appConfig.answersPath)
 	if mainErr != nil {
 		return
