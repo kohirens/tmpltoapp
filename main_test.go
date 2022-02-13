@@ -35,7 +35,7 @@ func TestCallingMain(tester *testing.T) {
 	// in a sub-command with the environment variable `GO_CHILD_FLAG` set.
 	// Note that a call to `main()` MUST exit or you'll spin out of control.
 	if os.Getenv(SubCmdFlags) != "" {
-		// We're in the test binary, so test flags are set, lets reset it so
+		// We're in the test binary, so test flags are set, lets reset it
 		// so that only the program is set
 		// and whatever flags we want.
 		args := strings.Split(os.Getenv(SubCmdFlags), " ")
@@ -58,7 +58,7 @@ func TestCallingMain(tester *testing.T) {
 		{"versionFlag", 0, []string{"-v"}},
 		{"helpFlag", 0, []string{"-h"}},
 		{
-			"minRequiredFlags",
+			"tmplIsLocal",
 			0,
 			[]string{
 				"-a", fixturesDir + PS + "answers-parse-dir-02.json",
@@ -70,8 +70,8 @@ func TestCallingMain(tester *testing.T) {
 			"downloadTemplate",
 			0,
 			[]string{
-				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.1.0.zip",
-				"-appPath", testTmp + PS + "tmpl-go-web-01",
+				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.2.0.zip",
+				"-appPath", testTmp + PS + "tmpl-go-web-02",
 				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
 			},
 		},
