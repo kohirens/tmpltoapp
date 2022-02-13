@@ -87,7 +87,7 @@ func ExampleExtract() {
 
 func TestCopyFiles(test *testing.T) {
 
-	err := copyDir(fixturesDir+"/template-01/tt.tpl", testTmp+"/tt.app")
+	err := copyDir(fixturesDir+PS+"template-01"+PS+"tt.tpl", testTmp+PS+"tt.app")
 	if err == nil {
 		test.Errorf("copyDir did not err")
 	}
@@ -263,53 +263,66 @@ func TestReadTemplateJson(tester *testing.T) {
 }
 
 func TestQuestionsInput(tester *testing.T) {
-	defer quiet()()
-	fixturePath1, _ := filepath.Abs(fixturesDir + PS + "template-03")
-
-	tmpFile, err := ioutil.TempFile(testTmp, "qi")
+	// Use a temp file to simulate input on the command line.
+	tmpFile, err := ioutil.TempFile(testTmp, "qi-01")
 	if err != nil {
 		tester.Errorf("failed to make temp file %v", err.Error())
 	}
 
 	defer os.Remove(tmpFile.Name())
 
-	if _, e := tmpFile.Write([]byte("hi\nrepoName")); e != nil {
+	if _, e := tmpFile.Write([]byte("1\n")); e != nil {
 		tester.Errorf("failed to write content to temp file %v, error: %v", tmpFile.Name(), e.Error())
 	}
 
-	if _, e := tmpFile.Seek(0, 0); e != nil {
-		tester.Errorf("failed to reset to beginning of temp file %v, error: %v", tmpFile.Name(), e.Error())
+	resetTmpFile := func() {
+		if _, e := tmpFile.Seek(0, 0); e != nil {
+			tester.Errorf("failed to reset to beginning of temp file %v, error: %v", tmpFile.Name(), e.Error())
+		}
 	}
 
 	fixtures := []struct {
 		name   string
 		config *Config
+		want   string
 	}{
 		{
-			"questions-input-01",
+			"missingAnAnswer",
 			&Config{
-				tplPath: fixturePath1,
-				answers: tplVars{},
+				answers: tplVars{"var1": "", "var2": ""},
+				Questions: questions{
+					Version:   "0.1.0",
+					Variables: tplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
+					Excludes:  nil,
+				},
 			},
+			"var3",
+		},
+		{
+			"noMissingAnswers",
+			&Config{
+				answers: tplVars{"var1": "1", "var2": "2", "var3": "3"},
+				Questions: questions{
+					Version:   "0.1.0",
+					Variables: tplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
+					Excludes:  nil,
+				},
+			},
+			"var3",
 		},
 	}
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		_, e := readTemplateJson(fxtr.config.tplPath + PS + TMPL_MANIFEST)
-		if e != nil {
-			test.Errorf("got an error %q", e.Error())
-		}
-
-		err := questionsInput(fxtr.config, tmpFile)
+		resetTmpFile()
+		err := getInput(&fxtr.config.Questions, &fxtr.config.answers, tmpFile)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())
 		}
 
-		if fxtr.config.answers["appName"] != "hi" {
-			test.Error("could not get version from template.json")
-			return
+		if fxtr.config.answers[fxtr.want] != "1" {
+			test.Errorf("failed to answer missing question %v using file as input", fxtr.want)
 		}
 	})
 }
