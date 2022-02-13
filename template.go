@@ -253,7 +253,7 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, m
 			return
 		}
 
-		verboseF(verboseLvlInfo, "procesing: %q\n", sourcePath)
+		verboseF(verboseLvlInfo, "processing: %q\n", sourcePath)
 
 		// Do not parse directories.
 		if fi.IsDir() {
