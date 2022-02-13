@@ -114,7 +114,9 @@ func copyDir(srcDir, dstDir string) (err error) {
 
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (zipFile string, err error) {
-	dest := path.Base(url)
+	// Save to a unique filename in the cache.
+	dest := strings.ReplaceAll(url, "https://", "")
+	dest = strings.ReplaceAll(dest, "/", "-")
 	// HTTP Request
 	resp, err := client.Get(url)
 	if err != nil {
