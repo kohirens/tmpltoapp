@@ -70,8 +70,8 @@ func TestCallingMain(tester *testing.T) {
 			"downloadTemplate",
 			0,
 			[]string{
-				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/heads/main.zip",
-				"-appPath", testTmp + PS + "tmpl-go-web",
+				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.1.0.zip",
+				"-appPath", testTmp + PS + "tmpl-go-web-01",
 				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
 			},
 		},
