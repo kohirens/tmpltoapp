@@ -245,13 +245,15 @@ func parse(tplFile, dstDir string, vars tplVars) (err error) {
 }
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
-func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (err error) {
+func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, manifest *questions) (err error) {
 	// Recursively walk the template directory.
 	err = filepath.Walk(tplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
 			rErr = wErr
 			return
 		}
+
+		verboseF(verboseLvlInfo, "procesing: %q\n", sourcePath)
 
 		// Do not parse directories.
 		if fi.IsDir() {
@@ -280,6 +282,20 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 			return
 		}
 
+		if manifest != nil && manifest.Excludes != nil {
+			fileToCheck := strings.ReplaceAll(sourcePath, tplDir, "")
+			fileToCheck = strings.ReplaceAll(fileToCheck, PS, "")
+			for _, exclude := range manifest.Excludes {
+				fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
+				fileToCheckB = strings.ReplaceAll(exclude, "/", "")
+				fmt.Printf("fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
+				if fileToCheckB == fileToCheck {
+					fmt.Printf("excluding file %q", sourcePath)
+					return
+				}
+			}
+		}
+
 		rErr = parse(sourcePath, saveDir, vars)
 
 		return
@@ -288,9 +304,11 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 	return
 }
 
+// TODO Rename to manifest or tmplConfig
 type questions struct {
-	Version   string  `json:"version"`
-	Variables tplVars `json:"variables"`
+	Version   string   `json:"version"`
+	Variables tplVars  `json:"variables"`
+	Excludes  []string `json:"excludes"`
 }
 
 // readTemplateJson read variables needed from the template.json file.
