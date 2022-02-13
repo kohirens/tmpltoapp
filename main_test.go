@@ -51,9 +51,9 @@ func TestCallingMain(tester *testing.T) {
 	}
 
 	var tests = []struct {
-		name string
+		name     string
 		wantCode int
-		args []string
+		args     []string
 	}{
 		{"versionFlag", 0, []string{"-v"}},
 		{"helpFlag", 0, []string{"-h"}},

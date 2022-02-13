@@ -27,7 +27,7 @@ type Client interface {
 	Head(url string) (*http.Response, error)
 }
 
-type tplVars map[string]string
+type tplVars map[string]string //TODO: change to tmplVars for consistency
 
 var regExpTmplLocation = regexp.MustCompile(`^https?://.+$`)
 
@@ -288,8 +288,8 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker) (
 }
 
 type questions struct {
-	Version string`json:"version"`
-	Variables tplVars`json:"variables"`
+	Version   string  `json:"version"`
+	Variables tplVars `json:"variables"`
 }
 
 // readTemplateJson read variables needed from the template.json file.
