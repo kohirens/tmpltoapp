@@ -146,10 +146,10 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 	return
 }
 
-func extract(archivePath, dest string) (string, error) {
+func extract(archivePath string) (string, error) {
 	tmplDir := ""
 	zipParentDir := ""
-
+	dest := strings.ReplaceAll(archivePath, ".zip", "")
 	// Get resource to zip archive.
 	archive, err := zip.OpenReader(archivePath)
 	if err != nil {

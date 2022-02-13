@@ -114,7 +114,7 @@ func main() {
 			return
 		}
 
-		appConfig.tmpl, iErr = extract(zipFile,  appConfig.cacheDir)
+		appConfig.tmpl, iErr = extract(zipFile)
 		if iErr != nil {
 			mainErr = iErr
 			return
