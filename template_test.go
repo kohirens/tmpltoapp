@@ -65,8 +65,8 @@ func ExampleDownload() {
 func TestExtract(test *testing.T) {
 	test.Run("canExtractDownload", func(t *testing.T) {
 		wd, _ := os.Getwd()
-		fixture := wd + "/" + fixturesDir + "/001.zip"
-		want := testTmp + "/001"
+		fixture := wd + PS + fixturesDir + PS + "001.zip"
+		want := testTmp + PS + "001"
 		_, err := extract(fixture)
 
 		if err != nil {
@@ -77,7 +77,7 @@ func TestExtract(test *testing.T) {
 
 func ExampleExtract() {
 	_, err := extract(
-		testTmp + "/001.zip",
+		testTmp + PS + "001.zip",
 	)
 
 	if err != nil {
@@ -264,7 +264,7 @@ func TestReadTemplateJson(tester *testing.T) {
 
 func TestQuestionsInput(tester *testing.T) {
 	defer quiet()()
-	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
+	fixturePath1, _ := filepath.Abs(fixturesDir + PS + "template-03")
 
 	tmpFile, err := ioutil.TempFile(testTmp, "qi")
 	if err != nil {
