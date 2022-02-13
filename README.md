@@ -1,4 +1,4 @@
-* [Bootup](#bootup)
+* [About](#about)
     * [Description](#description)
     * [Installation](#installation)
         * [Using Go](#using-go)
@@ -7,7 +7,7 @@
         * [Making a Template](#making-a-template)
         * [Using a Template](#using-a-template)
 
-# Bootup
+# About
 
 Start a project from a template.
 
@@ -25,21 +25,20 @@ values that need to be filled in when a file is process as a Go template.
 
 Templates can be supplied as a local folder or URL to zip file. See an examples:
 
-[test.tmpl](https://github.com/kohirens/bootup-test.tmpl)
-[web.go.tmpl](https://github.com/kohirens/web.go.tmpl)
+[web.go.tmpl](https://github.com/kohirens/tmpl-go-web)
 
 ## Installation
 
 ### Using Go
 
 ```
-go get -u -v github.com/kohirens/bootup
+go get -u -v github.com/kohirens/tmpltoapp
 ```
 
 ### Using Docker
 
 ```
-docker pull kohirens/bootup:latest
+docker pull kohirens/tmpltoapp:latest
 ```
 
 ## Get Started

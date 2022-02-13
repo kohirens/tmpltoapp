@@ -67,8 +67,8 @@ func main() {
 		return
 	}
 
-	// Make a directory for bootup to store data.
-	appDataDir = appDataDir + PS + "bootup"
+	// Make a directory for tmpltoapp to store data.
+	appDataDir = appDataDir + PS + "tmpltoapp"
 	mainErr = os.MkdirAll(appDataDir, DIR_MODE)
 	if mainErr != nil {
 		return

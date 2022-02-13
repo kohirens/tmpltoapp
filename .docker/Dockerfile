@@ -2,7 +2,7 @@ ARG USER_NAME='app'
 ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
-ARG REPO='github.com/kohirens/bootup'
+ARG REPO='github.com/kohirens/tmpltoapp'
 ARG GLIBC_VER='2.34-r0'
 
 FROM golang:1.17-alpine3.14 AS dev
@@ -115,13 +115,13 @@ USER ${USER_NAME}
 # Make directories with correct permissions
 RUN mkdir -p ~/bin
 
-COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/bootup /home/${USER_NAME}/bin
+COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/tmpltoapp /home/${USER_NAME}/bin
 
 ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
-ENTRYPOINT [ "bootup" ]
+ENTRYPOINT [ "tmpltoapp" ]
 
 CMD [ "-h" ]
 
-# docker build -t bootup --rm -f .docker/Dockerfile --progress plain .
-# docker run --rm bootup
+# docker build -t tmpltoapp --rm -f .docker/Dockerfile --progress plain .
+# docker run --rm tmpltoapp

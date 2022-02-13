@@ -7,8 +7,8 @@
 
 # Files
 # -----
-/bootup
-/bootup.exe
-/bootup.test
-/bootup.test.exe
+/tmpltoapp
+/tmpltoapp.exe
+/tmpltoapp.test
+/tmpltoapp.test.exe
 ...
