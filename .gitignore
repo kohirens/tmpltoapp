@@ -1,6 +1,7 @@
 # Directories
 # -----------
 /.idea/
+/testdata/repo-.*
 /tmp/
 /vendor/
 

@@ -18,7 +18,7 @@ get_latest_release() {
           grep '"type":'                    | # Get tag line
           sed -E 's/.*"([^"]+)".*/\1/'      ) # Pluck JSON value
 
-    if [ "${sha_type}" -eq "commit" ]; then
+    if [ "${sha_type}" = "commit" ] || [ "${sha_type}" = "tag" ]; then
         combo_sha=$(curl -s "https://api.github.com/repos/${1}/git/tags/${sha}" | # Get latest release from GitHub API
               grep '"sha":'                                                     | # Get tag line
               sed -E 's/.*"([^"]+)".*/\1/'                                      ) # Pluck JSON value
