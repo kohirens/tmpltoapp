@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}",
-            "args": [ "https://github.com/kohirens/tmpl-bootup-test/archive/0.0.1.zip", "my-new-app-001" ]
+            "args": [ "https://github.com/kohirens/tmpl-go-web/archive/0.2.0.zip", "my-new-app-001" ]
         }
     ]
 }

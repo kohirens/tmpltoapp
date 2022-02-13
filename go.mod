@@ -1,4 +1,4 @@
-module github.com/kohirens/bootup
+module github.com/kohirens/tmpltoapp
 
 go 1.15
 

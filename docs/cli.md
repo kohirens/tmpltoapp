@@ -3,7 +3,7 @@
 ## Overview
 
 ```shell
-bootup [options] "<dir/url>" "<outputDir>" "<answers>"
+tmpltoapp [options] "<dir/url>" "<outputDir>" "<answers>"
 ```
 
 ## Description
