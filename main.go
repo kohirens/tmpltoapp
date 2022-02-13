@@ -151,7 +151,13 @@ func main() {
 		return
 	}
 
-	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec)
+	if e := getInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
+		mainErr = fmt.Errorf(errs.gettingAnswers, e.Error())
+	}
+
+	//missingAnswrs := checkAnswrsToQuestions()
+
+	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest)
 }
 
 // Check to see if a URL is in the allowed list to download template from.
