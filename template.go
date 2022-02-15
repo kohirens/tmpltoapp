@@ -46,6 +46,7 @@ func getPathType(tplPath string) (pathType string) {
 	return
 }
 
+// TODO: This is currently not used and should be removed.
 // copyDir copies a source directory to another destination directory.
 func copyDir(srcDir, dstDir string) (err error) {
 	// TODO: Why not just use the OS to copy the files over!?
