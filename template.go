@@ -80,7 +80,7 @@ func copyDir(srcDir, dstDir string) (err error) {
 		}
 
 		dstPath := dstDir + PS + file.Name()
-		fmt.Printf("copy %q  to %q ", srcPath, dstPath)
+		verboseF(verboseLvlInfo, "copy %q  to %q ", srcPath, dstPath)
 		dstW, ferr := os.OpenFile(dstPath, os.O_CREATE|os.O_WRONLY, file.Mode())
 		if ferr != nil {
 			err = ferr
@@ -143,7 +143,7 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 
-	fmt.Printf("downloading %v to %v\n", url, dest)
+	verboseF(verboseLvlInfo, "downloading %v to %v\n", url, dest)
 
 	return
 }
