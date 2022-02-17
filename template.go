@@ -218,31 +218,37 @@ func extract(archivePath string) (string, error) {
 	return tmplDir, nil
 }
 
-// parse a a file as a Go template.
-func parse(tplFile, dstDir string, vars tplVars) (err error) {
+// parse a file as a Go template.
+func parse(tplFile, dstDir string, vars tplVars) error {
 
-	parser, err := template.ParseFiles(tplFile)
+	parser, err1 := template.ParseFiles(tplFile)
 
-	if err != nil {
-		return
+	if err1 != nil {
+		return err1
 	}
 
-	fileStats, err := os.Stat(tplFile)
+	fileStats, err2 := os.Stat(tplFile)
 
-	if err != nil {
-		return
+	if err2 != nil {
+		return err2
 	}
 
 	dstFile := dstDir + PS + fileStats.Name()
-	file, err := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY, fileStats.Mode())
+	file, err3 := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY, fileStats.Mode())
 
-	if err != nil {
-		return
+	if err3 != nil {
+		return err3
 	}
 
-	err = parser.Execute(file, vars)
+	if e := parser.Execute(file, vars); e != nil {
+		return e
+	}
 
-	return
+	if e := file.Close(); e != nil {
+		return e
+	}
+
+	return nil
 }
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
