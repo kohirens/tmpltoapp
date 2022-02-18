@@ -42,9 +42,12 @@ jobs:
             go test -v
 
 workflows:
-  pull-request:
+  quality-control:
     jobs:
-      - co
+      - co:
+          filters:
+            branches:
+              ignore: main
       - run-test:
           requires: [ co ]
   # Only run when branch is main
