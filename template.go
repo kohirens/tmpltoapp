@@ -300,7 +300,7 @@ func getInput(questions *questions, answers *tplVars, r *os.File) error {
 			verboseF(verboseLvlInfo, "question %q already has an answer of %q, so skipping\n", q, a)
 			continue
 		}
-		fmt.Printf("\n%q: ", q)
+		verboseF(verboseLvlInfo, "\n%q: ", q)
 		nPut.Scan()
 		(*answers)[v] = nPut.Text()
 		verboseF(verboseLvlInfo, "%q was answered with %q", q, (*answers)[v])
