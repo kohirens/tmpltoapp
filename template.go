@@ -252,7 +252,7 @@ func parse(tplFile, dstDir string, vars tplVars) error {
 }
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
-func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, manifest *questions) (err error) {
+func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, excludes []string) (err error) {
 	// Recursively walk the template directory.
 	err = filepath.Walk(tplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
@@ -289,15 +289,15 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, m
 			return
 		}
 
-		if manifest != nil && manifest.Excludes != nil {
+		if excludes != nil {
 			fileToCheck := strings.ReplaceAll(sourcePath, tplDir, "")
 			fileToCheck = strings.ReplaceAll(fileToCheck, PS, "")
-			for _, exclude := range manifest.Excludes {
+			for _, exclude := range excludes {
 				fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
 				fileToCheckB = strings.ReplaceAll(exclude, "/", "")
-				fmt.Printf("fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
+				verboseF(verboseLvlInfo, "fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
 				if fileToCheckB == fileToCheck {
-					fmt.Printf("excluding file %q", sourcePath)
+					verboseF(verboseLvlInfo, "excluding file %q", sourcePath)
 					return
 				}
 			}
