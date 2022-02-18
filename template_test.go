@@ -85,41 +85,6 @@ func ExampleExtract() {
 	}
 }
 
-//func TestCopyFiles(test *testing.T) {
-//
-//	err := copyDir(fixturesDir+PS+"template-01"+PS+"tt.tpl", testTmp+PS+"tt.app")
-//	if err == nil {
-//		test.Errorf("copyDir did not err")
-//	}
-//}
-
-//func TestCopyDirSuccess(tester *testing.T) {
-//	defer quiet()()
-//
-//	fixtures := []struct {
-//		dstDir, name, srcDir string
-//		want                 error
-//		IsVerified           func(string) bool
-//	}{
-//		{testTmp + "/template-01-out", "success", fixturesDir + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
-//	}
-//
-//	for _, fxtr := range fixtures {
-//		tester.Run(fxtr.name, func(test *testing.T) {
-//			err := copyDir(fxtr.srcDir, fxtr.dstDir)
-//			isAllGood := fxtr.IsVerified(fxtr.dstDir)
-//
-//			if err != fxtr.want {
-//				test.Errorf("Could not copy dir, err: %s", err.Error())
-//			}
-//
-//			if isAllGood {
-//				test.Errorf("all is not good: %v", isAllGood)
-//			}
-//		})
-//	}
-//}
-
 func TestCopyDir(tester *testing.T) {
 	defer quiet()()
 
