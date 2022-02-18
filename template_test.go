@@ -85,36 +85,70 @@ func ExampleExtract() {
 	}
 }
 
-func TestCopyFiles(test *testing.T) {
+//func TestCopyFiles(test *testing.T) {
+//
+//	err := copyDir(fixturesDir+PS+"template-01"+PS+"tt.tpl", testTmp+PS+"tt.app")
+//	if err == nil {
+//		test.Errorf("copyDir did not err")
+//	}
+//}
 
-	err := copyDir(fixturesDir+PS+"template-01"+PS+"tt.tpl", testTmp+PS+"tt.app")
-	if err == nil {
-		test.Errorf("copyDir did not err")
-	}
-}
+//func TestCopyDirSuccess(tester *testing.T) {
+//	defer quiet()()
+//
+//	fixtures := []struct {
+//		dstDir, name, srcDir string
+//		want                 error
+//		IsVerified           func(string) bool
+//	}{
+//		{testTmp + "/template-01-out", "success", fixturesDir + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
+//	}
+//
+//	for _, fxtr := range fixtures {
+//		tester.Run(fxtr.name, func(test *testing.T) {
+//			err := copyDir(fxtr.srcDir, fxtr.dstDir)
+//			isAllGood := fxtr.IsVerified(fxtr.dstDir)
+//
+//			if err != fxtr.want {
+//				test.Errorf("Could not copy dir, err: %s", err.Error())
+//			}
+//
+//			if isAllGood {
+//				test.Errorf("all is not good: %v", isAllGood)
+//			}
+//		})
+//	}
+//}
 
-func TestCopyDirSuccess(tester *testing.T) {
+func TestCopyDir(tester *testing.T) {
 	defer quiet()()
 
 	fixtures := []struct {
-		dstDir, name, srcDir string
-		want                 error
-		IsVerified           func(string) bool
+		dstDir,
+		name,
+		srcDir string
+		want func(error) bool
+		vars tplVars
 	}{
-		{testTmp + "/template-01-out", "success", fixturesDir + "/template-01", nil, func(p string) bool { return !stdlib.PathExist(p) }},
+		{
+			testTmp + PS + "template-04-out",
+			"dir1IsEmpty",
+			fixturesDir + "/template-04",
+			func(e error) bool {
+				return !stdlib.PathExist(testTmp + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
+			},
+			tplVars{},
+		},
 	}
 
+	fileChkr, _ := stdlib.NewFileExtChecker(&[]string{}, &[]string{"tpl"})
 	for _, fxtr := range fixtures {
 		tester.Run(fxtr.name, func(test *testing.T) {
-			err := copyDir(fxtr.srcDir, fxtr.dstDir)
-			isAllGood := fxtr.IsVerified(fxtr.dstDir)
+			err := parseDir(fxtr.srcDir, fxtr.dstDir, fxtr.vars, fileChkr, []string{})
+			isAllGood := fxtr.want(err)
 
-			if err != fxtr.want {
-				test.Errorf("Could not copy dir, err: %s", err.Error())
-			}
-
-			if isAllGood {
-				test.Errorf("all is not good: %v", isAllGood)
+			if !isAllGood {
+				test.Error("all is not good")
 			}
 		})
 	}
