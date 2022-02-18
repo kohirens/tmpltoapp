@@ -85,7 +85,7 @@ func ExampleExtract() {
 	}
 }
 
-func TestCopyDir(tester *testing.T) {
+func TestParseDir2(tester *testing.T) {
 	defer quiet()()
 
 	fixtures := []struct {
