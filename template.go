@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -21,6 +20,7 @@ import (
 const (
 	MAX_TPL_SIZE  = 1e+7
 	TMPL_MANIFEST = "template.json"
+	EMPTY_FILE    = ".empty"
 )
 
 type Client interface {
@@ -253,8 +253,12 @@ func parse(tplFile, dstDir string, vars tplVars) error {
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
 func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, excludes []string) (err error) {
+	// Normalize the path separator in these 2 variables before comparing them.
+	normTplDir := strings.ReplaceAll(tplDir, "/", PS)
+	normTplDir = strings.ReplaceAll(normTplDir, "\\", PS)
+
 	// Recursively walk the template directory.
-	err = filepath.Walk(tplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
+	err = filepath.Walk(normTplDir, func(sourcePath string, fi os.FileInfo, wErr error) (rErr error) {
 		if wErr != nil {
 			rErr = wErr
 			return
@@ -273,24 +277,34 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, e
 			return
 		}
 
+		currFile := filepath.Base(sourcePath)
 		// Skip non-text files.
-		if !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
+		// TODO: Remove FileExtensionCheck in favor of exclude/include list, once globbing is added.
+		if currFile != EMPTY_FILE && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
 			verboseF(verboseLvlInfo, "will skipp and not process through template engine; could not detect file type for %v", sourcePath)
 			return
 		}
-		// TODO: Update outDir to append any subdirectories we are walking from tplDir.
-		partial := strings.ReplaceAll(sourcePath, tplDir, "")
-		partial = strings.ReplaceAll(partial, PS, "/")
-		saveDir := path.Clean(outDir + path.Dir(partial))
+
+		// Normalize the path separator in these 2 variables before comparing them.
+		normSourcePath := strings.ReplaceAll(sourcePath, "/", PS)
+		normSourcePath = strings.ReplaceAll(normSourcePath, "\\", PS)
+
+		// Get the subdirectory from the template source and append it to the
+		// output directory, so that files are placed in the correct
+		// subdirectories in the output directory.
+		partial := strings.ReplaceAll(normSourcePath, normTplDir, "")
+		//partial = strings.ReplaceAll(partial, PS, "/")
+		saveDir := filepath.Clean(outDir + filepath.Dir(partial))
 
 		// TODO: Make the subdirectories in the new savePath.
 		err = os.MkdirAll(saveDir, DIR_MODE)
-		if err != nil {
+		if err != nil || currFile == EMPTY_FILE {
 			return
 		}
 
 		if excludes != nil {
-			fileToCheck := strings.ReplaceAll(sourcePath, tplDir, "")
+			// TODO: Replace with better method of comparing files.
+			fileToCheck := strings.ReplaceAll(normSourcePath, normTplDir, "")
 			fileToCheck = strings.ReplaceAll(fileToCheck, PS, "")
 			for _, exclude := range excludes {
 				fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
