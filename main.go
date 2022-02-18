@@ -157,7 +157,7 @@ func main() {
 
 	//missingAnswrs := checkAnswrsToQuestions()
 
-	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest)
+	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest.Excludes)
 }
 
 // Check to see if a URL is in the allowed list to download template from.
