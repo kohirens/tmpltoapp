@@ -3,7 +3,7 @@
 
 
 <a name="0.1.0"></a>
-## 0.1.0 - 2022-02-18
+## 0.1.0 - 2022-02-20
 ### Added
 - Excludes field to template.json Schema.
 - File for collective errors.
