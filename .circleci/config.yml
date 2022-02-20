@@ -36,6 +36,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+            keys:
+                - go-mod-v1-{{ checksum "go.mod" }}
       - run:
           name: "Unit test"
           command: |
