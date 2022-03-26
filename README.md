@@ -9,20 +9,31 @@
 
 # About
 
-Start an app from a template.
+Start an app (or something) from a template.
 
 
 ## Description
 
-Use this tool to start a new project from a template. A template is a folder
-with files, with each file processed as a Go template. Data for the template
-can be passed to the template/context by passing the path to a JSON file,
-where the keys will be used to fill in placeholders. Placeholders refer to the
-values that need to be filled in when a file is process as a Go template.
+Uses the Go text/template engine to produce output such as an app, project, etc.
+A template is a folder with files (of any extension). Each file processed as a
+Go template. Data for the template is supplied with JSON files. They can be
+simple key/value pairs. However, you are only limited to your knowledge of Go
+templates. Meaning it can be more than just simple string replacement of
+placeholders. Think loops, conditions, and function calls (built into go).
 
-Templates can be supplied as a local folder or URL to zip file. See an examples:
+This can be used to process anything you can start from a template. For example
+image you want to send out an email to many clients, then you can process
+a file, in a loop, and supply the data that changes to produce different output
+with each pass of the loop.
 
-[web.go.tmpl](https://github.com/kohirens/tmpl-go-web)
+## Terminology
+
+* Placeholders - refer to the variables that need to be filled in when a file
+  is process as a Go template.
+* Template - is a folder/directory with files (of any extension).
+* Empty directory - a directory with a single file named `.empty`, contents
+  are ignored.
+* Templates source - can be a local folder, URL to a zip file, or Git repo.
 
 ## Installation
 
