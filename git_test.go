@@ -21,7 +21,7 @@ func TestGitClone(tester *testing.T) {
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
 
-			got, err := gitClone(tc.repo, tc.outPath, tc.branch)
+			_, gotHash, err := gitClone(tc.repo, tc.outPath, tc.branch)
 
 			if tc.shouldErr == true && err == nil {
 				t.Error("did not get expected err")
@@ -31,8 +31,8 @@ func TestGitClone(tester *testing.T) {
 				t.Errorf("got an unexpected err: %s", err)
 			}
 
-			if got != tc.want {
-				t.Errorf("got %v, want %v", got, tc.want)
+			if gotHash != tc.want {
+				t.Errorf("got %v, want %v", gotHash, tc.want)
 			}
 		})
 	}
