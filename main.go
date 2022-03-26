@@ -103,10 +103,13 @@ func main() {
 		return
 	}
 
-	tmplPathType := getPathType(appConfig.tplPath)
+	tmplPathType, err3 := getPathType(appConfig.tmplType)
+	if err3 != nil {
+		mainErr = err3
+		return
+	}
 
-	if tmplPathType == "http" {
-		// TODO: Change or add option to use `git clone`.
+	if tmplPathType == "zip" {
 		client := http.Client{}
 		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
 		if iErr != nil {
@@ -123,6 +126,17 @@ func main() {
 
 	if tmplPathType == "local" {
 		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
+	}
+
+	if tmplPathType == "git" {
+		repo, commitHash, err2 := gitClone(appConfig.tplPath, appConfig.cacheDir, appConfig.branch)
+		verboseF(3, "appConfig = %v", appConfig)
+		fmt.Printf("repo = %q; %q", repo, commitHash)
+		if err2 != nil {
+			mainErr = err2
+			return
+		}
+		appConfig.tmpl = repo
 	}
 
 	verboseF(3, "appConfig = %v", appConfig)

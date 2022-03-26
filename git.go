@@ -11,7 +11,6 @@ import (
 func gitClone(repoLocation, outPath, branchName string) (string, string, error) {
 	verboseF(verboseLvlInfo, "git clone %s", repoLocation)
 
-	// TODO: checkout by branch or tag
 	options := &git.CloneOptions{
 		URL:          repoLocation,
 		Progress:     os.Stdout,

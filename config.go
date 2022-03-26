@@ -12,18 +12,19 @@ type Config struct {
 	answers               tplVars
 	AllowedUrls           []string // URLs you are allowed to download from.
 	answersPath           string   // path to a file containing values to variables to be parsed.
-	appPath               string
+	appPath               string   // Location of the processed template output.
 	cacheDir              string
-	tplPath               string // TODO: Rename to tmplPath for consistency.
-	tmpl                  string
-	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
-	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
-	Questions             questions
+	tplPath               string    // TODO: Rename to tmplPath for consistency.
+	tmpl                  string    // Path to template, this will be the cached path.
+	ExcludeFileExtensions []string  // Files to skip when sending to the go parsing engine.
+	IncludeFileExtensions []string  // Files to include when sending to the go parsing engine.
+	Questions             questions // Question for requesting input for the template.
+	branch                string    // Desired branch to clone.
+	tmplType              string    // Indicates a zip should be downloaded
 }
 
 // Load configuration file.
 func initConfigFile(file string) (err error) {
-
 	if stdlib.PathExist(file) {
 		verboseF(1, "config file %q exist", file)
 		return
@@ -135,6 +136,16 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 
 	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
 		err = fmt.Errorf(errMsgs[5])
+		return
+	}
+
+	options.tmplType, err = fs.GetString("tmplType")
+	if err != nil {
+		return
+	}
+
+	options.branch, err = fs.GetString("branch")
+	if err != nil {
 		return
 	}
 
