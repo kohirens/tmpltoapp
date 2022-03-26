@@ -8,7 +8,7 @@ services:
                 REPO: '${REPO}'
             dockerfile: '.docker/Dockerfile'
             context: '..'
-            target: 'dev'
+            target: '${BTARGET:-dev}'
         cap_add:
             - 'SYS_PTRACE'
             - 'SYSLOG'
