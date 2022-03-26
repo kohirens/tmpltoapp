@@ -1,4 +1,4 @@
-* [About](#about)
+* [TmplToApp](#tmpltoapp)
     * [Description](#description)
     * [Installation](#installation)
         * [Using Go](#using-go)
@@ -7,7 +7,7 @@
         * [Making a Template](#making-a-template)
         * [Using a Template](#using-a-template)
 
-# About
+# TmplToApp
 
 Start an app (or something) from a template.
 
