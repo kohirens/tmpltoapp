@@ -54,12 +54,37 @@ jobs:
           command: |
             go test -v
 
+  publish-image:
+    docker:
+      - image: circleci/golang:1.17
+#      - image: kohirens/circle-go:1.17
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build and Publish Docker Release Image"
+          command: |
+            echo "0.0.0-dev" > tagged.txt
+            if [ ! -f ./tagged.txt ]; then
+                echo "cannot publish a Docker image, release-tag file not found"
+                exit 1
+            fi
+            export BUILD_VER=$(cat "tagged.txt")
+            export BUILD_IMG="kohirens/tmpltoapp:${BUILD_VER}"
+            docker build -t "${BUILD_IMG}" --rm -f .docker/Dockerfile --progress plain .
+            docker push "${BUILD_IMG}"
+            docker rm "${BUILD_IMG}"
+
 workflows:
   quality-control:
     jobs:
       - co:
           filters: { branches: { ignore: main } }
       - run-test:
+          requires: [ co ]
+      - publish-image:
+          context: orb-publishing
           requires: [ co ]
 
   publish-changelog:
@@ -83,3 +108,9 @@ workflows:
     jobs:
       - vro/tag-and-release:
           context: orb-publishing
+  on-tag-release: # The filter will cause this to ONLY run on release tags.
+    jobs:
+      - publish-image:
+          context: orb-publishing
+          filters:
+            <<: *filter-semantic-tag

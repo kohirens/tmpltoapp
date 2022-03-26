@@ -30,19 +30,16 @@ type Client interface {
 
 type tplVars map[string]string //TODO: change to tmplVars for consistency
 
-var regExpTmplLocation = regexp.MustCompile(`^https?://.+$`)
+var regExpTmplLocation = regexp.MustCompile("^(zip|local|git)$")
 
 // getPathType Check if the path is an HTTP or local directory URL.
-func getPathType(tplPath string) (pathType string) {
-	if regExpTmplLocation.MatchString(tplPath) {
-		pathType = "http"
+func getPathType(tmplType string) (pathType string, err error) {
+	pathType = ""
+	if !regExpTmplLocation.MatchString(tmplType) {
+		err = fmt.Errorf("invalid value for flag tmplType %q", appConfig.tmplType)
 	}
 
-	// Check if local dir also exists.
-	if pathType == "" && stdlib.DirExist(tplPath) {
-		pathType = "local"
-	}
-
+	pathType = tmplType
 	return
 }
 

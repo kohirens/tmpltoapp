@@ -58,21 +58,34 @@ func TestCallingMain(tester *testing.T) {
 		{"versionFlag", 0, []string{"-v"}},
 		{"helpFlag", 0, []string{"-h"}},
 		{
-			"tmplIsLocal",
+			"localTemplate",
 			0,
 			[]string{
 				"-a", fixturesDir + PS + "answers-parse-dir-02.json",
 				"-t", fixturesDir + PS + "parse-dir-02",
 				"-p", testTmp + PS + "app-parse-dir-02",
+				"-tmplType", "local",
 			},
 		},
 		{
-			"downloadTemplate",
+			"downloadZipTemplate",
 			0,
 			[]string{
 				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.2.0.zip",
 				"-appPath", testTmp + PS + "tmpl-go-web-02",
 				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-tmplType", "zip",
+			},
+		},
+		{
+			"remoteGitTemplate",
+			0,
+			[]string{
+				"-t", "https://github.com/kohirens/tmpl-go-web.git",
+				"-appPath", testTmp + PS + "tmpl-go-web-03",
+				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-tmplType", "git",
+				"-branch", "0.2.0",
 			},
 		},
 	}

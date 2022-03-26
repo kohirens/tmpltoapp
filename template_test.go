@@ -166,24 +166,27 @@ func TestParse(tester *testing.T) {
 	}
 }
 
-func TestGetPathType(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-01")
-
+func TestGetPathType(runner *testing.T) {
 	fixtures := []struct {
-		name, tmplPath, want string
+		name, tmplType string
+		shouldErr      bool
 	}{
-		{"localAbsolutePath", fixturePath1, "local"},
-		{"localRelativePath", fixturesDir + "/template-01", "local"},
-		{"httpPath", "http://example.com", "http"},
-		{"httpSecurePath", "https://example.com", "http"},
+		{"tmplTypeLocal", "local", false},
+		{"tmplTypeZip", "zip", false},
+		{"tmplTypeGit", "git", false},
+		{"invalidType", "whatever", true},
 	}
 
-	for _, fxtr := range fixtures {
-		tester.Run(fxtr.name, func(test *testing.T) {
-			got := getPathType(fxtr.tmplPath)
+	for _, tc := range fixtures {
+		runner.Run(tc.name, func(test *testing.T) {
+			got, err := getPathType(tc.tmplType)
 
-			if got != fxtr.want {
-				test.Errorf("got %q, want %q", got, fxtr.want)
+			if !tc.shouldErr && err != nil {
+				test.Errorf("unexpected error: %s", err)
+			}
+
+			if got != tc.tmplType {
+				test.Errorf("got %q, want %q", got, tc.tmplType)
 			}
 		})
 	}

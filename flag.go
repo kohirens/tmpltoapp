@@ -55,6 +55,8 @@ var appFlags = cliFlags{
 	cliFlag{"verbosity", "", "extra detail processing info.", "int"},
 	cliFlag{"help", "h", "print usage information.", "bool"},
 	cliFlag{"version", "v", "print build version information and exit 0.", "bool"},
+	cliFlag{"tmplType", "zip", "Can be of git|zip|local.", "string"},
+	cliFlag{"branch", "", "branch to clone.", "string"},
 }
 
 type flagStorage struct {
