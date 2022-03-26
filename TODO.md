@@ -1,6 +1,6 @@
+* Add `git clone` support. Maybe use `go get` as it can handle caching.
 * Add 7zip extract support.
   * Make use of 7zip extractor in main.
-* Add `git clone` support.
 * Change `-a` to `-i` for answer short flag.
 * .empty files must be removed from output
 * Change excludes key to skipParsing in template.json

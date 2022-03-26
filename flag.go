@@ -77,7 +77,7 @@ func (fs *flagStorage) GetInt(key string) (val int, err error) {
 	return
 }
 
-// GetBool Get a flag parsed as a boolean.
+// GetBool Get a boolean flag.
 func (fs *flagStorage) GetBool(key string) (val bool, err error) {
 	v, ok := fs.bools[key]
 
