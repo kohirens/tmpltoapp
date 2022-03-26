@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/kohirens/stdlib"
 	"os"
+	"path/filepath"
 )
 
 // gitClone Clone a repo from a path/URL to a local directory.
-func gitClone(repoLocation, outPath, branchName string) (string, error) {
+func gitClone(repoLocation, outPath, branchName string) (string, string, error) {
 	verboseF(verboseLvlInfo, "git clone %s", repoLocation)
 
 	// TODO: checkout by branch or tag
@@ -28,7 +27,7 @@ func gitClone(repoLocation, outPath, branchName string) (string, error) {
 	repo, e1 := git.PlainClone(outPath, false, options)
 
 	if e1 != nil {
-		return "", e1
+		return "", "", e1
 	}
 
 	logs, e2 := repo.Log(&git.LogOptions{
@@ -36,18 +35,19 @@ func gitClone(repoLocation, outPath, branchName string) (string, error) {
 	})
 
 	if e2 != nil {
-		return "", e2
+		return "", "", e2
 	}
 
 	commit, e3 := logs.Next()
 
 	if e3 != nil {
-		return "", e3
+		return "", "", e3
 	}
 
-	if stdlib.DirExist(outPath) != true {
-		fmt.Errorf(errs.tmplOutput)
+	retVal, e4 := filepath.Abs(outPath)
+	if e4 != nil {
+		return "", "", e4
 	}
 
-	return commit.Hash.String(), nil
+	return retVal, commit.Hash.String(), nil
 }
