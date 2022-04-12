@@ -142,7 +142,7 @@ func extract(archivePath string) (string, error) {
 
 	err = archive.Close()
 	tmplDir = zipParentDir
-	verboseF(verboseLvlDgb, "zipParentDir = %v", zipParentDir)
+	verboseF(verboseLvlDbug, "zipParentDir = %v", zipParentDir)
 
 	return tmplDir, nil
 }
@@ -263,7 +263,7 @@ type questions struct {
 
 // readTemplateJson read variables needed from the template.json file.
 func readTemplateJson(filePath string) (*questions, error) {
-	verboseF(verboseLvlDgb, "\ntemplate manifest path: %q\n", filePath)
+	verboseF(verboseLvlDbug, "\ntemplate manifest path: %q\n", filePath)
 
 	// Verify the TMPL_MANIFEST file is present.
 	if !stdlib.PathExist(filePath) {

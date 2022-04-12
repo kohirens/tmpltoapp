@@ -129,8 +129,20 @@ func main() {
 	}
 
 	if tmplPathType == "git" {
-		repo, commitHash, err2 := gitClone(appConfig.tplPath, appConfig.cacheDir, appConfig.branch)
-		verboseF(3, "appConfig = %v", appConfig)
+		var repo, commitHash string
+		var err2 error
+
+		repoDir := appConfig.cacheDir + PS + getRepoDir(appConfig.tplPath)
+		infof("repoDir = %q\n", repoDir)
+
+		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
+		if stdlib.DirExist(repoDir) {
+			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
+		} else {
+			repo, commitHash, err2 = gitClone(appConfig.tplPath, repoDir, appConfig.branch)
+		}
+
+		//infof("repo = %q; %q", repo, commitHash)
 		fmt.Printf("repo = %q; %q", repo, commitHash)
 		if err2 != nil {
 			mainErr = err2
