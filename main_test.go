@@ -15,6 +15,7 @@ const (
 	testTmp     = "tmp"
 	// SubCmdFlags space separated list of command line flags.
 	SubCmdFlags = "SUB_CMD_FLAGS"
+	testRemotes = testTmp + PS + "remotes"
 )
 
 func TestMain(m *testing.M) {
@@ -85,7 +86,7 @@ func TestCallingMain(tester *testing.T) {
 				"-appPath", testTmp + PS + "tmpl-go-web-03",
 				"-a", fixturesDir + PS + "answers-tmpl-go-web.json",
 				"-tmplType", "git",
-				"-branch", "0.2.0",
+				"-branch", "refs/tags/0.2.0",
 			},
 		},
 	}
@@ -135,4 +136,32 @@ func quiet() func() {
 		os.Stderr = serr
 		log.SetOutput(os.Stderr)
 	}
+}
+
+func setupARepository(bundleName string) string {
+	repoPath := testRemotes + PS + bundleName
+
+	// It may have already been unbundled.
+	fileInfo, err1 := os.Stat(repoPath)
+	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
+		absPath, e2 := filepath.Abs(repoPath)
+		if e2 == nil {
+			return absPath
+		}
+		return repoPath
+	}
+
+	srcRepo := "." + PS + fixturesDir + PS + bundleName + ".bundle"
+	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
+	_, _ = cmd.CombinedOutput()
+	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
+		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, repoPath)
+	}
+
+	absPath, e2 := filepath.Abs(repoPath)
+	if e2 == nil {
+		return absPath
+	}
+
+	return repoPath
 }

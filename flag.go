@@ -52,7 +52,7 @@ var appFlags = cliFlags{
 	cliFlag{"tmplPath", "t", "URL to a zip or a local path to a directory.", "string"},
 	cliFlag{"appPath", "p", "Path to output the new project.", "string"},
 	cliFlag{"answers", "a", "Path to an answer file.", "string"},
-	cliFlag{"verbosity", "", "extra detail processing info.", "int"},
+	cliFlag{"verbosity", "", "extra detail processing infof.", "int"},
 	cliFlag{"help", "h", "print usage information.", "bool"},
 	cliFlag{"version", "v", "print build version information and exit 0.", "bool"},
 	cliFlag{"tmplType", "zip", "Can be of git|zip|local.", "string"},
