@@ -59,7 +59,8 @@ USER ${USER_NAME}
 RUN mkdir -p ~/bin
 
 # Install Go helpful dev tools.
-RUN go get -u -v golang.org/x/tools/gopls \
+RUN go get -u github.com/cweill/gotests/...
+RUN go install golang.org/x/tools/gopls \
     github.com/go-delve/delve/cmd/dlv \
     github.com/ramya-rao-a/go-outline \
     github.com/cweill/gotests/... \
