@@ -16,7 +16,7 @@ func TestGitClone(tester *testing.T) {
 		want      string
 		want2     string
 	}{
-		{"cloneRepo1", fixturesDir + "/repo-01.git", testTmp + "/repo-01", "refs/head/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050", testTmp + "/repo-01"},
+		{"cloneRepo1", fixturesDir + "/repo-01.git", testTmp + "/repo-01", "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050", testTmp + "/repo-01"},
 		{"clone404", fixturesDir + "/does-not-exit.git", testTmp, "", true, "", ""},
 	}
 

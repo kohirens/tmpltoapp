@@ -44,6 +44,7 @@ func gitClone(repoUrl, repoLocalPath, branchName string) (string, string, error)
 	return w.Filesystem.Root(), ref.Hash().String(), nil
 }
 
+// gitCheckout Open an existing repo and checkout commit by full ref-name
 func gitCheckout(repoLocalPath, branchName string) (string, string, error) {
 	infof("cd %s", repoLocalPath)
 	r, e1 := git.PlainOpen(repoLocalPath)
@@ -83,6 +84,7 @@ func gitCheckout(repoLocalPath, branchName string) (string, string, error) {
 	return retVal, ref.Hash().String(), nil
 }
 
+// getRepoDir extract a local dirname from a Git URL.
 func getRepoDir(repoLocation string) string {
 	if len(repoLocation) < 1 {
 		return repoLocation
@@ -93,5 +95,6 @@ func getRepoDir(repoLocation string) string {
 	if isUrl.MatchString(repoLocation) {
 		return strings.Replace(baseName, ".git", "", 1)
 	}
+
 	return baseName
 }
