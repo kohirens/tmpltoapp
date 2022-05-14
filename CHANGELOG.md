@@ -2,6 +2,9 @@
 ## [Unreleased]
 
 
+<a name="0.1.1"></a>
+## [0.1.1] - 2022-05-13
+
 <a name="0.1.0"></a>
 ## 0.1.0 - 2022-02-20
 ### Added
@@ -118,4 +121,5 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.0...0.1.1
