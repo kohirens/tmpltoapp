@@ -3,9 +3,9 @@ ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 ARG REPO='github.com/kohirens/tmpltoapp'
-ARG GLIBC_VER='2.34-r0'
+ARG GLIBC_VER='2.35-r0'
 
-FROM golang:1.17-alpine3.14 AS dev
+FROM golang:1.17-alpine3.15 AS dev
 
 ARG USER_NAME
 ARG USER_UID
@@ -20,7 +20,6 @@ ENV WORK_DIR=/home/${USER_NAME}/src/${REPO}
 ENV SHELL=/bin/sh
 ENV LD_LIBRARY_PATH="/usr/lib:/lib"
 
-COPY .devcontainer/download-vs-code-server.sh .
 COPY .docker/start.sh /usr/local/bin/start.sh
 
 # VS Code Requirements: openssh, musl, libgcc, libstdc++
@@ -56,22 +55,26 @@ RUN addgroup --system --gid ${USER_GID} ${USER_GROUP} \
 USER ${USER_NAME}
 
 # Make directories with correct permissions
-RUN mkdir -p ~/bin
+RUN mkdir -p ~/bin ~/src/${REPO} && chmod 0774 -R ~/src/${REPO}
+
+WORKDIR "/home/${USER_NAME}"
 
 # Install Go helpful dev tools.
-RUN go get -u github.com/cweill/gotests/...
-RUN go install golang.org/x/tools/gopls \
-    github.com/go-delve/delve/cmd/dlv \
-    github.com/ramya-rao-a/go-outline \
-    github.com/cweill/gotests/... \
-    github.com/uudashr/gopkgs/v2/cmd/gopkgs \
-    honnef.co/go/tools/cmd/staticcheck \
-    github.com/git-chglog/git-chglog/cmd/git-chglog
+RUN go install golang.org/x/tools/gopls@latest \
+ && go install github.com/go-delve/delve/cmd/dlv@latest \
+ && go install github.com/ramya-rao-a/go-outline@latest \
+ && go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest \
+ && go install honnef.co/go/tools/cmd/staticcheck@latest \
+ && go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest \
+ && go install github.com/cweill/gotests/...@latest
+
+COPY --chown=${USER_NAME}:${USER_GROUP} .devcontainer/download-vs-code-server.sh .
 
 # Install VS Code Server and Requirements for pre-installing extensions
-RUN ./download-vs-code-server.sh \
+RUN chmod +x ./download-vs-code-server.sh && ./download-vs-code-server.sh \
  && mkdir -p /home/${USER_NAME}/.vscode-server/extensions \
- && mkdir -p /home/${USER_NAME}/.vscode-server-insiders/extensions
+ && mkdir -p /home/${USER_NAME}/.vscode-server-insiders/extensions \
+ && rm ./download-vs-code-server.sh
 
 ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
@@ -89,14 +92,11 @@ ARG USER_GID
 ARG USER_GROUP
 ARG REPO
 
-ENV GOPATH /home/${USER_NAME}
-ENV CGO_ENABLED=0
+COPY --chown=${USER_NAME}:${USER_GROUP} . .
 
-COPY . .
+RUN go mod tidy && go build && go install
 
-RUN go build && go install
-
-FROM alpine:3.13 AS release
+FROM alpine:3.15 AS release
 
 ARG USER_NAME
 ARG USER_UID

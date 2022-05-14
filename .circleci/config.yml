@@ -21,9 +21,9 @@ filter-semantic-tag: &filter-semantic-tag
 
 jobs:
   co:
-    working_directory: ~/repo
+#    working_directory: ~/repo
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - checkout
       - restore_cache:
@@ -42,7 +42,7 @@ jobs:
 
   run-test:
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - attach_workspace:
           at: .
@@ -56,9 +56,10 @@ jobs:
 
   publish-image:
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: "20.10.14"
       - attach_workspace:
           at: .
       - run:
@@ -66,15 +67,14 @@ jobs:
           command: |
             echo "Publishing tag '<< pipeline.git.tag >>'"
             export BUILD_VER="<< pipeline.git.tag >>"
-            export BUILD_VER="0.0.0-dev"
             if [ -z "${BUILD_VER}" ]; then
               echo "cannot publish a Docker image, release-tag is empty"
               exit 1
             fi
             export BUILD_IMG="kohirens/tmpltoapp:${BUILD_VER}"
             docker build -t "${BUILD_IMG}" --rm -f .docker/Dockerfile --progress plain .
-            #docker push "${BUILD_IMG}"
-            docker rm "${BUILD_IMG}"
+            docker push "${BUILD_IMG}"
+            docker rmi "${BUILD_IMG}"
 
   publish-execs:
     docker:
@@ -107,9 +107,6 @@ workflows:
       - co:
           filters: { branches: { ignore: main } }
       - run-test:
-          requires: [ co ]
-      - publish-image:
-          context: orb-publishing
           requires: [ co ]
 
   publish-changelog:
