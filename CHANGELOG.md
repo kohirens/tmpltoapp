@@ -2,6 +2,19 @@
 ## [Unreleased]
 
 
+<a name="0.2.0"></a>
+## [0.2.0] - 2022-05-16
+### Added
+- Auto Build Executables to Pipeline
+
+### Changed
+- Updated README with how to download with cURL.
+- Return path from gitClone.
+
+### Fixed
+- Docker image build.
+
+
 <a name="0.1.1"></a>
 ## [0.1.1] - 2022-05-14
 
@@ -121,5 +134,6 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.0...0.1.1
