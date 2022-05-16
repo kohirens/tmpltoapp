@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="0.2.1"></a>
+## [0.2.1] - 2022-05-16
+### Fixed
+- Builing tagged Docker image after a release publish.
+
+
 <a name="0.2.0"></a>
 ## [0.2.0] - 2022-05-16
 ### Added
@@ -134,6 +140,7 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.1...HEAD
+[0.2.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.1.0...0.1.1
