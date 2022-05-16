@@ -60,8 +60,7 @@ jobs:
     steps:
       - setup_remote_docker:
           version: "20.10.14"
-      - attach_workspace:
-          at: .
+      - checkout
       - run:
           name: "Build and Publish Docker Release Image"
           command: |
@@ -84,8 +83,6 @@ jobs:
             password: ${DH_PASS}
     steps:
         - checkout
-        - attach_workspace:
-            at: .
         - run:
             name: "Build"
             command: |
