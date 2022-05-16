@@ -49,6 +49,16 @@ go get github.com/kohirens/tmpltoapp
 docker pull kohirens/tmpltoapp:latest
 ```
 
+### Using cURL
+
+```
+cd /tmp
+mkdir -p "${HOME}/bin"
+curl -L -o tmpltoapp.tar.gz https://github.com/kohirens/tmpltoapp/releases/download/x.x.x/tmpltoapp-linux-amd64.tar.gz
+tar -xzvf tmpltoapp.tar.gz  $HOME/bin
+export PATH="${HOME}/bin:${PATH}"
+```
+
 ## Get Started
 
 ### Making a Template
@@ -110,6 +120,7 @@ NOTE: There are command line flags should you need to place the arguments
 * Empty directories will be placed without the ".empty" file.
 * Files listed in the `excludes` list are output to the final app directory without template processing.
 * Template are processed with the Go lib [Golang text/template].
+
 ---
 
 [Golang text/template]: https://golang.org/pkg/text/template/
