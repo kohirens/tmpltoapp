@@ -33,6 +33,8 @@
 */
 package main
 
+//go:generate git-tool-belt semver -save info.go -format go -packageName main -varName appConfig
+
 import (
 	"flag"
 	"fmt"
@@ -160,7 +162,7 @@ func flagMain() error {
 	version, _ := flagStore.GetBool("version")
 	if version {
 		flagStore.Flags.SetOutput(os.Stdout)
-		fmt.Printf("\n%v\n", buildVersion)
+		fmt.Printf("%v, %v\n", appConfig.CurrentVersion, appConfig.CommitHash)
 		os.Exit(0)
 	}
 
