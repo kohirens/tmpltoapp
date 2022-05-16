@@ -21,6 +21,8 @@ type Config struct {
 	Questions             questions // Question for requesting input for the template.
 	branch                string    // Desired branch to clone.
 	tmplType              string    // Indicates a zip should be downloaded
+	CurrentVersion        string
+	CommitHash            string
 }
 
 // Load configuration file.
