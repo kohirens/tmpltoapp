@@ -55,7 +55,7 @@ docker pull kohirens/tmpltoapp:latest
 cd /tmp
 mkdir -p "${HOME}/bin"
 curl -L -o tmpltoapp.tar.gz https://github.com/kohirens/tmpltoapp/releases/download/x.x.x/tmpltoapp-linux-amd64.tar.gz
-tar -xzvf tmpltoapp.tar.gz  $HOME/bin
+tar -xzvf tmpltoapp.tar.gz  ${HOME}/bin
 export PATH="${HOME}/bin:${PATH}"
 ```
 
