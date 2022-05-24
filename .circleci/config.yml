@@ -13,6 +13,10 @@ parameters:
     description: Trigger publishing a release tag workflow.
     type: boolean
 
+default-env-vars: &default-env-vars
+    DH_IMG_REPO: "kohirens/tmpltoapp"
+    DH_CONTAINER: "tmpltoapp-node-1"
+
 filter-semantic-tag: &filter-semantic-tag
   tags:
     only: /^v?\d+\.\d+\.\d+$/
@@ -59,6 +63,8 @@ jobs:
         auth:
           username: ${DH_USER}
           password: ${DH_PASS}
+    environment:
+      <<: *default-env-vars
     steps:
       - setup_remote_docker:
           version: "20.10.14"
@@ -72,10 +78,11 @@ jobs:
               echo "cannot publish a Docker image, release-tag is empty"
               exit 1
             fi
-            export BUILD_IMG="kohirens/tmpltoapp:${BUILD_VER}"
-            docker build -t "${BUILD_IMG}" --rm -f .docker/Dockerfile --progress plain .
-            docker push "${BUILD_IMG}"
-            docker rmi "${BUILD_IMG}"
+            echo "${DH_PASS}" | docker login -u "${DH_USER}" --password-stdin
+            export DH_IMAGE="${DH_IMG_REPO}:${BUILD_VER}"
+            docker build -t "${DH_IMAGE}" --rm -f .docker/Dockerfile .
+            docker push "${DH_IMAGE}"
+            docker rmi "${DH_IMAGE}"
 
   publish-execs:
     docker:
