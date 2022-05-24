@@ -1,7 +1,7 @@
 { // ref: https://code.visualstudio.com/docs/remote/devcontainerjson-reference
 	"name": "TmplToApp",
 	"dockerComposeFile": "../.docker/docker-compose.yml",
-	"service": "cli",
+	"service": "node",
 	"workspaceFolder": "/home/app/src/github.com/kohirens/tmpltoapp",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	"remoteEnv": {
