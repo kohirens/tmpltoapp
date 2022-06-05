@@ -127,6 +127,8 @@ func defineFlags(programName string, handling flag.ErrorHandling) (flagStore *fl
 
 // flagMain This is code refactored from main to help keep main readable.
 func flagMain() error {
+// TODO: move all line from main here and call this in main.
+
 	err1 := flagStore.Flags.Parse(os.Args[1:])
 	if err1 != nil {
 		return err1
