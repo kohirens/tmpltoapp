@@ -31,14 +31,14 @@ type cliFlag struct {
 type cliFlags []cliFlag
 
 var appFlags = cliFlags{
-	cliFlag{"tmplPath", "t", "URL to a zip or a local path to a directory.", "string"},
-	cliFlag{"appPath", "p", "Path to output the new project.", "string"},
-	cliFlag{"answers", "a", "Path to an answer file.", "string"},
-	cliFlag{"verbosity", "", "extra detail processing infof.", "int"},
-	cliFlag{"help", "h", "print usage information.", "bool"},
-	cliFlag{"version", "v", "print build version information and exit 0.", "bool"},
-	cliFlag{"tmplType", "zip", "Can be of git|zip|local.", "string"},
-	cliFlag{"branch", "", "branch to clone.", "string"},
+	cliFlag{"tmplPath", "t", usageMsgs["tmplPath"], "string"},
+	cliFlag{"appPath", "p", usageMsgs["appPath"], "string"},
+	cliFlag{"answers", "a", usageMsgs["answers"], "string"},
+	cliFlag{"verbosity", "", usageMsgs["verbosity"], "int"},
+	cliFlag{"help", "h", usageMsgs["help"], "bool"},
+	cliFlag{"version", "v", usageMsgs["version"], "bool"},
+	cliFlag{"tmplType", "zip", usageMsgs["tmplType"], "string"},
+	cliFlag{"branch", "", usageMsgs["branch"], "string"},
 }
 
 type flagStorage struct {
