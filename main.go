@@ -17,17 +17,11 @@ const (
 	DIR_MODE = 0774
 )
 
+//runtimeConfig = new(cliFlags) // store all settings (including CLI flag values).
+
 var (
-	appConfig = &Config{}
-	flagStore *flagStorage
-	errMsgs   = [...]string{
-		"please specify a path (or URL) to a template",
-		"enter a local path to output the app",
-		"the following error occurred trying to get the app data directory: %q",
-		"path/URL to template is not in the allow-list",
-		"template download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
-		"please specify a path to an answer file that exist",
-	}
+	appConfig   = &Config{}
+	flagStore   *flagStorage
 	programName string
 )
 
@@ -90,7 +84,7 @@ func main() {
 
 	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.AllowedUrls)
 	if isUrl && !isAllowed {
-		mainErr = fmt.Errorf(errMsgs[3])
+		mainErr = fmt.Errorf(errors.pathNotAllowed)
 		return
 	}
 	verboseF(1, "isUrl %v", isUrl)
