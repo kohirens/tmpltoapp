@@ -8,6 +8,6 @@ var usageMsgs = map[string]string{
 	"subCommands": "\n  sub-commands:\n\n    semver\n\tsee semver --help\n    taggable\n\tsee taggable --help\n    checkConf\n\tsee checkConf --help\n",
 	"tmplPath":    "URL to a zip or a local path to a directory.",
 	"tmplType":    "Can be of git|zip|local.",
-	"verbosity":   "extra detail processing infof.",
+	"verbosity":   "extra detail processing info.",
 	"version":     "print build version information and exit 0.",
 }

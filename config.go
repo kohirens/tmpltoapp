@@ -23,6 +23,8 @@ type Config struct {
 	tmplType              string    // Indicates a zip should be downloaded
 	CurrentVersion        string
 	CommitHash            string
+	help                  bool
+	version               bool
 }
 
 // Load configuration file.
