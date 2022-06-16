@@ -1,75 +1,11 @@
 package main
 
 import (
-	"flag"
 	"os"
 	"os/exec"
 	"runtime"
 	"testing"
 )
-
-func TestDefineFlags(t *testing.T) {
-	args := []string{"-h", "-verbosity", "2"}
-	fs, terr := defineFlags(os.Args[0], flag.ContinueOnError)
-
-	if terr != nil {
-		t.Errorf("unexpected error defining flags: %q", terr.Error())
-		return
-	}
-
-	terr = fs.Flags.Parse(args)
-
-	if terr != nil {
-		t.Errorf("unexpected error defining flags: %q", terr.Error())
-		return
-	}
-
-	val, terr := fs.GetBool("help")
-
-	if terr != nil {
-		t.Errorf("unexpected error defining flags: %q", terr.Error())
-		return
-	}
-
-	if val != true {
-		t.Errorf("want %v, got %v", true, val)
-	}
-
-	v2, terr := fs.GetInt("verbosity")
-
-	if terr != nil {
-		t.Errorf("unexpected error getting verbosity flag %q", terr.Error())
-		return
-	}
-
-	if v2 != 2 {
-		t.Errorf("want %v, got %v", 2, v2)
-	}
-}
-
-func TestPrintVersionInfo(t *testing.T) {
-	args := []string{"-version"}
-	fs, terr := defineFlags(programName, flag.ExitOnError)
-
-	if terr != nil {
-		t.Errorf("unexpected error defining flags: %q", terr.Error())
-		return
-	}
-
-	terr = fs.Flags.Parse(args)
-
-	if terr != nil {
-		t.Errorf("unexpected error defining flags: %q", terr.Error())
-		return
-	}
-
-	got, terr := fs.GetBool("version")
-
-	if !got {
-		t.Errorf("got %v, want %v", got, true)
-		return
-	}
-}
 
 func TestFlagExitCode(t *testing.T) {
 

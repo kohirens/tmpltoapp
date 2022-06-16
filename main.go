@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,22 +18,15 @@ const (
 
 var (
 	appConfig   = &Config{} // store all settings (including CLI flag values).
-	flagStore   *flagStorage
 	programName string
 )
 
 func init() {
 	// Use `path/filepath.Base` for cross-platform compatibility.
 	programName = filepath.Base(os.Args[0])
-	fs, err := defineFlags(programName, flag.ContinueOnError)
-	if err != nil {
-		return
-	}
 
 	// Define all flags
 	appConfig.define()
-
-	flagStore = fs
 }
 
 func main() {
