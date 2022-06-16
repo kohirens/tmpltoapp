@@ -111,11 +111,11 @@ func TestFlagExitCode(t *testing.T) {
 		},
 		{
 			flag:       "-undefined",
-			expectExit: 1,
+			expectExit: 2,
 		},
 		{
 			flag:       "-t",
-			expectExit: 1,
+			expectExit: 2,
 		},
 	}
 
