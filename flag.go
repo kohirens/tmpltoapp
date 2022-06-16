@@ -162,7 +162,22 @@ func flagMain(config *Config) error {
 		os.Exit(0)
 	}
 
-	err2 := extractParsedFlags(flag.Args(), config)
+	pArgs := flag.Args()[0:]
+	verboseF(3, "number of arguments passed in: %d", len(pArgs))
+	verboseF(3, "arguments passed in: %v", pArgs)
+
+	numArgs := len(pArgs)
+	if numArgs >= 1 {
+		config.tplPath = pArgs[0]
+	}
+	if numArgs > 2 {
+		config.appPath = pArgs[1]
+	}
+	if numArgs > 3 {
+		config.answersPath = pArgs[3]
+	}
+
+	err2 := config.validate()
 	if err2 != nil {
 		return err2
 	}

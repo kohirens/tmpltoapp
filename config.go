@@ -88,39 +88,25 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 	return
 }
 
-// extractParsedFlags parses command line flags into program options.
-func extractParsedFlags(pArgs []string, options *Config) error {
-	verboseF(3, "number of arguments passed in: %d", len(pArgs))
-	verboseF(3, "arguments passed in: %v", pArgs)
-
-	numArgs := len(pArgs)
-	if numArgs >= 1 {
-		options.tplPath = pArgs[0]
-	}
-	if numArgs > 2 {
-		options.appPath = pArgs[1]
-	}
-	if numArgs > 3 {
-		options.answersPath = pArgs[3]
-	}
-
-	if options.tplPath == "" {
+// validate parses command line flags into program options.
+func (rtc *Config) validate() error {
+	if rtc.tplPath == "" {
 		return fmt.Errorf(errors.tmplPath)
 	}
 
-	if options.appPath == "" {
+	if rtc.appPath == "" {
 		return fmt.Errorf(errors.localOutPath)
 	}
 
-	if stdlib.DirExist(options.appPath) {
-		return fmt.Errorf("appPath already exits %q", options.appPath)
+	if stdlib.DirExist(rtc.appPath) {
+		return fmt.Errorf("appPath already exits %q", rtc.appPath)
 	}
 
-	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
+	if rtc.answersPath == "" || !stdlib.PathExist(rtc.answersPath) {
 		return fmt.Errorf(errors.answerPath)
 	}
 
-	if options.tmplType == "" {
+	if rtc.tmplType == "" {
 		return fmt.Errorf(errors.badTmplType)
 	}
 
