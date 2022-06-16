@@ -122,12 +122,12 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 	verbosityLevel, _ = fs.GetInt("verbosity")
 
 	if options.tplPath == "" {
-		err = fmt.Errorf(errMsgs[0])
+		err = fmt.Errorf(errors.tmplPath)
 		return
 	}
 
 	if options.appPath == "" {
-		err = fmt.Errorf(errMsgs[1])
+		err = fmt.Errorf(errors.localOutPath)
 		return
 	}
 
@@ -137,7 +137,7 @@ func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err e
 	}
 
 	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
-		err = fmt.Errorf(errMsgs[5])
+		err = fmt.Errorf(errors.answerPath)
 		return
 	}
 

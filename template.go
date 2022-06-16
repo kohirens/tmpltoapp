@@ -55,7 +55,7 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 	}
 
 	if resp.StatusCode > 300 || resp.StatusCode < 200 {
-		err = fmt.Errorf(errMsgs[0], resp.Status, resp.StatusCode)
+		err = fmt.Errorf(errors.tmplPath, resp.Status, resp.StatusCode)
 		return
 	}
 
