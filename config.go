@@ -89,69 +89,40 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 }
 
 // extractParsedFlags parses command line flags into program options.
-func extractParsedFlags(fs *flagStorage, pArgs []string, options *Config) (err error) {
-	flags := fs.Flags
+func extractParsedFlags(pArgs []string, options *Config) error {
 	verboseF(3, "number of arguments passed in: %d", len(pArgs))
 	verboseF(3, "arguments passed in: %v", pArgs)
 
-	numArgs := len(flags.Args())
-	if numArgs > 0 {
-		options.tplPath = flags.Arg(0)
-	}
-	if numArgs > 1 {
-		options.appPath = flags.Arg(1)
+	numArgs := len(pArgs)
+	if numArgs >= 1 {
+		options.tplPath = pArgs[0]
 	}
 	if numArgs > 2 {
-		options.answersPath = flags.Arg(1)
+		options.appPath = pArgs[1]
 	}
-
-	// flags override arguments.
-	tmplPath, err := fs.GetString("tmplPath")
-	if err == nil {
-		options.tplPath = tmplPath
+	if numArgs > 3 {
+		options.answersPath = pArgs[3]
 	}
-
-	appPath, err := fs.GetString("appPath")
-	if err == nil {
-		options.appPath = appPath
-	}
-
-	answersPath, err := fs.GetString("answers")
-	if err == nil {
-		options.answersPath = answersPath
-	}
-
-	verbosityLevel, _ = fs.GetInt("verbosity")
 
 	if options.tplPath == "" {
-		err = fmt.Errorf(errors.tmplPath)
-		return
+		return fmt.Errorf(errors.tmplPath)
 	}
 
 	if options.appPath == "" {
-		err = fmt.Errorf(errors.localOutPath)
-		return
+		return fmt.Errorf(errors.localOutPath)
 	}
 
 	if stdlib.DirExist(options.appPath) {
-		err = fmt.Errorf("appPath already exits %q", options.appPath)
-		return
+		return fmt.Errorf("appPath already exits %q", options.appPath)
 	}
 
 	if options.answersPath == "" || !stdlib.PathExist(options.answersPath) {
-		err = fmt.Errorf(errors.answerPath)
-		return
+		return fmt.Errorf(errors.answerPath)
 	}
 
-	options.tmplType, err = fs.GetString("tmplType")
-	if err != nil {
-		return
+	if options.tmplType == "" {
+		return fmt.Errorf(errors.badTmplType)
 	}
 
-	options.branch, err = fs.GetString("branch")
-	if err != nil {
-		return
-	}
-
-	return
+	return nil
 }

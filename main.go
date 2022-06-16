@@ -17,10 +17,8 @@ const (
 	DIR_MODE = 0774
 )
 
-//runtimeConfig = new(cliFlags) // store all settings (including CLI flag values).
-
 var (
-	appConfig   = &Config{}
+	appConfig   = &Config{} // store all settings (including CLI flag values).
 	flagStore   *flagStorage
 	programName string
 )
@@ -32,6 +30,9 @@ func init() {
 	if err != nil {
 		return
 	}
+
+	// Define all flags
+	appConfig.define()
 
 	flagStore = fs
 }
@@ -47,7 +48,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	mainErr = flagMain()
+	mainErr = flagMain(appConfig)
 	if mainErr != nil {
 		return
 	}

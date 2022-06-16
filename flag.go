@@ -143,27 +143,26 @@ func (cf *Config) define() {
 }
 
 // flagMain Process and validate all CLI flags.
-func flagMain() error {
+func flagMain(config *Config) error {
+	flag.Parse()
+
 	err1 := flagStore.Flags.Parse(os.Args[1:])
 	if err1 != nil {
 		return err1
 	}
 
-	help, _ := flagStore.GetBool("help")
-	if help {
-		flagStore.Flags.SetOutput(os.Stdout)
-		flagStore.Flags.Usage()
+	if config.help {
+		flag.PrintDefaults()
+		fmt.Printf(usageMsgs["subCommands"])
 		os.Exit(0)
 	}
 
-	version, _ := flagStore.GetBool("version")
-	if version {
-		flagStore.Flags.SetOutput(os.Stdout)
-		fmt.Printf("%v, %v\n", appConfig.CurrentVersion, appConfig.CommitHash)
+	if config.version {
+		fmt.Printf("%v, %v\n", config.CurrentVersion, config.CommitHash)
 		os.Exit(0)
 	}
 
-	err2 := extractParsedFlags(flagStore, os.Args, appConfig)
+	err2 := extractParsedFlags(flag.Args(), config)
 	if err2 != nil {
 		return err2
 	}
