@@ -19,7 +19,6 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	programName = filepath.Base(os.Args[0])
 	// call flag.Parse() here if TestMain uses flags
 	os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files

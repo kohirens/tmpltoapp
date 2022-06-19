@@ -17,14 +17,10 @@ const (
 )
 
 var (
-	appConfig   = &Config{} // store all settings (including CLI flag values).
-	programName string
+	appConfig = &Config{} // store all settings (including CLI flag values).
 )
 
 func init() {
-	// Use `path/filepath.Base` for cross-platform compatibility.
-	programName = filepath.Base(os.Args[0])
-
 	// Define all flags
 	appConfig.define()
 }
@@ -45,7 +41,6 @@ func main() {
 		return
 	}
 
-	verboseF(verboseLvlWarn, "running program %q", programName)
 	verboseF(verboseLvlInfo, "verbose level: %v", verbosityLevel)
 
 	appDataDir, mainErr := stdlib.AppDataDir()
