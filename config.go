@@ -30,7 +30,7 @@ type Config struct {
 // Load configuration file.
 func initConfigFile(file string) (err error) {
 	if stdlib.PathExist(file) {
-		verboseF(1, "config file %q exist", file)
+		infof("config file %q exist", file)
 		return
 	}
 
@@ -47,7 +47,7 @@ func initConfigFile(file string) (err error) {
 
 	_, err = f.WriteString(DEFAULT_CFG)
 
-	verboseF(1, "made a new config file %q exist", file)
+	infof("made a new config file %q exist", file)
 
 	return
 }

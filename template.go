@@ -72,7 +72,7 @@ func download(url, dstDir string, client Client) (zipFile string, err error) {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 
-	verboseF(verboseLvlInfo, "downloading %v to %v\n", url, dest)
+	infof("downloading %v to %v\n", url, dest)
 
 	return
 }
@@ -92,7 +92,7 @@ func extract(archivePath string) (string, error) {
 		return tmplDir, fmt.Errorf("could not write dest %q, error: %v", dest, err.Error())
 	}
 
-	verboseF(verboseLvlInfo, "extracting %v to %v\n", archivePath, dest)
+	infof("extracting %v to %v\n", archivePath, dest)
 	for _, file := range archive.File {
 		sourceFile, fErr := file.Open()
 		if fErr != nil {
@@ -142,7 +142,7 @@ func extract(archivePath string) (string, error) {
 
 	err = archive.Close()
 	tmplDir = zipParentDir
-	verboseF(verboseLvlDbug, "zipParentDir = %v", zipParentDir)
+	dbugf("zipParentDir = %v", zipParentDir)
 
 	return tmplDir, nil
 }
@@ -193,7 +193,7 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, e
 			return
 		}
 
-		verboseF(verboseLvlInfo, "processing: %q\n", sourcePath)
+		infof("processing: %q\n", sourcePath)
 
 		// Do not parse directories.
 		if fi.IsDir() {
@@ -210,7 +210,7 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, e
 		// Skip non-text files.
 		// TODO: Remove FileExtensionCheck in favor of exclude/include list, once globbing is added.
 		if currFile != EMPTY_FILE && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
-			verboseF(verboseLvlInfo, "will skipp and not process through template engine; could not detect file type for %v", sourcePath)
+			infof("will skipp and not process through template engine; could not detect file type for %v", sourcePath)
 			return
 		}
 
@@ -238,9 +238,9 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, e
 			for _, exclude := range excludes {
 				fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
 				fileToCheckB = strings.ReplaceAll(exclude, "/", "")
-				verboseF(verboseLvlInfo, "fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
+				infof("fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
 				if fileToCheckB == fileToCheck {
-					verboseF(verboseLvlInfo, "excluding file %q", sourcePath)
+					infof("excluding file %q", sourcePath)
 					return
 				}
 			}
@@ -263,7 +263,7 @@ type questions struct {
 
 // readTemplateJson read variables needed from the template.json file.
 func readTemplateJson(filePath string) (*questions, error) {
-	verboseF(verboseLvlDbug, "\ntemplate manifest path: %q\n", filePath)
+	dbugf("\ntemplate manifest path: %q\n", filePath)
 
 	// Verify the TMPL_MANIFEST file is present.
 	if !stdlib.PathExist(filePath) {
@@ -275,14 +275,14 @@ func readTemplateJson(filePath string) (*questions, error) {
 		return nil, err1
 	}
 
-	verboseF(verboseLvlInfo, "content = %s \n", content)
+	infof("content = %s \n", content)
 
 	q := questions{}
 	if err2 := json.Unmarshal(content, &q); err2 != nil {
 		return nil, err2
 	}
 
-	verboseF(verboseLvlInfo, "content = %v \n", content)
+	infof("content = %v \n", content)
 
 	return &q, nil
 }
@@ -294,13 +294,13 @@ func getInput(questions *questions, answers *tplVars, r *os.File) error {
 	for v, q := range questions.Variables {
 		a, isAnswered := (*answers)[v]
 		if isAnswered {
-			verboseF(verboseLvlInfo, "question %q already has an answer of %q, so skipping\n", q, a)
+			infof("question %q already has an answer of %q, so skipping\n", q, a)
 			continue
 		}
-		verboseF(verboseLvlInfo, "\n%q: ", q)
+		infof("\n%q: ", q)
 		nPut.Scan()
 		(*answers)[v] = nPut.Text()
-		verboseF(verboseLvlInfo, "%q was answered with %q", q, (*answers)[v])
+		infof("%q was answered with %q", q, (*answers)[v])
 	}
 
 	return nil

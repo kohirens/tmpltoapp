@@ -41,7 +41,7 @@ func main() {
 		return
 	}
 
-	verboseF(verboseLvlInfo, "verbose level: %v", verbosityLevel)
+	infof("verbose level: %v", verbosityLevel)
 
 	appDataDir, mainErr := stdlib.AppDataDir()
 	if mainErr != nil {
@@ -64,7 +64,7 @@ func main() {
 
 	mainErr = settings(configFile, appConfig)
 
-	verboseF(3, "configured runtime options %v", appConfig)
+	errf("configured runtime options %v", appConfig)
 
 	if mainErr != nil {
 		return
@@ -75,7 +75,7 @@ func main() {
 		mainErr = fmt.Errorf(errors.pathNotAllowed)
 		return
 	}
-	verboseF(1, "isUrl %v", isUrl)
+	infof("isUrl %v", isUrl)
 
 	appConfig.cacheDir = appDataDir + PS + "cache"
 	mainErr = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
@@ -132,7 +132,7 @@ func main() {
 		appConfig.tmpl = repo
 	}
 
-	verboseF(3, "appConfig = %v", appConfig)
+	errf("appConfig = %v", appConfig)
 
 	if !stdlib.DirExist(appConfig.tmpl) {
 		mainErr = fmt.Errorf("invalid template directory %q", appConfig.tmpl)

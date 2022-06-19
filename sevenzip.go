@@ -14,10 +14,10 @@ func isSevenZipInstalled() (string, error) {
 	ec := cmd.ProcessState.ExitCode()
 
 	if err1 != nil {
-		verboseF(verboseLvlDbug, "stdout: %v\n\nstderr:\n%v\n", out1, err1.Error())
+		dbugf("stdout: %v\n\nstderr:\n%v\n", out1, err1.Error())
 	}
 
-	verboseF(verboseLvlDbug, "7zip check exit code : %v\n\n", ec)
+	dbugf("7zip check exit code : %v\n\n", ec)
 
 	if ec != 0 && runtime.GOOS == "windows" {
 		winPath := os.Getenv("ProgramFiles") + PS + "7-zip" + PS + "7z.exe"
@@ -27,7 +27,7 @@ func isSevenZipInstalled() (string, error) {
 		ec := cmd.ProcessState.ExitCode()
 
 		if err2 != nil {
-			verboseF(verboseLvlDbug, "stdout: %v\n\nstderr:\n%v\n", out2, err2.Error())
+			dbugf("stdout: %v\n\nstderr:\n%v\n", out2, err2.Error())
 		}
 
 		if ec == 0 {
@@ -35,14 +35,14 @@ func isSevenZipInstalled() (string, error) {
 		}
 	}
 
-	verboseF(verboseLvlDbug, "7zip check exit code : %v\n\n", ec)
+	dbugf("7zip check exit code : %v\n\n", ec)
 
 	if ec == 0 {
-		verboseF(verboseLvlInfo, "7zip installation found.")
+		infof("7zip installation found.")
 		return "", nil
 	}
 
-	verboseF(verboseLvlInfo, "7zip is not installed.")
+	infof("7zip is not installed.")
 
 	return "", nil
 }
