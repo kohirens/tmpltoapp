@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/kohirens/stdlib"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"github.com/kohirens/stdlib"
 )
 
 const (
@@ -64,18 +62,11 @@ func main() {
 
 	mainErr = settings(configFile, appConfig)
 
-	errf("configured runtime options %v", appConfig)
-
 	if mainErr != nil {
 		return
 	}
 
-	isUrl, isAllowed := urlIsAllowed(appConfig.tplPath, appConfig.AllowedUrls)
-	if isUrl && !isAllowed {
-		mainErr = fmt.Errorf(errors.pathNotAllowed)
-		return
-	}
-	infof("isUrl %v", isUrl)
+	infof("configured runtime options %v", appConfig)
 
 	appConfig.cacheDir = appDataDir + PS + "cache"
 	mainErr = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
@@ -165,21 +156,4 @@ func main() {
 	//missingAnswrs := checkAnswrsToQuestions()
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest.Excludes)
-}
-
-// Check to see if a URL is in the allowed list to download template from.
-func urlIsAllowed(loc string, urls []string) (isUrl, isAllowed bool) {
-	isUrl = strings.HasPrefix(loc, "https://")
-	isAllowed = false
-
-	if isUrl {
-		for _, url := range urls {
-			if strings.HasPrefix(loc, url) {
-				isAllowed = true
-				break
-			}
-		}
-	}
-
-	return
 }
