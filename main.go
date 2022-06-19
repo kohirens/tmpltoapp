@@ -114,8 +114,7 @@ func main() {
 			repo, commitHash, err2 = gitClone(appConfig.tplPath, repoDir, appConfig.branch)
 		}
 
-		//infof("repo = %q; %q", repo, commitHash)
-		fmt.Printf("repo = %q; %q", repo, commitHash)
+		infof("repo = %q; %q", repo, commitHash)
 		if err2 != nil {
 			mainErr = err2
 			return
@@ -153,7 +152,7 @@ func main() {
 		mainErr = fmt.Errorf(errs.gettingAnswers, e.Error())
 	}
 
-	//missingAnswrs := checkAnswrsToQuestions()
+	//missingAnswers := checkAnswersToQuestions()
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest.Excludes)
 }
