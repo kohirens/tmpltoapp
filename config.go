@@ -89,24 +89,24 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 }
 
 // validate parses command line flags into program options.
-func (rtc *Config) validate() error {
-	if rtc.tplPath == "" {
+func (cfg *Config) validate() error {
+	if cfg.tplPath == "" {
 		return fmt.Errorf(errors.tmplPath)
 	}
 
-	if rtc.appPath == "" {
+	if cfg.appPath == "" {
 		return fmt.Errorf(errors.localOutPath)
 	}
 
-	if stdlib.DirExist(rtc.appPath) {
-		return fmt.Errorf("appPath already exits %q", rtc.appPath)
+	if stdlib.DirExist(cfg.appPath) {
+		return fmt.Errorf("appPath already exits %q", cfg.appPath)
 	}
 
-	if rtc.answersPath == "" || !stdlib.PathExist(rtc.answersPath) {
+	if cfg.answersPath == "" || !stdlib.PathExist(cfg.answersPath) {
 		return fmt.Errorf(errors.answerPath)
 	}
 
-	if rtc.tmplType == "" {
+	if cfg.tmplType == "" {
 		return fmt.Errorf(errors.badTmplType)
 	}
 
