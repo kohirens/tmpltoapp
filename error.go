@@ -9,7 +9,7 @@ var errors = struct {
 	tmplPath         string
 	unhandledHttpErr string
 }{
-	answerPath:       "please specify a path to an answer file that exist",
+	answerPath:       "please specify a path to a valid answer file that exist: given %q",
 	appDataDir:       "the following error occurred trying to get the app data directory: %q",
 	badTmplType:      "tmplType type was not set, must be zip|git",
 	localOutPath:     "enter a local path to output the app",
