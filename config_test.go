@@ -40,46 +40,6 @@ func TestGetSettings(t *testing.T) {
 	})
 }
 
-func TestUrlIsAllowed(t *testing.T) {
-	var tests = []struct {
-		name, url    string
-		want1, want2 bool
-	}{
-		{"isAllowed", "https://test.com", true, true},
-		{"notAllowed", "https://gitit.com", true, false},
-		{"notAUrl", "/local/path", false, false},
-	}
-
-	fixtures := []string{"https://test.com"}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// exec code.
-			got1, got2 := urlIsAllowed(tt.url, fixtures)
-
-			if tt.want1 != got1 && tt.want2 != got2 {
-				t.Errorf("got [%v,%v]; want [%v, %v]", got1, got2, tt.want1, tt.want2)
-			}
-		})
-	}
-
-	t.Run("canReadConfig", func(t *testing.T) {
-		// exec code.
-		want := "test.com"
-		got := &Config{}
-
-		err := settings(fixturesDir+"/config-01.json", got)
-
-		if err != nil {
-			t.Errorf("got an unexpected error %v", err.Error())
-		}
-
-		if got.AllowedUrls[0] != want {
-			t.Errorf("got %v, want [%v]", got, want)
-		}
-	})
-}
-
 func TestInitConfigFile(t *testing.T) {
 	var tests = []struct {
 		name, file string
