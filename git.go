@@ -57,6 +57,8 @@ func gitCheckout(repoLocalPath, branchName string) (string, string, error) {
 		return "", "", e2
 	}
 
+	infof("branchName = %v ", branchName)
+
 	h, err := r.ResolveRevision(plumbing.Revision(branchName))
 	if err != nil {
 		return "", "", err
