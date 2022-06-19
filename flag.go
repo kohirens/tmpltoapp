@@ -28,7 +28,7 @@ func (cfg *Config) define() {
 	flag.StringVar(&cfg.answersPath, "a", "", usageMsgs["answers"]+" (shorthand)")
 	flag.StringVar(&cfg.appPath, "appPath", "", usageMsgs["appPath"])
 	flag.StringVar(&cfg.appPath, "p", "", usageMsgs["appPath"]+" (shorthand)")
-	flag.StringVar(&cfg.branch, "branch", "", usageMsgs["branch"])
+	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
 	flag.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&cfg.help, "h", false, usageMsgs["help"]+" (shorthand)")
 	flag.StringVar(&cfg.tplPath, "tmplPath", "", usageMsgs["tmplPath"])
