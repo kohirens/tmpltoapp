@@ -67,7 +67,8 @@ func gitCheckout(repoLocalPath, branchName string) (string, string, error) {
 
 	infof("git checkout %s", branchName)
 	e3 := wt.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.ReferenceName(branchName),
+		Hash: plumbing.NewHash(h.String()),
+		//Branch: plumbing.ReferenceName(branchName),
 	})
 	if e3 != nil {
 		return "", "", e3
