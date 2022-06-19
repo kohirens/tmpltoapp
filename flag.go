@@ -92,7 +92,7 @@ func (cfg *Config) validate() error {
 	}
 
 	if cfg.answersPath != "" && !stdlib.PathExist(cfg.answersPath) {
-		return fmt.Errorf(errors.answerPath)
+		return fmt.Errorf(errors.answerPath, cfg.answersPath)
 	}
 
 	if cfg.tmplType == "" {
