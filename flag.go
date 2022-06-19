@@ -54,8 +54,8 @@ func flagMain(config *Config) error {
 	}
 
 	pArgs := flag.Args()[0:]
-	verboseF(3, "number of arguments passed in: %d", len(pArgs))
-	verboseF(3, "arguments passed in: %v", pArgs)
+	errf("number of arguments passed in: %d", len(pArgs))
+	errf("arguments passed in: %v", pArgs)
 
 	numArgs := len(pArgs)
 	if numArgs >= 1 {
