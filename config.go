@@ -87,28 +87,3 @@ func loadAnswers(filename string) (answers tplVars, err error) {
 
 	return
 }
-
-// validate parses command line flags into program options.
-func (cfg *Config) validate() error {
-	if cfg.tplPath == "" {
-		return fmt.Errorf(errors.tmplPath)
-	}
-
-	if cfg.appPath == "" {
-		return fmt.Errorf(errors.localOutPath)
-	}
-
-	if stdlib.DirExist(cfg.appPath) {
-		return fmt.Errorf("appPath already exits %q", cfg.appPath)
-	}
-
-	if cfg.answersPath == "" || !stdlib.PathExist(cfg.answersPath) {
-		return fmt.Errorf(errors.answerPath)
-	}
-
-	if cfg.tmplType == "" {
-		return fmt.Errorf(errors.badTmplType)
-	}
-
-	return nil
-}
