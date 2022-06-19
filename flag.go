@@ -91,7 +91,7 @@ func (cfg *Config) validate() error {
 		return fmt.Errorf("appPath already exits %q", cfg.appPath)
 	}
 
-	if cfg.answersPath == "" || !stdlib.PathExist(cfg.answersPath) {
+	if cfg.answersPath != "" && !stdlib.PathExist(cfg.answersPath) {
 		return fmt.Errorf(errors.answerPath)
 	}
 
