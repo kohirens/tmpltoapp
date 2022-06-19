@@ -5,7 +5,7 @@ var usageMsgs = map[string]string{
 	"appPath":     "Path to output the new project.",
 	"branch":      "branch to clone.",
 	"help":        "print usage information.",
-	"subCommands": "\n  sub-commands:\n\n    semver\n\tsee semver --help\n    taggable\n\tsee taggable --help\n    checkConf\n\tsee checkConf --help\n",
+	"subCommands": "\n  sub-commands:\n\n    none\n",
 	"tmplPath":    "URL to a zip or a local path to a directory.",
 	"tmplType":    "Can be of git|zip|local.",
 	"verbosity":   "extra detail processing info.",
