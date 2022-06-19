@@ -62,10 +62,10 @@ func flagMain(config *Config) error {
 	if numArgs >= 1 {
 		config.tplPath = pArgs[0]
 	}
-	if numArgs > 2 {
+	if numArgs >= 2 {
 		config.appPath = pArgs[1]
 	}
-	if numArgs > 3 {
+	if numArgs >= 3 {
 		config.answersPath = pArgs[3]
 	}
 
