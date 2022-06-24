@@ -28,7 +28,7 @@ type Client interface {
 	Head(url string) (*http.Response, error)
 }
 
-type tplVars map[string]string //TODO: change to tmplVars for consistency
+type tplVars map[string]string // TODO: change to tmplVars for consistency
 
 var regExpTmplType = regexp.MustCompile("^(zip|git)$")
 

@@ -68,6 +68,7 @@ func main() {
 
 	infof("configured runtime options %v", appConfig)
 
+	// TODO: Move to configMain
 	appConfig.cacheDir = appDataDir + PS + "cache"
 	mainErr = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
 	if mainErr != nil {
