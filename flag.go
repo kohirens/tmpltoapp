@@ -95,8 +95,8 @@ func (cfg *Config) validate() error {
 		return fmt.Errorf(errors.answerPath, cfg.answersPath)
 	}
 
-	if cfg.tmplType == "" {
-		return fmt.Errorf(errors.badTmplType)
+	if !regExpTmplType.MatchString(cfg.tmplType) {
+		return fmt.Errorf(errors.badTmplType, cfg.tmplType)
 	}
 
 	return nil

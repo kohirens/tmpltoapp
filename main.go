@@ -75,13 +75,7 @@ func main() {
 		return
 	}
 
-	tmplPathType, err3 := getPathType(appConfig.tmplType)
-	if err3 != nil {
-		mainErr = err3
-		return
-	}
-
-	if tmplPathType == "zip" {
+	if appConfig.tmplType == "zip" {
 		client := http.Client{}
 		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
 		if iErr != nil {
@@ -96,11 +90,16 @@ func main() {
 		}
 	}
 
+	tmplPathType, err3 := getTmplType(appConfig.tmplType)
+	if err3 != nil {
+		mainErr = err3
+		return
+	}
 	if tmplPathType == "local" {
 		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
 	}
 
-	if tmplPathType == "git" {
+	if appConfig.tmplType == "git" {
 		var repo, commitHash string
 		var err2 error
 

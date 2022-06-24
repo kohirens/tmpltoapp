@@ -179,7 +179,7 @@ func TestGetPathType(runner *testing.T) {
 
 	for _, tc := range fixtures {
 		runner.Run(tc.name, func(test *testing.T) {
-			got, err := getPathType(tc.tmplType)
+			got, err := getTmplType(tc.tmplType)
 
 			if !tc.shouldErr && err != nil {
 				test.Errorf("unexpected error: %s", err)
