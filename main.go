@@ -76,6 +76,12 @@ func main() {
 		return
 	}
 
+	appConfig.tmplLocation = getTmplLocation(appConfig.tplPath)
+
+	if appConfig.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
+		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
+	}
+
 	if appConfig.tmplType == "zip" {
 		client := http.Client{}
 		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
@@ -89,15 +95,6 @@ func main() {
 			mainErr = iErr
 			return
 		}
-	}
-
-	tmplPathType, err3 := getTmplType(appConfig.tmplType)
-	if err3 != nil {
-		mainErr = err3
-		return
-	}
-	if tmplPathType == "local" {
-		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
 	}
 
 	if appConfig.tmplType == "git" {
