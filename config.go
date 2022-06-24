@@ -20,6 +20,7 @@ type Config struct {
 	IncludeFileExtensions []string  // Files to include when sending to the go parsing engine.
 	Questions             questions // Question for requesting input for the template.
 	branch                string    // Desired branch to clone.
+	tmplLocation          string    // Indicates local or remote location to downloaded
 	tmplType              string    // Indicates a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string

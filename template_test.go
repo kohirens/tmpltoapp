@@ -166,27 +166,29 @@ func TestParse(tester *testing.T) {
 	}
 }
 
-func TestGetPathType(runner *testing.T) {
+func TestGetTmplLocation(runner *testing.T) {
 	fixtures := []struct {
-		name, tmplType string
-		shouldErr      bool
+		name, path, want string
 	}{
-		{"tmplTypeLocal", "local", false},
-		{"tmplTypeZip", "zip", false},
-		{"tmplTypeGit", "git", false},
-		{"invalidType", "whatever", true},
+		{"relative", "./", "local"},
+		{"relative2", ".", "local"},
+		{"relativeUp", "..", "local"},
+		{"absolute", "/home/myuser", "local"},
+		{"windows", "C:\\Temp", "local"},
+		{"http", "http://example.com/repo1", "remote"},
+		{"https", "https://example.com/repo1", "remote"},
+		{"git", "git://example.com/repo1", "remote"},
+		{"file", "file://example.com/repo1", "remote"},
+		{"hiddenRelative", ".m/example.com/repo1", "local"},
+		{"tildeRelative", "~/repo1.git", "local"},
 	}
 
 	for _, tc := range fixtures {
 		runner.Run(tc.name, func(test *testing.T) {
-			got, err := getTmplType(tc.tmplType)
+			got := getTmplLocation(tc.path)
 
-			if !tc.shouldErr && err != nil {
-				test.Errorf("unexpected error: %s", err)
-			}
-
-			if got != tc.tmplType {
-				test.Errorf("got %q, want %q", got, tc.tmplType)
+			if got != tc.want {
+				test.Errorf("got %q, want %q", got, tc.want)
 			}
 		})
 	}

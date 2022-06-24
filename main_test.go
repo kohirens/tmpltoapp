@@ -64,7 +64,7 @@ func TestCallingMain(tester *testing.T) {
 				"-a", fixturesDir + PS + "answers-parse-dir-02.json",
 				"-t", fixturesDir + PS + "parse-dir-02",
 				"-p", testTmp + PS + "app-parse-dir-02",
-				"-tmplType", "local",
+				"-tmplType", "dir",
 			},
 		},
 		{
