@@ -2,6 +2,29 @@
 ## [Unreleased]
 
 
+<a name="1.0.0"></a>
+## [1.0.0] - 2022-06-26
+### Added
+- Centralized store for program messages.
+
+### Changed
+- Separate logic to determine if the template is local or remote.
+- Separate the template type logic from template location.
+- Set branch default value to main.
+- Make answersPath option input.
+- Rename variable.
+- Verbosity code.
+- Refactored error messags.
+
+### Fixed
+- Only download a zip when remote.
+- But with setting positional clig flags.
+
+### Removed
+- Check URL is allowed.
+- Unused variable.
+
+
 <a name="0.3.1"></a>
 ## [0.3.1] - 2022-05-24
 ### Fixed
@@ -155,7 +178,8 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.1...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.1...1.0.0
 [0.3.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.0...0.2.1
