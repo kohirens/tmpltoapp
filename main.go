@@ -76,19 +76,19 @@ func main() {
 		return
 	}
 
-	appConfig.tmplLocation = getTmplLocation(appConfig.tplPath)
+	appConfig.tmplLocation = getTmplLocation(appConfig.tmplPath)
 
 	if appConfig.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
-		appConfig.tmpl = filepath.Clean(appConfig.tplPath)
+		appConfig.tmpl = filepath.Clean(appConfig.tmplPath)
 	}
 
 	if appConfig.tmplType == "zip" {
 		var zipFile string
 		var iErr error
-		zipFile = appConfig.tplPath
+		zipFile = appConfig.tmplPath
 		if appConfig.tmplLocation == "remote" {
 			client := http.Client{}
-			zipFile, iErr = download(appConfig.tplPath, appConfig.cacheDir, &client)
+			zipFile, iErr = download(appConfig.tmplPath, appConfig.cacheDir, &client)
 			if iErr != nil {
 				mainErr = iErr
 				return
@@ -106,7 +106,7 @@ func main() {
 		var repo, commitHash string
 		var err2 error
 
-		repoDir := appConfig.cacheDir + PS + getRepoDir(appConfig.tplPath)
+		repoDir := appConfig.cacheDir + PS + getRepoDir(appConfig.tmplPath)
 		infof("repoDir = %q\n", repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
@@ -114,7 +114,7 @@ func main() {
 			infof("pulling latest\n")
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
-			repo, commitHash, err2 = gitClone(appConfig.tplPath, repoDir, appConfig.branch)
+			repo, commitHash, err2 = gitClone(appConfig.tmplPath, repoDir, appConfig.branch)
 		}
 
 		infof("repo = %q; %q", repo, commitHash)

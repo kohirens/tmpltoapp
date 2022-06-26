@@ -31,8 +31,8 @@ func (cfg *Config) define() {
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
 	flag.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&cfg.help, "h", false, usageMsgs["help"]+" (shorthand)")
-	flag.StringVar(&cfg.tplPath, "tmplPath", "", usageMsgs["tmplPath"])
-	flag.StringVar(&cfg.tplPath, "t", "", usageMsgs["tmplPath"]+" (shorthand)")
+	flag.StringVar(&cfg.tmplPath, "tmplPath", "", usageMsgs["tmplPath"])
+	flag.StringVar(&cfg.tmplPath, "t", "", usageMsgs["tmplPath"]+" (shorthand)")
 	flag.StringVar(&cfg.tmplType, "tmplType", "zip", usageMsgs["tmplType"])
 	flag.IntVar(&verbosityLevel, "verbosity", 0, usageMsgs["verbosity"])
 	flag.BoolVar(&cfg.version, "version", false, usageMsgs["version"])
@@ -60,7 +60,7 @@ func flagMain(config *Config) error {
 
 	numArgs := len(pArgs)
 	if numArgs >= 1 {
-		config.tplPath = pArgs[0]
+		config.tmplPath = pArgs[0]
 	}
 	if numArgs >= 2 {
 		config.appPath = pArgs[1]
@@ -79,7 +79,7 @@ func flagMain(config *Config) error {
 
 // validate parses command line flags into program options.
 func (cfg *Config) validate() error {
-	if cfg.tplPath == "" {
+	if cfg.tmplPath == "" {
 		return fmt.Errorf(errors.tmplPath)
 	}
 
