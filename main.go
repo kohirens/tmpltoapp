@@ -125,8 +125,6 @@ func main() {
 		appConfig.tmpl = repo
 	}
 
-	errf("appConfig = %v", appConfig)
-
 	if !stdlib.DirExist(appConfig.tmpl) {
 		mainErr = fmt.Errorf("invalid template directory %q", appConfig.tmpl)
 		return
