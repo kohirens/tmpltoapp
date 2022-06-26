@@ -83,11 +83,16 @@ func main() {
 	}
 
 	if appConfig.tmplType == "zip" {
-		client := http.Client{}
-		zipFile, iErr := download(appConfig.tplPath, appConfig.cacheDir, &client)
-		if iErr != nil {
-			mainErr = iErr
-			return
+		var zipFile string
+		var iErr error
+		zipFile = appConfig.tplPath
+		if appConfig.tmplLocation == "remote" {
+			client := http.Client{}
+			zipFile, iErr = download(appConfig.tplPath, appConfig.cacheDir, &client)
+			if iErr != nil {
+				mainErr = iErr
+				return
+			}
 		}
 
 		appConfig.tmpl, iErr = extract(zipFile)
