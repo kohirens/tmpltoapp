@@ -14,7 +14,7 @@ type Config struct {
 	answersPath           string   // path to a file containing values to variables to be parsed.
 	appPath               string   // Location of the processed template output.
 	cacheDir              string
-	tplPath               string    // TODO: Rename to tmplPath for consistency.
+	tmplPath              string    // TODO: Rename to tmplPath for consistency.
 	tmpl                  string    // Path to template, this will be the cached path.
 	ExcludeFileExtensions []string  // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string  // Files to include when sending to the go parsing engine.

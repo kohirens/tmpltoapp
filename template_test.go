@@ -245,7 +245,7 @@ func TestReadTemplateJson(tester *testing.T) {
 		{
 			"canBeFound",
 			&Config{
-				tplPath: fixturePath1,
+				tmplPath: fixturePath1,
 			},
 			false,
 		},
@@ -253,7 +253,7 @@ func TestReadTemplateJson(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		got, err := readTemplateJson(fxtr.config.tplPath + PS + TMPL_MANIFEST)
+		got, err := readTemplateJson(fxtr.config.tmplPath + PS + TMPL_MANIFEST)
 
 		if fxtr.shouldErr && err == nil {
 			test.Errorf("expected an error, but got nil")
