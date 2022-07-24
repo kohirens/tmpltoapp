@@ -11,6 +11,9 @@
 
 Start an app (or something) from a template.
 
+## Info
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/kohirens/tmpltoapp/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/kohirens/tmpltoapp/tree/main)
 
 ## Description
 
