@@ -8,6 +8,6 @@ var usageMsgs = map[string]string{
 	"subCommands": "\n  sub-commands:\n\n    none\n",
 	"tmplPath":    "URL to a zip or a local path to a directory.",
 	"tmplType":    "Can be of git|zip|local.",
-	"verbosity":   "extra detail processing info.",
+	"verbosity":   "Set the level of information printed when running.",
 	"version":     "print build version information and exit 0.",
 }
