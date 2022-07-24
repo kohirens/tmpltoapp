@@ -13,8 +13,6 @@
 */
 package main
 
-//go:generate git-tool-belt semver -save info.go -format go -packageName main -varName appConfig
-
 import (
 	"flag"
 	"fmt"
