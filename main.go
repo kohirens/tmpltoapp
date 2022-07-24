@@ -139,7 +139,7 @@ func main() {
 	tmplManifestFile := appConfig.tmpl + PS + TMPL_MANIFEST
 	tmplManifest, errX := readTemplateJson(tmplManifestFile)
 	if errX != nil {
-		mainErr = fmt.Errorf(errs.missingTmplJson, TMPL_MANIFEST, tmplManifestFile, errX.Error())
+		mainErr = fmt.Errorf(errors.missingTmplJson, TMPL_MANIFEST, tmplManifestFile, errX.Error())
 		return
 	}
 

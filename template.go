@@ -271,7 +271,7 @@ func readTemplateJson(filePath string) (*questions, error) {
 
 	// Verify the TMPL_MANIFEST file is present.
 	if !stdlib.PathExist(filePath) {
-		return nil, fmt.Errorf(errs.tmplManifest404, TMPL_MANIFEST)
+		return nil, fmt.Errorf(errors.tmplManifest404, TMPL_MANIFEST)
 	}
 
 	content, err1 := ioutil.ReadFile(filePath)
