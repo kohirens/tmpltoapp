@@ -144,9 +144,12 @@ func main() {
 	}
 
 	appConfig.TmplJson = *tmplManifest
-	appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
-	if mainErr != nil {
-		return
+
+	if len(appConfig.answersPath) > 0 { // optionally load the answers.json
+		appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
+		if mainErr != nil {
+			return
+		}
 	}
 
 	// Checks for any missing placeholder values waits for their input from the CLI.
