@@ -294,7 +294,7 @@ func TestQuestionsInput(tester *testing.T) {
 			"missingAnAnswer",
 			&Config{
 				answers: tmplVars{"var1": "", "var2": ""},
-				Questions: tmplJson{
+				TmplJson: tmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -306,7 +306,7 @@ func TestQuestionsInput(tester *testing.T) {
 			"noMissingAnswers",
 			&Config{
 				answers: tmplVars{"var1": "1", "var2": "2", "var3": "3"},
-				Questions: tmplJson{
+				TmplJson: tmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -319,7 +319,7 @@ func TestQuestionsInput(tester *testing.T) {
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
 		resetTmpFile()
-		err := getPlaceholderInput(&fxtr.config.Questions, &fxtr.config.answers, tmpFile)
+		err := getPlaceholderInput(&fxtr.config.TmplJson, &fxtr.config.answers, tmpFile)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())

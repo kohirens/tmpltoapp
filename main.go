@@ -145,14 +145,14 @@ func main() {
 		return
 	}
 
-	appConfig.Questions = *tmplManifest
+	appConfig.TmplJson = *tmplManifest
 	appConfig.answers, mainErr = loadAnswers(appConfig.answersPath)
 	if mainErr != nil {
 		return
 	}
 
 	//also checks for values missing for  input for placehodmissingAnswers := checkAnswersToQuestions()
-	if e := getPlaceholderInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
+	if e := getPlaceholderInput(&appConfig.TmplJson, &appConfig.answers, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
