@@ -151,11 +151,10 @@ func main() {
 		return
 	}
 
+	//also checks for values missing for  input for placehodmissingAnswers := checkAnswersToQuestions()
 	if e := getPlaceholderInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
-
-	//missingAnswers := checkAnswersToQuestions()
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest.Excludes)
 }
