@@ -1,10 +1,15 @@
 # How To Build A Template JSON Manifest
 
-This JSON will contain a list of all placeholders in your template.
+Your template will need to container a `template.json` file which should list
+all placeholders in your template. This is file is used at the time the template
+is process with this tool. It is checked for all variables that must be
+answered before process can occur. You can build one manually by using the
+following format.
 
 At minimum the `template.json` needs to contain
-1. version with a  value of `0.1.0`
-2. A `placeholders` property with at least 1 template variable name
+
+1. A `version` property with a  value of `0.1.0`
+2. A `placeholders` object property with at least 1 template variable name
 
 for example:
 ```JSON
@@ -18,9 +23,9 @@ for example:
 }
 ```
 
-Notice the string values for the `placeholder` for each key equest to a question
-to as for that variables value. This is because they are used to ask for the
-value when filing out the template from the CLI.
+Notice the string values for each key in the `placeholders` property equates
+to a question. This is because they can be used as prompts to
+ask for the value when filing out the template from the CLI.
 
 ## References
 
