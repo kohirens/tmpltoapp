@@ -10,11 +10,12 @@ At minimum the `template.json` needs to contain
 
 1. A `version` property with a  value of `0.1.0`
 2. A `placeholders` object property with at least 1 template variable name
+2. An optional `excludes` array property with at least 1 item to indicate a file or directory to skip processing and copy as-is.
 
 for example:
 ```JSON
 {
-    "version": "0.1.0",
+    "version": "1.0.0",
     "placeholders": {
         "appName": "a name for the application",
         "repoName": "a repository name for the application",
