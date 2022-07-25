@@ -151,7 +151,7 @@ func main() {
 		return
 	}
 
-	if e := getInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
+	if e := getPlaceholderInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
