@@ -152,7 +152,7 @@ func main() {
 	}
 
 	if e := getInput(&appConfig.Questions, &appConfig.answers, os.Stdin); e != nil {
-		mainErr = fmt.Errorf(errs.gettingAnswers, e.Error())
+		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
 	//missingAnswers := checkAnswersToQuestions()

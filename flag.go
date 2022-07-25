@@ -2,15 +2,6 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-/*
-	Package main.flags implements command-line flag parsing.
-
-	Usage
-
-	```shell
-	tmpltoapp [options] "<dir/url>" "<outputDir>" "<answers>"
-	```
-*/
 package main
 
 import (
