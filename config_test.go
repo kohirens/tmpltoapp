@@ -27,15 +27,10 @@ func TestGetSettings(t *testing.T) {
 
 	t.Run("canReadConfig", func(t *testing.T) {
 		// exec code.
-		want := "test.com"
 		got := &Config{}
 		err := settings(fixturesDir+"/config-01.json", got)
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
-		}
-
-		if got.AllowedUrls[0] != want {
-			t.Errorf("got %v, want [%v]", got, want)
 		}
 	})
 }
