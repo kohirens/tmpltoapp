@@ -294,17 +294,27 @@ func readTemplateJson(filePath string) (*questions, error) {
 // getInput Take user input for template variables.
 func getInput(questions *questions, answers *tplVars, r *os.File) error {
 	nPut := bufio.NewScanner(r)
+	numPlaceholder := len(questions.Variables)
+	numValues := len(*answers)
+
+	logf(messages.questionAnswerStat, numPlaceholder, numValues)
+
+	if numPlaceholder == numValues {
+		return nil
+	}
+
+	logf(messages.pleaseAnswerQuestions)
 
 	for v, q := range questions.Variables {
 		a, isAnswered := (*answers)[v]
 		if isAnswered {
-			infof("question %q already has an answer of %q, so skipping\n", q, a)
+			infof(messages.questionHasAnAnswer, q, a)
 			continue
 		}
 		infof("\n%q: ", q)
 		nPut.Scan()
 		(*answers)[v] = nPut.Text()
-		infof("%q was answered with %q", q, (*answers)[v])
+		infof(messages.questionAnsweredWith, q, (*answers)[v])
 	}
 
 	return nil
