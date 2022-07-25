@@ -319,7 +319,7 @@ func TestQuestionsInput(tester *testing.T) {
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
 		resetTmpFile()
-		err := getInput(&fxtr.config.Questions, &fxtr.config.answers, tmpFile)
+		err := getPlaceholderInput(&fxtr.config.Questions, &fxtr.config.answers, tmpFile)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())

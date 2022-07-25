@@ -291,8 +291,8 @@ func readTemplateJson(filePath string) (*questions, error) {
 	return &q, nil
 }
 
-// getInput Take user input for template variables.
-func getInput(questions *questions, answers *tplVars, r *os.File) error {
+// getPlaceholderInput Take user input for template variables.
+func getPlaceholderInput(questions *questions, answers *tplVars, r *os.File) error {
 	nPut := bufio.NewScanner(r)
 	numPlaceholder := len(questions.Variables)
 	numValues := len(*answers)
