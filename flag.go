@@ -14,7 +14,7 @@ import (
 // define All application flags.
 func (cfg *Config) define() {
 	flag.StringVar(&cfg.answersPath, "answers", "", usageMsgs["answers"])
-	flag.StringVar(&cfg.answersPath, "a", "", usageMsgs["answers"]+" (shorthand)")
+	flag.StringVar(&cfg.answersPath, "i", "", usageMsgs["answers"]+" (shorthand)")
 	flag.StringVar(&cfg.appPath, "appPath", "", usageMsgs["appPath"])
 	flag.StringVar(&cfg.appPath, "p", "", usageMsgs["appPath"]+" (shorthand)")
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
