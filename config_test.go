@@ -73,8 +73,8 @@ func TestLoadAnswers(test *testing.T) {
 	test.Run(fxtr.name, func(t *testing.T) {
 		got, err := loadAnswers(fxtr.file)
 
-		if err == nil && got["var1"] != fxtr.want {
-			t.Errorf("got %q, want %q", got["var1"], fxtr.want)
+		if err == nil && got.Placeholders["var1"] != fxtr.want {
+			t.Errorf("got %q, want %q", got.Placeholders["var1"], fxtr.want)
 		}
 	})
 

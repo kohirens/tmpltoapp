@@ -30,6 +30,16 @@ type Client interface {
 
 type tmplVars map[string]string
 
+type answersJson struct {
+	Placeholders tmplVars `json:"placeholders"`
+}
+
+type tmplJson struct {
+	Version      string   `json:"version"`
+	Placeholders tmplVars `json:"placeholders"`
+	Excludes     []string `json:"excludes"`
+}
+
 var regExpTmplType = regexp.MustCompile("^(zip|git|dir)$")
 
 var regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
@@ -258,12 +268,6 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 	return
 }
 
-type tmplJson struct {
-	Version      string   `json:"version"`
-	Placeholders tmplVars `json:"placeholders"`
-	Excludes     []string `json:"excludes"`
-}
-
 // readTemplateJson read variables needed from the template.json file.
 func readTemplateJson(filePath string) (*tmplJson, error) {
 	dbugf("\ntemplate manifest path: %q\n", filePath)
@@ -290,7 +294,7 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 	return &q, nil
 }
 
-// getPlaceholderInput Take user input for template variables.
+// getPlaceholderInput Checks for any missing placeholder values waits for their input from the CLI.
 func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) error {
 	nPut := bufio.NewScanner(r)
 	numPlaceholder := len(questions.Placeholders)

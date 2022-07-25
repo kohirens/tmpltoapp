@@ -10,8 +10,9 @@ import (
 
 type Config struct {
 	answers               tmplVars
-	answersPath           string // path to a file containing values to variables to be parsed.
-	appPath               string // Location of the processed template output.
+	answersJson           answersJson // data use for template processing
+	answersPath           string      // path to a file containing values to variables to be parsed.
+	appPath               string      // Location of the processed template output.
 	cacheDir              string
 	tmplPath              string   // URL or local path to a template.
 	tmpl                  string   // Path to template, this will be the cached path.
@@ -71,7 +72,7 @@ func settings(filename string, cfg *Config) (err error) {
 }
 
 // loadAnswers Load key/value pairs from a JSON file to fill in placeholders (provides that data for the Go templates).
-func loadAnswers(filename string) (answers tmplVars, err error) {
+func loadAnswers(filename string) (aj answersJson, err error) {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
@@ -79,7 +80,7 @@ func loadAnswers(filename string) (answers tmplVars, err error) {
 		return
 	}
 
-	err = json.Unmarshal(content, &answers)
+	err = json.Unmarshal(content, &aj)
 	if err != nil {
 		err = fmt.Errorf(errors.cannotDecodeAnswerFile, filename, err.Error())
 		return
