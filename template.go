@@ -28,7 +28,7 @@ type Client interface {
 	Head(url string) (*http.Response, error)
 }
 
-type tplVars map[string]string // TODO: change to tmplVars for consistency
+type tmplVars map[string]string
 
 var regExpTmplType = regexp.MustCompile("^(zip|git|dir)$")
 
@@ -152,7 +152,7 @@ func extract(archivePath string) (string, error) {
 }
 
 // parse a file as a Go template.
-func parse(tplFile, dstDir string, vars tplVars) error {
+func parse(tplFile, dstDir string, vars tmplVars) error {
 
 	parser, err1 := template.ParseFiles(tplFile)
 
@@ -185,7 +185,7 @@ func parse(tplFile, dstDir string, vars tplVars) error {
 }
 
 // parseDir Recursively walk a directory parsing all files along the way as Go templates.
-func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, excludes []string) (err error) {
+func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, excludes []string) (err error) {
 	// Normalize the path separator in these 2 variables before comparing them.
 	normTplDir := strings.ReplaceAll(tplDir, "/", PS)
 	normTplDir = strings.ReplaceAll(normTplDir, "\\", PS)
@@ -258,15 +258,14 @@ func parseDir(tplDir, outDir string, vars tplVars, fec *stdlib.FileExtChecker, e
 	return
 }
 
-// TODO Rename to manifest or tmplConfig
-type questions struct {
-	Version   string   `json:"version"`
-	Variables tplVars  `json:"variables"`
-	Excludes  []string `json:"excludes"`
+type tmplJson struct {
+	Version      string   `json:"version"`
+	Placeholders tmplVars `json:"placeholders"`
+	Excludes     []string `json:"excludes"`
 }
 
 // readTemplateJson read variables needed from the template.json file.
-func readTemplateJson(filePath string) (*questions, error) {
+func readTemplateJson(filePath string) (*tmplJson, error) {
 	dbugf("\ntemplate manifest path: %q\n", filePath)
 
 	// Verify the TMPL_MANIFEST file is present.
@@ -281,7 +280,7 @@ func readTemplateJson(filePath string) (*questions, error) {
 
 	infof("content = %s \n", content)
 
-	q := questions{}
+	q := tmplJson{}
 	if err2 := json.Unmarshal(content, &q); err2 != nil {
 		return nil, err2
 	}
@@ -292,9 +291,9 @@ func readTemplateJson(filePath string) (*questions, error) {
 }
 
 // getPlaceholderInput Take user input for template variables.
-func getPlaceholderInput(questions *questions, answers *tplVars, r *os.File) error {
+func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) error {
 	nPut := bufio.NewScanner(r)
-	numPlaceholder := len(questions.Variables)
+	numPlaceholder := len(questions.Placeholders)
 	numValues := len(*answers)
 
 	logf(messages.questionAnswerStat, numPlaceholder, numValues)
@@ -305,7 +304,7 @@ func getPlaceholderInput(questions *questions, answers *tplVars, r *os.File) err
 
 	logf(messages.pleaseAnswerQuestions)
 
-	for v, q := range questions.Variables {
+	for v, q := range questions.Placeholders {
 		a, isAnswered := (*answers)[v]
 		if isAnswered {
 			infof(messages.questionHasAnAnswer, q, a)
