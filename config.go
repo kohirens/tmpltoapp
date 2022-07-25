@@ -10,9 +10,8 @@ import (
 
 type Config struct {
 	answers               tmplVars
-	AllowedUrls           []string // TODO: Remove this obsolete option URLs you are allowed to download from.
-	answersPath           string   // path to a file containing values to variables to be parsed.
-	appPath               string   // Location of the processed template output.
+	answersPath           string // path to a file containing values to variables to be parsed.
+	appPath               string // Location of the processed template output.
 	cacheDir              string
 	tmplPath              string   // URL or local path to a template.
 	tmpl                  string   // Path to template, this will be the cached path.

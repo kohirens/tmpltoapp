@@ -9,7 +9,6 @@
 * Format output when asking for variable input.
 * Move all messaging to various arrays (big tedious job, but centralized text make easier to translate).
 * Look for URL as the first argument and output path as the second.
-* Remove use "IncludeFileExtensions" and "AllowedUrls" from config.
 * Add cache dir to config.
 * add setting sub-command to set the cache dir.
 * Remove "running program tmpltoapp.exe" from verbosity output.
