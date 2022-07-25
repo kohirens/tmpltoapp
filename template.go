@@ -289,8 +289,6 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 		return nil, err2
 	}
 
-	infof("content = %v \n", content)
-
 	return &q, nil
 }
 
