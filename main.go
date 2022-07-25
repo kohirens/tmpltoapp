@@ -146,15 +146,15 @@ func main() {
 	}
 
 	appConfig.TmplJson = *tmplManifest
-	appConfig.answers, mainErr = loadAnswers(appConfig.answersPath)
+	appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
 	if mainErr != nil {
 		return
 	}
 
-	//also checks for values missing for  input for placehodmissingAnswers := checkAnswersToQuestions()
-	if e := getPlaceholderInput(&appConfig.TmplJson, &appConfig.answers, os.Stdin); e != nil {
+	// Checks for any missing placeholder values waits for their input from the CLI.
+	if e := getPlaceholderInput(&appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
-	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answers, fec, tmplManifest.Excludes)
+	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }
