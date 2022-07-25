@@ -93,7 +93,7 @@ func TestParseDir2(tester *testing.T) {
 		name,
 		srcDir string
 		want func(error) bool
-		vars tplVars
+		vars tmplVars
 	}{
 		{
 			testTmp + PS + "template-04-out",
@@ -102,7 +102,7 @@ func TestParseDir2(tester *testing.T) {
 			func(e error) bool {
 				return !stdlib.PathExist(testTmp + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
 			},
-			tplVars{},
+			tmplVars{},
 		},
 	}
 
@@ -124,7 +124,7 @@ func TestParse(tester *testing.T) {
 
 	fixtures := []struct {
 		name, tplFile, appDir string
-		vars                  tplVars
+		vars                  tmplVars
 		gotWhatIWant          wanted
 		failMsg               string
 	}{
@@ -132,7 +132,7 @@ func TestParse(tester *testing.T) {
 			"emptyInput",
 			"",
 			"",
-			tplVars{"var1": "1234"},
+			tmplVars{"var1": "1234"},
 			func(err error) bool { return err != nil },
 			"failed with no input.",
 		},
@@ -140,7 +140,7 @@ func TestParse(tester *testing.T) {
 			"validInput",
 			fixturesDir + "/template-02/file-01.tpl",
 			testTmp + "/appDirParse-01",
-			tplVars{"var1": "1234"},
+			tmplVars{"var1": "1234"},
 			func(err error) bool {
 				f, _ := ioutil.ReadFile(testTmp + "/appDirParse-01/file-01.tpl")
 				s := string(f)
@@ -200,12 +200,12 @@ func TestParseDir(tester *testing.T) {
 
 	fixtures := []struct {
 		name, tmplPath, outPath string
-		tplVars                 tplVars
+		tplVars                 tmplVars
 		fileToCheck, want       string
 	}{
 		{
 			"parse-dir-01", fixturePath1, tmpDir + "/parse-dir-01",
-			tplVars{"APP_NAME": "SolarPolar"},
+			tmplVars{"APP_NAME": "SolarPolar"},
 			tmpDir + "/parse-dir-01/dir1/README.md", "SolarPolar\n",
 		},
 	}
@@ -293,11 +293,11 @@ func TestQuestionsInput(tester *testing.T) {
 		{
 			"missingAnAnswer",
 			&Config{
-				answers: tplVars{"var1": "", "var2": ""},
-				Questions: questions{
-					Version:   "0.1.0",
-					Variables: tplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
-					Excludes:  nil,
+				answers: tmplVars{"var1": "", "var2": ""},
+				Questions: tmplJson{
+					Version:      "0.1.0",
+					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
+					Excludes:     nil,
 				},
 			},
 			"var3",
@@ -305,11 +305,11 @@ func TestQuestionsInput(tester *testing.T) {
 		{
 			"noMissingAnswers",
 			&Config{
-				answers: tplVars{"var1": "1", "var2": "2", "var3": "3"},
-				Questions: questions{
-					Version:   "0.1.0",
-					Variables: tplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
-					Excludes:  nil,
+				answers: tmplVars{"var1": "1", "var2": "2", "var3": "3"},
+				Questions: tmplJson{
+					Version:      "0.1.0",
+					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
+					Excludes:     nil,
 				},
 			},
 			"var3",

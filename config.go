@@ -9,19 +9,19 @@ import (
 )
 
 type Config struct {
-	answers               tplVars
+	answers               tmplVars
 	AllowedUrls           []string // TODO: Remove this obsolete option URLs you are allowed to download from.
 	answersPath           string   // path to a file containing values to variables to be parsed.
 	appPath               string   // Location of the processed template output.
 	cacheDir              string
-	tmplPath              string    // URL or local path to a template.
-	tmpl                  string    // Path to template, this will be the cached path.
-	ExcludeFileExtensions []string  // Files to skip when sending to the go parsing engine.
-	IncludeFileExtensions []string  // Files to include when sending to the go parsing engine.
-	Questions             questions // Question for requesting input for the template.
-	branch                string    // Desired branch to clone.
-	tmplLocation          string    // Indicates local or remote location to downloaded
-	tmplType              string    // Indicates a zip to extract or a repository to download.
+	tmplPath              string   // URL or local path to a template.
+	tmpl                  string   // Path to template, this will be the cached path.
+	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
+	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
+	Questions             tmplJson // Question for requesting input for the template.
+	branch                string   // Desired branch to clone.
+	tmplLocation          string   // Indicates local or remote location to downloaded
+	tmplType              string   // Indicates a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string
 	help                  bool
@@ -72,7 +72,7 @@ func settings(filename string, cfg *Config) (err error) {
 }
 
 // loadAnswers Load key/value pairs from a JSON file to fill in placeholders (provides that data for the Go templates).
-func loadAnswers(filename string) (answers tplVars, err error) {
+func loadAnswers(filename string) (answers tmplVars, err error) {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
