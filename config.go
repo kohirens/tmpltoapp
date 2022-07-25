@@ -17,7 +17,7 @@ type Config struct {
 	tmpl                  string   // Path to template, this will be the cached path.
 	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
-	Questions             tmplJson // Question for requesting input for the template.
+	TmplJson              tmplJson // Question for requesting input for the template.
 	branch                string   // Desired branch to clone.
 	tmplLocation          string   // Indicates local or remote location to downloaded
 	tmplType              string   // Indicates a zip to extract or a repository to download.
