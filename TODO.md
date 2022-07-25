@@ -14,6 +14,6 @@
 * Add output dir to verbosity output.
 * Remove config from verbosity output.
 * Make current directory the default parent output directory.
-* Add setup sub-command to setup the config.
+* Add `setup` sub-command to set up the config.
 * Should append version to cached downloads.
 * Show in verbosity if using cache or downloading a fresh copy.

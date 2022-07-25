@@ -104,13 +104,17 @@ tool does.
 4. make a `template.json` file which acts as a manifest, it needs the following:
    ```
    {
-      "version": "0.2.0",
-      "variables": {
-        "appName": "Name of the app",
-        "author": "Code author name"
+      "version": "1.0.0",
+      "placeholders": {
+        "appName": "name of the app",
+        "repoName": "name of the VCS repository"
       },
       "excludes": [
-         ".gitignore"
+         ".gitignore",
+         "*.gif",
+         "*.jpg",
+         "*.png",
+         "*.mov",
       ]
    }
    ```
