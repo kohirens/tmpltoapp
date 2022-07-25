@@ -81,7 +81,8 @@ a new project.
       ## Summary
       ```
    Note: the placeholder `{{ .appName }}` will be replaced with the apps name at runtime.
-4. Commit the changes and push up to your repo.
+4. Add a `template.json` file that serves as a manifest of all variables in the template, see [How To Build A Template JSON Manifest](/docs/building-a-template-json.md)
+5. Commit the changes and push up to your repo.
 
 ### Using a Template
 
