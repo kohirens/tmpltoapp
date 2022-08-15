@@ -52,7 +52,7 @@ func TestGetRepoDir(tester *testing.T) {
 	}{
 		{"local", "/repo-01", "repo-01"},
 		{"url", "https://example.com/repo-01.git", "repo-01"},
-		{"bareRepo", "/repo-01.git", "repo-01.git"},
+		{"bareRepo", "/repo-01.git", "repo-01"},
 	}
 
 	for _, tc := range testCases {
