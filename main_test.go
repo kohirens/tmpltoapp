@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kohirens/stdlib"
 	"log"
 	"os"
 	"os/exec"
@@ -71,7 +72,7 @@ func TestCallingMain(tester *testing.T) {
 			"downloadZipTemplate",
 			0,
 			[]string{
-				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.2.0.zip",
+				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
 				"-appPath", testTmp + PS + "tmpl-go-web-02",
 				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
 				"-tmplType", "zip",
@@ -85,7 +86,7 @@ func TestCallingMain(tester *testing.T) {
 				"-appPath", testTmp + PS + "tmpl-go-web-03",
 				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
 				"-tmplType", "git",
-				"-branch", "refs/tags/0.2.0",
+				"-branch", "refs/tags/0.3.0",
 			},
 		},
 	}
@@ -151,6 +152,12 @@ func setupARepository(bundleName string) string {
 	}
 
 	srcRepo := "." + PS + fixturesDir + PS + bundleName + ".bundle"
+
+	// It may not exist.
+	if !stdlib.PathExist(srcRepo) {
+		return bundleName
+	}
+
 	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
 	_, _ = cmd.CombinedOutput()
 	if ec := cmd.ProcessState.ExitCode(); ec != 0 {

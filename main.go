@@ -110,11 +110,11 @@ func main() {
 		infof("repoDir = %q\n", repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
-		if stdlib.DirExist(repoDir) {
+		if stdlib.DirExist(repoDir + "/.git") {
 			infof("pulling latest\n")
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
-			repo, commitHash, err2 = gitClone(appConfig.tmplPath, repoDir, appConfig.branch)
+			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.cacheDir, appConfig.branch)
 		}
 
 		infof("repo = %q; %q", repo, commitHash)

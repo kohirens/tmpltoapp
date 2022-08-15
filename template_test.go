@@ -257,9 +257,15 @@ func TestReadTemplateJson(tester *testing.T) {
 
 		if fxtr.shouldErr && err == nil {
 			test.Errorf("expected an error, but got nil")
+			return
 		}
 
-		if got.Version != "0.1.0" {
+		if !fxtr.shouldErr && err != nil {
+			test.Errorf("did not expect an error, but got %s", err.Error())
+			return
+		}
+
+		if got.Version != "1.0.0" {
 			test.Error("could not get version from template.json")
 			return
 		}
