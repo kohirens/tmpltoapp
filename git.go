@@ -93,9 +93,9 @@ func getRepoDir(repoLocation string) string {
 		return repoLocation
 	}
 
-	isUrl := regexp.MustCompile("(git|http|https)://")
+	isGitUri := regexp.MustCompile("^(git|http|https)://|.+git$")
 	baseName := filepath.Base(repoLocation)
-	if isUrl.MatchString(repoLocation) {
+	if isGitUri.MatchString(repoLocation) {
 		return strings.Replace(baseName, ".git", "", 1)
 	}
 
