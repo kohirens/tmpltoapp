@@ -14,18 +14,14 @@ import (
 // define All application flags.
 func (cfg *Config) define() {
 	flag.StringVar(&cfg.answersPath, "answers", "", usageMsgs["answers"])
-	flag.StringVar(&cfg.answersPath, "i", "", usageMsgs["answers"]+" (shorthand)")
-	flag.StringVar(&cfg.appPath, "appPath", "", usageMsgs["appPath"])
-	flag.StringVar(&cfg.appPath, "p", "", usageMsgs["appPath"]+" (shorthand)")
+	flag.StringVar(&cfg.outPath, "out-path", "", usageMsgs["out-path"])
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
 	flag.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&cfg.help, "h", false, usageMsgs["help"]+" (shorthand)")
-	flag.StringVar(&cfg.tmplPath, "tmplPath", "", usageMsgs["tmplPath"])
-	flag.StringVar(&cfg.tmplPath, "t", "", usageMsgs["tmplPath"]+" (shorthand)")
-	flag.StringVar(&cfg.tmplType, "tmplType", "zip", usageMsgs["tmplType"])
+	flag.StringVar(&cfg.tmplPath, "tmpl-path", "", usageMsgs["tmplPath"])
+	flag.StringVar(&cfg.tmplType, "tmpl-type", "git", usageMsgs["tmplType"])
 	flag.IntVar(&verbosityLevel, "verbosity", 0, usageMsgs["verbosity"])
 	flag.BoolVar(&cfg.version, "version", false, usageMsgs["version"])
-	flag.BoolVar(&cfg.version, "v", false, usageMsgs["version"]+" (shorthand)")
 }
 
 // flagMain Process and validate all CLI flags.
@@ -44,23 +40,22 @@ func flagMain(config *Config) error {
 	}
 
 	pArgs := flag.Args()[0:]
-	errf("number of arguments passed in: %d", len(pArgs))
-	errf("arguments passed in: %v", pArgs)
+	dbugf("number of arguments passed in: %d", len(pArgs))
+	dbugf("arguments passed in: %v", pArgs)
 
 	numArgs := len(pArgs)
 	if numArgs >= 1 {
 		config.tmplPath = pArgs[0]
 	}
 	if numArgs >= 2 {
-		config.appPath = pArgs[1]
+		config.outPath = pArgs[1]
 	}
 	if numArgs >= 3 {
 		config.answersPath = pArgs[3]
 	}
 
-	err2 := config.validate()
-	if err2 != nil {
-		return err2
+	if e := config.validate(); e != nil {
+		return e
 	}
 
 	return nil
@@ -72,12 +67,12 @@ func (cfg *Config) validate() error {
 		return fmt.Errorf(errors.tmplPath)
 	}
 
-	if cfg.appPath == "" {
+	if cfg.outPath == "" {
 		return fmt.Errorf(errors.localOutPath)
 	}
 
-	if stdlib.DirExist(cfg.appPath) {
-		return fmt.Errorf("appPath already exits %q", cfg.appPath)
+	if stdlib.DirExist(cfg.outPath) {
+		return fmt.Errorf("outPath already exits %q", cfg.outPath)
 	}
 
 	if cfg.answersPath != "" && !stdlib.PathExist(cfg.answersPath) {

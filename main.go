@@ -31,7 +31,7 @@ func main() {
 	defer func() {
 		if mainErr != nil {
 			fmt.Print("\nfatal error detected: ")
-			log.Fatalln(mainErr)
+			log.Fatalln(mainErr.Error())
 		}
 		os.Exit(0)
 	}()
@@ -157,5 +157,5 @@ func main() {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
-	mainErr = parseDir(appConfig.tmpl, appConfig.appPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
+	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }

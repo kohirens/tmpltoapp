@@ -2,7 +2,7 @@ package main
 
 var usageMsgs = map[string]string{
 	"answers":     "Path to an answer file.",
-	"appPath":     "Path to output the new project.",
+	"out-path":    "Path to output the new project.",
 	"branch":      "branch to clone.",
 	"help":        "print usage information.",
 	"subCommands": "\n  sub-commands:\n\n    none\n",

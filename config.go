@@ -12,7 +12,7 @@ type Config struct {
 	answers               tmplVars
 	answersJson           answersJson // data use for template processing
 	answersPath           string      // path to a file containing values to variables to be parsed.
-	appPath               string      // Location of the processed template output.
+	outPath               string      // Location of the processed template output.
 	cacheDir              string
 	tmplPath              string   // URL or local path to a template.
 	tmpl                  string   // Path to template, this will be the cached path.

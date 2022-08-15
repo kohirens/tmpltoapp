@@ -38,7 +38,7 @@ func TestFlagExitCode(t *testing.T) {
 			expectExit: 0,
 		},
 		{
-			flag:       "-v",
+			flag:       "-help",
 			expectExit: 0,
 		},
 		{
@@ -47,10 +47,6 @@ func TestFlagExitCode(t *testing.T) {
 		},
 		{
 			flag:       "-undefined",
-			expectExit: 2,
-		},
-		{
-			flag:       "-t",
 			expectExit: 2,
 		},
 	}
