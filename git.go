@@ -2,89 +2,97 @@ package main
 
 import (
 	"fmt"
-	git "github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 )
 
 // gitClone Clone a repo from a path/URL to a local directory.
-func gitClone(repoUrl, repoLocalPath, branchName string) (string, string, error) {
-	options := &git.CloneOptions{
-		URL:          repoUrl,
-		Progress:     os.Stdout,
-		SingleBranch: false,
-		Depth:        1,
-	}
+func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
+	infof("branch to clone is %q", branchName)
+	infof("git clone %s", repoUrl)
 
-	if branchName != "" {
-		options.ReferenceName = plumbing.ReferenceName(branchName)
-	}
+	sco, e1 := gitCmd(localCache, "clone", repoUrl)
 
-	infof("git clone %s", repoLocalPath)
-	repo, e1 := git.PlainClone(repoLocalPath, false, options)
 	if e1 != nil {
-		return "", "", e1
+		return "", "", fmt.Errorf("error cloning %v: %s", repoUrl, e1.Error())
 	}
 
-	// Retrieving the path to the cloned repo.
-	w, e4 := repo.Worktree()
-	if e4 != nil {
-		return "", "", e4
+	infof("clone output \n%s", sco)
+
+	repoDir := localCache + PS + getRepoDir(repoUrl)
+
+	latestCommitHash, e2 := getLastCommitHash(repoDir)
+	if e2 != nil {
+		return "", "", fmt.Errorf("error getting commit hash %v: %s", repoDir, e2.Error())
 	}
 
-	// Retrieving the commit being pointed by HEAD
-	ref, e5 := repo.Head()
-	if e5 != nil {
-		return "", "", e5
-	}
-
-	return w.Filesystem.Root(), ref.Hash().String(), nil
+	return repoDir, latestCommitHash, nil
 }
 
 // gitCheckout Open an existing repo and checkout commit by full ref-name
-func gitCheckout(repoLocalPath, branchName string) (string, string, error) {
-	infof("cd %s", repoLocalPath)
-	r, e1 := git.PlainOpen(repoLocalPath)
+func gitCheckout(repoLocalPath, ref string) (string, string, error) {
+	sco, e1 := gitCmd(repoLocalPath, "fetch", "--all", "-p")
 	if e1 != nil {
-		return "", "", e1
+		infof("failed it this far")
+		return "", "", fmt.Errorf("fetch failed on %s and %s; %s", repoLocalPath, ref, e1.Error())
 	}
 
-	wt, e2 := r.Worktree()
+	infof("git fetch output %v", sco)
+	infof("ref = %v ", ref)
+	infof("git checkout %s", ref)
+
+	sco2, e2 := gitCmd(repoLocalPath, "checkout", ""+ref)
 	if e2 != nil {
-		return "", "", e2
+		return "", "", fmt.Errorf("git checkout failed: %s", e2.Error())
 	}
 
-	infof("branchName = %v ", branchName)
+	infof("git fetch output %v", sco2)
 
-	h, err := r.ResolveRevision(plumbing.Revision(branchName))
-	if err != nil {
-		return "", "", err
-	}
-	fmt.Printf("revision = %s\n", h.String())
-
-	infof("git checkout %s", branchName)
-	e3 := wt.Checkout(&git.CheckoutOptions{
-		Hash: plumbing.NewHash(h.String()),
-		//Branch: plumbing.ReferenceName(branchName),
-	})
-	if e3 != nil {
-		return "", "", e3
-	}
-
-	ref, e7 := r.Head()
-	if e7 != nil {
-		return "", "", e7
-	}
-
-	retVal, e8 := filepath.Abs(repoLocalPath)
+	repoDir, e8 := filepath.Abs(repoLocalPath)
 	if e8 != nil {
 		return "", "", e8
 	}
 
-	return retVal, ref.Hash().String(), nil
+	latestCommitHash, e4 := getLastCommitHash(repoDir)
+	if e4 != nil {
+		return "", "", e4
+	}
+
+	return repoDir, latestCommitHash, nil
+}
+
+// gitCmd run a git command.
+func gitCmd(repoPath string, args ...string) ([]byte, error) {
+	cmd := exec.Command("git", args...)
+	cmd.Env = os.Environ()
+	cmd.Dir = repoPath
+	cmdStr := cmd.String()
+	infof("running command %s", cmdStr)
+	cmdOut, cmdErr := cmd.CombinedOutput()
+	exitCode := cmd.ProcessState.ExitCode()
+
+	if cmdErr != nil {
+		return nil, fmt.Errorf("error running git %v: %v", args, cmdErr.Error())
+	}
+
+	if exitCode != 0 {
+		return nil, fmt.Errorf("git %v returned exit code %q", args, exitCode)
+	}
+
+	return cmdOut, nil
+}
+
+// getLastCommitHash Returns the HEAD commit hash.
+func getLastCommitHash(repoDir string) (string, error) {
+	latestCommitHash, e1 := gitCmd(repoDir, "rev-parse", "HEAD")
+	if e1 != nil {
+		return "", fmt.Errorf("error getting commit hash %v: %s", repoDir, e1.Error())
+	}
+
+	return strings.Trim(string(latestCommitHash), "\n"), nil
 }
 
 // getRepoDir extract a local dirname from a Git URL.

@@ -13,17 +13,18 @@ func TestGitClone(tester *testing.T) {
 		outPath   string
 		branch    string
 		shouldErr bool
-		want      string
-		want2     string
+		wantHash  string
+		wantOut   string
 	}{
-		{"cloneRepo1", fixturesDir + "/repo-01.git", testTmp + "/repo-01", "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050", testTmp + "/repo-01"},
+		{"cloneRepo1", "repo-01.git", testTmp, "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050", testTmp + PS + "repo-01"},
 		{"clone404", fixturesDir + "/does-not-exit.git", testTmp, "", true, "", ""},
 	}
 
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
+			repoPath := setupARepository(tc.repo)
 
-			gotPath, gotHash, err := gitClone(tc.repo, tc.outPath, tc.branch)
+			gotPath, gotHash, err := gitClone(repoPath, tc.outPath, tc.branch)
 
 			if tc.shouldErr == true && err == nil {
 				t.Error("did not get expected err")
@@ -33,12 +34,12 @@ func TestGitClone(tester *testing.T) {
 				t.Errorf("got an unexpected err: %s", err)
 			}
 
-			if gotHash != tc.want {
-				t.Errorf("got %v, want %v", gotHash, tc.want)
+			if gotHash != tc.wantHash {
+				t.Errorf("got %v, want %v", gotHash, tc.wantHash)
 			}
 
-			if gotPath != tc.want2 {
-				t.Errorf("got %v, want %v", gotPath, tc.want2)
+			if gotPath != tc.wantOut {
+				t.Errorf("got %v, want %v", gotPath, tc.wantOut)
 			}
 		})
 	}
