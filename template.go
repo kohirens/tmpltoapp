@@ -289,6 +289,16 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 		return nil, err2
 	}
 
+	dbugf("tmplJson.Version = %v", q.Version)
+	if q.Version == "" {
+		return nil, fmt.Errorf("missing the Version propery in template.json")
+	}
+
+	dbugf("tmplJson.Placeholders = %v", len(q.Placeholders))
+	if q.Placeholders == nil {
+		return nil, fmt.Errorf("missing the placeholders propery in template.json")
+	}
+
 	return &q, nil
 }
 
