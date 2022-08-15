@@ -56,36 +56,36 @@ func TestCallingMain(tester *testing.T) {
 		wantCode int
 		args     []string
 	}{
-		{"versionFlag", 0, []string{"-v"}},
-		{"helpFlag", 0, []string{"-h"}},
+		{"versionFlag", 0, []string{"-version"}},
+		{"helpFlag", 0, []string{"-help"}},
 		{
 			"localTemplate",
 			0,
 			[]string{
 				"-answers", fixturesDir + PS + "answers-parse-dir-02.json",
-				"-t", fixturesDir + PS + "parse-dir-02",
-				"-p", testTmp + PS + "app-parse-dir-02",
-				"-tmplType", "dir",
+				"-tmpl-path", fixturesDir + PS + "parse-dir-02",
+				"-out-path", testTmp + PS + "app-parse-dir-02",
+				"-tmpl-type", "dir",
 			},
 		},
 		{
 			"downloadZipTemplate",
 			0,
 			[]string{
-				"-t", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
-				"-appPath", testTmp + PS + "tmpl-go-web-02",
+				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
+				"-out-path", testTmp + PS + "tmpl-go-web-02",
 				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
-				"-tmplType", "zip",
+				"-tmpl-type", "zip",
 			},
 		},
 		{
 			"remoteGitTemplate",
 			0,
 			[]string{
-				"-t", "https://github.com/kohirens/tmpl-go-web.git",
-				"-appPath", testTmp + PS + "tmpl-go-web-03",
+				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web.git",
+				"-out-path", testTmp + PS + "tmpl-go-web-03",
 				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
-				"-tmplType", "git",
+				"-tmpl-type", "git",
 				"-branch", "refs/tags/0.3.0",
 			},
 		},
