@@ -13,6 +13,7 @@ import (
 
 // define All application flags.
 func (cfg *Config) define() {
+	// TODO: add flag to set a default values for -skip-un-answered and use a -default-value questions.
 	flag.StringVar(&cfg.answersPath, "answers", "", usageMsgs["answers"])
 	flag.StringVar(&cfg.outPath, "out-path", "", usageMsgs["out-path"])
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
@@ -26,9 +27,24 @@ func (cfg *Config) define() {
 
 // flagMain Process and validate all CLI flags.
 func flagMain(config *Config) error {
+	// TODO: allow flags in any order
+	// Remember that Flag parsing stops just before the first non-flag argument ("-" is a non-flag argument) or after the terminator "--".
 	flag.Parse()
 
+	// TODO: Show order of all input here
+	pArgs := flag.Args()
+	dbugf("number of arguments passed in: %d", len(pArgs))
+	dbugf("arguments passed in: %v", pArgs)
+
+	for i := 0; i < len(pArgs); i++ {
+		v := pArgs[i]
+		if v[0] == '-' {
+			return fmt.Errorf(errors.flagOrderErr, v)
+		}
+	}
+
 	if config.help {
+		// TODO: Replace with custom printDefaults function
 		flag.PrintDefaults()
 		fmt.Printf(usageMsgs["subCommands"])
 		os.Exit(0)
@@ -38,10 +54,6 @@ func flagMain(config *Config) error {
 		fmt.Printf("%v, %v\n", config.CurrentVersion, config.CommitHash)
 		os.Exit(0)
 	}
-
-	pArgs := flag.Args()[0:]
-	dbugf("number of arguments passed in: %d", len(pArgs))
-	dbugf("arguments passed in: %v", pArgs)
 
 	numArgs := len(pArgs)
 	if numArgs >= 1 {

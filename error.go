@@ -6,6 +6,7 @@ var errors = struct {
 	badTmplType            string
 	cannotReadAnswerFile   string
 	cannotDecodeAnswerFile string
+	flagOrderErr           string
 	gettingAnswers         string
 	localOutPath           string
 	missingTmplJson        string
@@ -20,6 +21,7 @@ var errors = struct {
 	badTmplType:            "%q is an invalid value for flag tmplType, or it was not set, must be zip|git",
 	cannotReadAnswerFile:   "there was an error reading the answer file %q: %s",
 	cannotDecodeAnswerFile: "could not decode JSON in answer file %q, because of: %s",
+	flagOrderErr:           "flag %v MUST come before any non-flag arguments, a fix would be to move this flag to the left of other input arguments",
 	gettingAnswers:         "problem getting answers; error %q",
 	localOutPath:           "enter a local path to output the app",
 	missingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",
