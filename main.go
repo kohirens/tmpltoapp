@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 )
 
+// TODO: Change name to tmplpress
+
 const (
 	PS       = string(os.PathSeparator)
 	DIR_MODE = 0774
@@ -156,6 +158,8 @@ func main() {
 	if e := getPlaceholderInput(&appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
+
+	// TODO: showAllQuestionsAndAnswer: Output each question with its answer
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }
