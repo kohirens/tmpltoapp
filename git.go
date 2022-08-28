@@ -17,7 +17,7 @@ func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
 	sco, e1 := gitCmd(localCache, "clone", repoUrl)
 
 	if e1 != nil {
-		return "", "", fmt.Errorf("error cloning %v: %s", repoUrl, e1.Error())
+		return "", "", fmt.Errorf(errors.cloning, repoUrl, e1.Error())
 	}
 
 	infof("clone output \n%s", sco)
@@ -26,7 +26,7 @@ func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
 
 	latestCommitHash, e2 := getLastCommitHash(repoDir)
 	if e2 != nil {
-		return "", "", fmt.Errorf("error getting commit hash %v: %s", repoDir, e2.Error())
+		return "", "", fmt.Errorf(errors.gettingCommitHash, repoDir, e2.Error())
 	}
 
 	return repoDir, latestCommitHash, nil
@@ -34,22 +34,18 @@ func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
 
 // gitCheckout Open an existing repo and checkout commit by full ref-name
 func gitCheckout(repoLocalPath, ref string) (string, string, error) {
-	sco, e1 := gitCmd(repoLocalPath, "fetch", "--all", "-p")
+	_, e1 := gitCmd(repoLocalPath, "fetch", "--all", "-p")
 	if e1 != nil {
-		infof("failed it this far")
-		return "", "", fmt.Errorf("fetch failed on %s and %s; %s", repoLocalPath, ref, e1.Error())
+		return "", "", fmt.Errorf(errors.gitFetchFailed, repoLocalPath, ref, e1.Error())
 	}
 
-	infof("git fetch output %v", sco)
-	infof("ref = %v ", ref)
-	infof("git checkout %s", ref)
+	infof(messages.refInfo, ref)
+	infof(messages.gitCheckout, ref)
 
-	sco2, e2 := gitCmd(repoLocalPath, "checkout", ""+ref)
+	_, e2 := gitCmd(repoLocalPath, "checkout", ""+ref)
 	if e2 != nil {
-		return "", "", fmt.Errorf("git checkout failed: %s", e2.Error())
+		return "", "", fmt.Errorf(errors.gitCheckoutFailed, e2.Error())
 	}
-
-	infof("git fetch output %v", sco2)
 
 	repoDir, e8 := filepath.Abs(repoLocalPath)
 	if e8 != nil {
@@ -70,16 +66,16 @@ func gitCmd(repoPath string, args ...string) ([]byte, error) {
 	cmd.Env = os.Environ()
 	cmd.Dir = repoPath
 	cmdStr := cmd.String()
-	infof("running command %s", cmdStr)
+	infof(messages.runningCommand, cmdStr)
 	cmdOut, cmdErr := cmd.CombinedOutput()
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if cmdErr != nil {
-		return nil, fmt.Errorf("error running git %v: %v", args, cmdErr.Error())
+		return nil, fmt.Errorf(errors.runGitFailed, args, cmdErr.Error())
 	}
 
 	if exitCode != 0 {
-		return nil, fmt.Errorf("git %v returned exit code %q", args, exitCode)
+		return nil, fmt.Errorf(errors.gitExitErrCode, args, exitCode)
 	}
 
 	return cmdOut, nil
@@ -89,7 +85,7 @@ func gitCmd(repoPath string, args ...string) ([]byte, error) {
 func getLastCommitHash(repoDir string) (string, error) {
 	latestCommitHash, e1 := gitCmd(repoDir, "rev-parse", "HEAD")
 	if e1 != nil {
-		return "", fmt.Errorf("error getting commit hash %v: %s", repoDir, e1.Error())
+		return "", fmt.Errorf(errors.gettingCommitHash, repoDir, e1.Error())
 	}
 
 	return strings.Trim(string(latestCommitHash), "\n"), nil
