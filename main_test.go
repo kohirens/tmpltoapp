@@ -62,7 +62,7 @@ func TestCallingMain(tester *testing.T) {
 			"localTemplate",
 			0,
 			[]string{
-				"-answers", fixturesDir + PS + "answers-parse-dir-02.json",
+				"-answer-path", fixturesDir + PS + "answers-parse-dir-02.json",
 				"-tmpl-path", fixturesDir + PS + "parse-dir-02",
 				"-out-path", testTmp + PS + "app-parse-dir-02",
 				"-tmpl-type", "dir",
@@ -74,7 +74,7 @@ func TestCallingMain(tester *testing.T) {
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
 				"-out-path", testTmp + PS + "tmpl-go-web-02",
-				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-answer-path", fixturesDir + PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "zip",
 			},
 		},
@@ -84,7 +84,7 @@ func TestCallingMain(tester *testing.T) {
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web.git",
 				"-out-path", testTmp + PS + "tmpl-go-web-03",
-				"-answers", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-answer-path", fixturesDir + PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "git",
 				"-branch", "refs/tags/0.3.0",
 			},

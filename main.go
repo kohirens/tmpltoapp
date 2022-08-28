@@ -43,8 +43,6 @@ func main() {
 		return
 	}
 
-	infof("verbose level: %v", verbosityLevel)
-
 	appDataDir, mainErr := stdlib.AppDataDir()
 	if mainErr != nil {
 		return
