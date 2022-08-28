@@ -14,27 +14,39 @@ import (
 // define All application flags.
 func (cfg *Config) define() {
 	// TODO: add flag to set a default values for -skip-un-answered and use a -default-value questions.
-	flag.StringVar(&cfg.answersPath, "answers", "", usageMsgs["answers"])
-	flag.StringVar(&cfg.outPath, "out-path", "", usageMsgs["out-path"])
+	// Note: These are defined in alphabetical order.
+	flag.StringVar(&cfg.answersPath, "answer-path", "", usageMsgs["answer-path"])
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
 	flag.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&cfg.help, "h", false, usageMsgs["help"]+" (shorthand)")
-	flag.StringVar(&cfg.tmplPath, "tmpl-path", "", usageMsgs["tmplPath"])
-	flag.StringVar(&cfg.tmplType, "tmpl-type", "git", usageMsgs["tmplType"])
+	flag.StringVar(&cfg.outPath, "out-path", "", usageMsgs["out-path"])
+	flag.StringVar(&cfg.tmplPath, "tmpl-path", "", usageMsgs["tmpl-path"])
+	flag.StringVar(&cfg.tmplType, "tmpl-type", "git", usageMsgs["tmpl-type"])
 	flag.IntVar(&verbosityLevel, "verbosity", 0, usageMsgs["verbosity"])
 	flag.BoolVar(&cfg.version, "version", false, usageMsgs["version"])
 }
 
 // flagMain Process and validate all CLI flags.
 func flagMain(config *Config) error {
-	// TODO: allow flags in any order
-	// Remember that Flag parsing stops just before the first non-flag argument ("-" is a non-flag argument) or after the terminator "--".
+	// Remember that flag parsing stops just before the first argument that does not have a "-" and is also NOT the
+	// value of a flag or comes after the terminator "--".
+	// It was planed to allow for flags/arguments in any order, but it may be less confusing to only support flag first
+	// and then arguments; it may also require less code to debug and document for not very much gain.
 	flag.Parse()
 
-	// TODO: Show order of all input here
+	infof("verbose level: %v", verbosityLevel)
+
+	// TODO: Show order of all input here (this may not be doable or necessary)
 	pArgs := flag.Args()
-	dbugf("number of arguments passed in: %d", len(pArgs))
-	dbugf("arguments passed in: %v", pArgs)
+	dbugf("number of non-flag arguments passed in: %d", len(pArgs))
+	dbugf("actual arguments passed in: %v", pArgs)
+	dbugf("number of parsed flags = %v", flag.NFlag())
+	if verbosityLevel == verboseLvlDbug {
+		fmt.Printf("printing all flags set:\n")
+		flag.Visit(func(f *flag.Flag) {
+			fmt.Printf("\t%s = %v (default= %v)\n", f.Name, f.Value, f.DefValue)
+		})
+	}
 
 	for i := 0; i < len(pArgs); i++ {
 		v := pArgs[i]
@@ -46,7 +58,7 @@ func flagMain(config *Config) error {
 	if config.help {
 		// TODO: Replace with custom printDefaults function
 		flag.PrintDefaults()
-		fmt.Printf(usageMsgs["subCommands"])
+		fmt.Printf(messages.subCommands)
 		os.Exit(0)
 	}
 

@@ -11,21 +11,21 @@ import (
 type Config struct {
 	answers               tmplVars
 	answersJson           answersJson // data use for template processing
-	answersPath           string      // path to a file containing values to variables to be parsed.
-	outPath               string      // Location of the processed template output.
+	answersPath           string      // flag to get the path to a file containing values to variables to be parsed.
+	outPath               string      // flag to set the location of the processed template output.
 	cacheDir              string
-	tmplPath              string   // URL or local path to a template.
+	tmplPath              string   // flag to set the URL or local path to a template.
 	tmpl                  string   // Path to template, this will be the cached path.
 	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
 	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
 	TmplJson              tmplJson // Question for requesting input for the template.
-	branch                string   // Desired branch to clone.
+	branch                string   // flag to set the desired branch to clone.
 	tmplLocation          string   // Indicates local or remote location to downloaded
-	tmplType              string   // Indicates a zip to extract or a repository to download.
+	tmplType              string   // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string
-	help                  bool
-	version               bool
+	help                  bool // flag to show the usage for all flags.
+	version               bool // flag to show the current version
 }
 
 // Load configuration file.
