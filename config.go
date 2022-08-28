@@ -31,7 +31,7 @@ type Config struct {
 // Load configuration file.
 func initConfigFile(file string) (err error) {
 	if stdlib.PathExist(file) {
-		infof("config file %q exist", file)
+		infof(messages.configFileExist, file)
 		return
 	}
 
@@ -48,7 +48,7 @@ func initConfigFile(file string) (err error) {
 
 	_, err = f.WriteString(DEFAULT_CFG)
 
-	infof("made a new config file %q exist", file)
+	infof(messages.madeNewConfig, file)
 
 	return
 }
@@ -58,13 +58,13 @@ func settings(filename string, cfg *Config) (err error) {
 	content, er := ioutil.ReadFile(filename)
 
 	if os.IsNotExist(er) {
-		err = fmt.Errorf("could not %s", er.Error())
+		err = fmt.Errorf(errors.couldNot, er.Error())
 		return
 	}
 
 	er = json.Unmarshal(content, cfg)
 	if er != nil {
-		err = fmt.Errorf("could not decode %q, error: %s", filename, er.Error())
+		err = fmt.Errorf(errors.couldNotDecode, filename, er.Error())
 		return
 	}
 

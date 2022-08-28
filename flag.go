@@ -34,17 +34,17 @@ func flagMain(config *Config) error {
 	// and then arguments; it may also require less code to debug and document for not very much gain.
 	flag.Parse()
 
-	infof("verbose level: %v", verbosityLevel)
+	infof(messages.verboseLevelInfo, verbosityLevel)
 
 	// TODO: Show order of all input here (this may not be doable or necessary)
 	pArgs := flag.Args()
-	dbugf("number of non-flag arguments passed in: %d", len(pArgs))
-	dbugf("actual arguments passed in: %v", pArgs)
-	dbugf("number of parsed flags = %v", flag.NFlag())
+	dbugf(messages.numNonFlagArgs, len(pArgs))
+	dbugf(messages.actualArgs, pArgs)
+	dbugf(messages.numParsedFlags, flag.NFlag())
 	if verbosityLevel == verboseLvlDbug {
-		fmt.Printf("printing all flags set:\n")
+		fmt.Println(messages.printAllFlags)
 		flag.Visit(func(f *flag.Flag) {
-			fmt.Printf("\t%s = %v (default= %v)\n", f.Name, f.Value, f.DefValue)
+			fmt.Printf(messages.printFlag, f.Name, f.Value, f.DefValue)
 		})
 	}
 
@@ -63,7 +63,7 @@ func flagMain(config *Config) error {
 	}
 
 	if config.version {
-		fmt.Printf("%v, %v\n", config.CurrentVersion, config.CommitHash)
+		fmt.Printf(messages.currentVersion, config.CurrentVersion, config.CommitHash)
 		os.Exit(0)
 	}
 
@@ -96,7 +96,7 @@ func (cfg *Config) validate() error {
 	}
 
 	if stdlib.DirExist(cfg.outPath) {
-		return fmt.Errorf("outPath already exits %q", cfg.outPath)
+		return fmt.Errorf(messages.outPathExist, cfg.outPath)
 	}
 
 	if cfg.answersPath != "" && !stdlib.PathExist(cfg.answersPath) {
