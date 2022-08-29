@@ -34,6 +34,12 @@ type answersJson struct {
 	Placeholders tmplVars `json:"placeholders"`
 }
 
+func newAnswerJson() *answersJson {
+	return &answersJson{
+		Placeholders: make(tmplVars),
+	}
+}
+
 type tmplJson struct {
 	Version      string   `json:"version"`
 	Placeholders tmplVars `json:"placeholders"`
@@ -304,8 +310,8 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 
 // getPlaceholderInput Checks for any missing placeholder values waits for their input from the CLI.
 func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) error {
-	nPut := bufio.NewScanner(r)
 	numPlaceholder := len(questions.Placeholders)
+	anwrs := *answers
 	numValues := len(*answers)
 
 	logf(messages.questionAnswerStat, numPlaceholder, numValues)
@@ -316,16 +322,21 @@ func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) err
 
 	logf(messages.pleaseAnswerQuestions)
 
-	for v, q := range questions.Placeholders {
-		a, isAnswered := (*answers)[v]
-		if isAnswered {
-			infof(messages.questionHasAnAnswer, q, a)
+	nPut := bufio.NewScanner(r)
+
+	for placeholder, question := range questions.Placeholders {
+		a, answered := anwrs[placeholder]
+		// skip placeholder that have been supplied with an answer from an answer file.
+		if answered {
+			infof(messages.questionHasAnAnswer, question, a)
 			continue
 		}
-		infof("\n%q: ", q)
+
+		fmt.Printf("\n%v; %v: ", placeholder, question)
 		nPut.Scan()
-		(*answers)[v] = nPut.Text()
-		infof(messages.questionAnsweredWith, q, (*answers)[v])
+		anwrs[placeholder] = nPut.Text()
+		infof(messages.questionAnsweredWith, question, anwrs[placeholder])
+		infof("%v = %q", placeholder, anwrs[placeholder])
 	}
 
 	return nil

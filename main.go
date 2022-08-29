@@ -144,8 +144,9 @@ func main() {
 	}
 
 	appConfig.TmplJson = *tmplManifest
+	appConfig.answersJson = *newAnswerJson()
 
-	if len(appConfig.answersPath) > 0 { // optionally load the answers.json
+	if stdlib.PathExist(appConfig.answersPath) {
 		appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
 		if mainErr != nil {
 			return

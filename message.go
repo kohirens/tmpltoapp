@@ -40,7 +40,7 @@ var messages = struct {
 	numNonFlagArgs:        "number of non-flag arguments passed in: %d",
 	numParsedFlags:        "number of parsed flags = %v",
 	outPathExist:          "out-path already exits %q",
-	pleaseAnswerQuestions: "please answer the following\nnote: providing no value will render the placeholder with no valued when processing is done",
+	pleaseAnswerQuestions: "please answer the following\nnote: providing no value will render an empty string in its place",
 	printAllFlags:         "printing all flags set:",
 	printFlag:             "\t%s = %v (default= %v)\n",
 	questionAnsweredWith:  "%q was answered with %q",
