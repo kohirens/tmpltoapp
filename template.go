@@ -310,7 +310,7 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 }
 
 // getPlaceholderInput Checks for any missing placeholder values waits for their input from the CLI.
-func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) error {
+func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File, defaultVal string) error {
 	numPlaceholder := len(questions.Placeholders)
 	numValues := len(*answers)
 
@@ -333,6 +333,13 @@ func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) err
 			continue
 		}
 
+		// Just use the default value for all un-set placeholders.
+		if defaultVal != " " {
+			anwrs[placeholder] = defaultVal
+			infof("using default value for placeholder %v", placeholder)
+			continue
+		}
+
 		fmt.Printf("\n%v; %v: ", placeholder, question)
 		nPut.Scan()
 		anwrs[placeholder] = nPut.Text()
@@ -341,4 +348,11 @@ func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) err
 	}
 
 	return nil
+}
+
+func showAllQuestionsAndAnswer(questions *tmplJson, answers *tmplVars) {
+	anwrs := *answers
+	for placeholder, question := range questions.Placeholders {
+		logf(messages.questionAnsweredWith, question, anwrs[placeholder])
+	}
 }
