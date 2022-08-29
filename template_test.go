@@ -150,7 +150,7 @@ func TestParse(tester *testing.T) {
 		},
 	}
 
-	err := os.MkdirAll(testTmp+"/appDirParse-01", os.FileMode(DIR_MODE))
+	err := os.MkdirAll(testTmp+"/appDirParse-01", os.FileMode(DirMode))
 	if err != nil {
 		tester.Errorf("Could not copy dir, err: %s", err.Error())
 	}
@@ -253,7 +253,7 @@ func TestReadTemplateJson(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		got, err := readTemplateJson(fxtr.config.tmplPath + PS + TMPL_MANIFEST)
+		got, err := readTemplateJson(fxtr.config.tmplPath + PS + TmplManifest)
 
 		if fxtr.shouldErr && err == nil {
 			test.Errorf("expected an error, but got nil")

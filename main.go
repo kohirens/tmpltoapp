@@ -14,8 +14,8 @@ import (
 // TODO: Change name to tmplpress
 
 const (
-	PS       = string(os.PathSeparator)
-	DIR_MODE = 0774
+	PS      = string(os.PathSeparator)
+	DirMode = 0774
 )
 
 var (
@@ -50,7 +50,7 @@ func main() {
 
 	// Make a directory for tmpltoapp to store data.
 	appDataDir = appDataDir + PS + "tmpltoapp"
-	mainErr = os.MkdirAll(appDataDir, DIR_MODE)
+	mainErr = os.MkdirAll(appDataDir, DirMode)
 	if mainErr != nil {
 		return
 	}
@@ -136,10 +136,10 @@ func main() {
 	}
 
 	// Require template directories to have a specific file in order to be processed to prevent processing directories unintentionally.
-	tmplManifestFile := appConfig.tmpl + PS + TMPL_MANIFEST
+	tmplManifestFile := appConfig.tmpl + PS + TmplManifest
 	tmplManifest, errX := readTemplateJson(tmplManifestFile)
 	if errX != nil {
-		mainErr = fmt.Errorf(errors.missingTmplJson, TMPL_MANIFEST, tmplManifestFile, errX.Error())
+		mainErr = fmt.Errorf(errors.missingTmplJson, TmplManifest, tmplManifestFile, errX.Error())
 		return
 	}
 

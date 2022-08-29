@@ -18,11 +18,12 @@ import (
 )
 
 const (
-	MAX_TPL_SIZE  = 1e+7
-	TMPL_MANIFEST = "template.json"
-	EMPTY_FILE    = ".empty"
+	MaxTplSize   = 1e+7
+	TmplManifest = "template.json"
+	EmptyFile    = ".empty"
 )
 
+// Client specify the methods reqruied by an HTTP client
 type Client interface {
 	Get(url string) (*http.Response, error)
 	Head(url string) (*http.Response, error)
@@ -107,7 +108,7 @@ func extract(archivePath string) (string, error) {
 		return tmplDir, fmt.Errorf("could not open archive %q, error: %v", archivePath, err.Error())
 	}
 
-	err = os.MkdirAll(dest, DIR_MODE)
+	err = os.MkdirAll(dest, DirMode)
 	if err != nil {
 		return tmplDir, fmt.Errorf("could not write dest %q, error: %v", dest, err.Error())
 	}
@@ -221,15 +222,15 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		}
 
 		// Stop processing files if a template file is too big.
-		if fi.Size() > MAX_TPL_SIZE {
-			rErr = fmt.Errorf("template file too big to parse, must be less thatn %v bytes", MAX_TPL_SIZE)
+		if fi.Size() > MaxTplSize {
+			rErr = fmt.Errorf("template file too big to parse, must be less thatn %v bytes", MaxTplSize)
 			return
 		}
 
 		currFile := filepath.Base(sourcePath)
 		// Skip non-text files.
 		// TODO: Remove FileExtensionCheck in favor of exclude/include list, once globbing is added.
-		if currFile != EMPTY_FILE && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
+		if currFile != EmptyFile && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
 			infof("will skipp and not process through template engine; could not detect file type for %v", sourcePath)
 			return
 		}
@@ -246,8 +247,8 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		saveDir := filepath.Clean(outDir + filepath.Dir(partial))
 
 		// TODO: Make the subdirectories in the new savePath.
-		err = os.MkdirAll(saveDir, DIR_MODE)
-		if err != nil || currFile == EMPTY_FILE {
+		err = os.MkdirAll(saveDir, DirMode)
+		if err != nil || currFile == EmptyFile {
 			return
 		}
 
@@ -280,7 +281,7 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 
 	// Verify the TMPL_MANIFEST file is present.
 	if !stdlib.PathExist(filePath) {
-		return nil, fmt.Errorf(errors.tmplManifest404, TMPL_MANIFEST)
+		return nil, fmt.Errorf(errors.tmplManifest404, TmplManifest)
 	}
 
 	content, err1 := ioutil.ReadFile(filePath)
@@ -311,7 +312,6 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 // getPlaceholderInput Checks for any missing placeholder values waits for their input from the CLI.
 func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) error {
 	numPlaceholder := len(questions.Placeholders)
-	anwrs := *answers
 	numValues := len(*answers)
 
 	logf(messages.questionAnswerStat, numPlaceholder, numValues)
@@ -322,6 +322,7 @@ func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File) err
 
 	logf(messages.pleaseAnswerQuestions)
 
+	anwrs := *answers
 	nPut := bufio.NewScanner(r)
 
 	for placeholder, question := range questions.Placeholders {
