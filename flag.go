@@ -56,9 +56,7 @@ func flagMain(config *Config) error {
 	}
 
 	if config.help {
-		// TODO: Replace with custom printDefaults function
-		flag.PrintDefaults()
-		fmt.Printf(messages.subCommands)
+		Usage()
 		os.Exit(0)
 	}
 
@@ -108,4 +106,19 @@ func (cfg *Config) validate() error {
 	}
 
 	return nil
+}
+
+func Usage() {
+	fmt.Printf("Usage: tmpltoapp -[options] [args]\n\n")
+	fmt.Print("example: tmpltoapp -answers \"answers.json\" -out-path \"../new-app\" \"https://github.com/kohirens/tmpl-go-web\"\n\n")
+
+	fmt.Printf("Options: \n\n")
+	flag.VisitAll(func(f *flag.Flag) {
+		um, ok := usageMsgs[f.Name]
+		if ok {
+			fmt.Printf("  -%-11s %v\n\n", f.Name, um)
+			f.Value.String()
+		}
+	})
+	fmt.Printf(messages.subCommands)
 }

@@ -3,7 +3,7 @@ package main
 var usageMsgs = map[string]string{
 	"answer-path": "Path to a JSON file containing the values for placeholders (which are the keys) defined by a template.",
 	"branch":      "Branch of the template to clone when tmplType=git.",
-	"help":        "Prints usage information and exit 0.",
+	"help":        "(or -h) Prints usage information and exit 0.",
 	"out-path":    "Path to output the new project.",
 	"tmpl-path":   "URL to a zip or a local path to a directory.",
 	"tmpl-type":   "Can be of git|zip|local.",
@@ -48,6 +48,6 @@ var messages = struct {
 	questionHasAnAnswer:   "question %q already has an answer of %q, so skipping",
 	refInfo:               "ref = %v ",
 	runningCommand:        "running command %s",
-	subCommands:           "\n  sub-commands:\n\n    none\n",
+	subCommands:           "sub-commands:\n\n",
 	verboseLevelInfo:      "verbose level: %v",
 }
