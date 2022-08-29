@@ -140,10 +140,11 @@ func main() {
 	}
 
 	// Checks for any missing placeholder values waits for their input from the CLI.
-	if e := getPlaceholderInput(appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin); e != nil {
+	if e := getPlaceholderInput(appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin, appConfig.defaultVal); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
-	// TODO: showAllQuestionsAndAnswer: Output each question with its answer
+
+	showAllQuestionsAndAnswer(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }

@@ -13,15 +13,16 @@ type Config struct {
 	answersJson           *answersJson // data use for template processing
 	answersPath           string       // flag to get the path to a file containing values to variables to be parsed.
 	outPath               string       // flag to set the location of the processed template output.
-	cacheDir              string
-	tmplPath              string    // flag to set the URL or local path to a template.
-	tmpl                  string    // Path to template, this will be the cached path.
-	ExcludeFileExtensions *[]string // Files to skip when sending to the go parsing engine.
-	IncludeFileExtensions *[]string // Files to include when sending to the go parsing engine.
-	TmplJson              *tmplJson // Question for requesting input for the template.
-	branch                string    // flag to set the desired branch to clone.
-	tmplLocation          string    // Indicates local or remote location to downloaded
-	tmplType              string    // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
+	cacheDir              string       // Cache for downloaded templates.
+	defaultVal            string       // Flag to set a default placeholder value when a placeholder is empty.
+	tmplPath              string       // flag to set the URL or local path to a template.
+	tmpl                  string       // Path to template, this will be the cached path.
+	ExcludeFileExtensions *[]string    // Files to skip when sending to the go parsing engine.
+	IncludeFileExtensions *[]string    // Files to include when sending to the go parsing engine.
+	TmplJson              *tmplJson    // Question for requesting input for the template.
+	branch                string       // flag to set the desired branch to clone.
+	tmplLocation          string       // Indicates local or remote location to downloaded
+	tmplType              string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string
 	help                  bool // flag to show the usage for all flags.

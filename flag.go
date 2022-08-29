@@ -17,6 +17,7 @@ func (cfg *Config) define() {
 	// Note: These are defined in alphabetical order.
 	flag.StringVar(&cfg.answersPath, "answer-path", "", usageMsgs["answer-path"])
 	flag.StringVar(&cfg.branch, "branch", "main", usageMsgs["branch"])
+	flag.StringVar(&cfg.defaultVal, "default-val", " ", usageMsgs["default-val"])
 	flag.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&cfg.help, "h", false, usageMsgs["help"]+" (shorthand)")
 	flag.StringVar(&cfg.outPath, "out-path", "", usageMsgs["out-path"])
