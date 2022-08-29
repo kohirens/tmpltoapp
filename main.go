@@ -144,7 +144,7 @@ func main() {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
-	showAllQuestionsAndAnswer(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
+	//showAllQuestionsAndAnswer(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }
