@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 // TODO: Change name to tmplpress
@@ -63,24 +62,11 @@ func main() {
 	}
 
 	mainErr = settings(configFile, appConfig)
-
 	if mainErr != nil {
 		return
 	}
 
-	// TODO: Move to configMain
-	appConfig.cacheDir = appDataDir + PS + "cache"
-	mainErr = os.MkdirAll(appConfig.cacheDir, DIR_MODE)
-	if mainErr != nil {
-		mainErr = fmt.Errorf("could not make cache directory, error: %s", mainErr.Error())
-		return
-	}
-
-	appConfig.tmplLocation = getTmplLocation(appConfig.tmplPath)
-
-	if appConfig.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
-		appConfig.tmpl = filepath.Clean(appConfig.tmplPath)
-	}
+	mainErr = configMain(appDataDir)
 
 	if appConfig.tmplType == "zip" {
 		var zipFile string
@@ -130,7 +116,7 @@ func main() {
 		return
 	}
 
-	fec, err1 := stdlib.NewFileExtChecker(&appConfig.ExcludeFileExtensions, &appConfig.IncludeFileExtensions)
+	fec, err1 := stdlib.NewFileExtChecker(appConfig.ExcludeFileExtensions, appConfig.IncludeFileExtensions)
 	if err1 != nil {
 		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
 	}
@@ -143,8 +129,8 @@ func main() {
 		return
 	}
 
-	appConfig.TmplJson = *tmplManifest
-	appConfig.answersJson = *newAnswerJson()
+	appConfig.TmplJson = tmplManifest
+	appConfig.answersJson = newAnswerJson()
 
 	if stdlib.PathExist(appConfig.answersPath) {
 		appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
@@ -154,10 +140,9 @@ func main() {
 	}
 
 	// Checks for any missing placeholder values waits for their input from the CLI.
-	if e := getPlaceholderInput(&appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin); e != nil {
+	if e := getPlaceholderInput(appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin); e != nil {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
-
 	// TODO: showAllQuestionsAndAnswer: Output each question with its answer
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)

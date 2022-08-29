@@ -6,26 +6,43 @@ import (
 	"github.com/kohirens/stdlib"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 type Config struct {
-	answers               tmplVars
-	answersJson           answersJson // data use for template processing
-	answersPath           string      // flag to get the path to a file containing values to variables to be parsed.
-	outPath               string      // flag to set the location of the processed template output.
+	answersJson           *answersJson // data use for template processing
+	answersPath           string       // flag to get the path to a file containing values to variables to be parsed.
+	outPath               string       // flag to set the location of the processed template output.
 	cacheDir              string
-	tmplPath              string   // flag to set the URL or local path to a template.
-	tmpl                  string   // Path to template, this will be the cached path.
-	ExcludeFileExtensions []string // Files to skip when sending to the go parsing engine.
-	IncludeFileExtensions []string // Files to include when sending to the go parsing engine.
-	TmplJson              tmplJson // Question for requesting input for the template.
-	branch                string   // flag to set the desired branch to clone.
-	tmplLocation          string   // Indicates local or remote location to downloaded
-	tmplType              string   // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
+	tmplPath              string    // flag to set the URL or local path to a template.
+	tmpl                  string    // Path to template, this will be the cached path.
+	ExcludeFileExtensions *[]string // Files to skip when sending to the go parsing engine.
+	IncludeFileExtensions *[]string // Files to include when sending to the go parsing engine.
+	TmplJson              *tmplJson // Question for requesting input for the template.
+	branch                string    // flag to set the desired branch to clone.
+	tmplLocation          string    // Indicates local or remote location to downloaded
+	tmplType              string    // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string
 	help                  bool // flag to show the usage for all flags.
 	version               bool // flag to show the current version
+}
+
+// configMain initialize the application configuration
+func configMain(appDataDir string) error {
+	appConfig.cacheDir = appDataDir + PS + "cache"
+	e1 := os.MkdirAll(appConfig.cacheDir, DirMode)
+	if e1 != nil {
+		return fmt.Errorf("could not make cache directory, error: %s", e1.Error())
+	}
+
+	appConfig.tmplLocation = getTmplLocation(appConfig.tmplPath)
+
+	if appConfig.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
+		appConfig.tmpl = filepath.Clean(appConfig.tmplPath)
+	}
+
+	return nil
 }
 
 // Load configuration file.
@@ -72,7 +89,7 @@ func settings(filename string, cfg *Config) (err error) {
 }
 
 // loadAnswers Load key/value pairs from a JSON file to fill in placeholders (provides that data for the Go templates).
-func loadAnswers(filename string) (aj answersJson, err error) {
+func loadAnswers(filename string) (aj *answersJson, err error) {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {

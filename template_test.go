@@ -299,8 +299,10 @@ func TestQuestionsInput(tester *testing.T) {
 		{
 			"missingAnAnswer",
 			&Config{
-				answers: tmplVars{"var1": "", "var2": ""},
-				TmplJson: tmplJson{
+				answersJson: &answersJson{
+					Placeholders: tmplVars{"var1": "", "var2": ""},
+				},
+				TmplJson: &tmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -311,8 +313,10 @@ func TestQuestionsInput(tester *testing.T) {
 		{
 			"noMissingAnswers",
 			&Config{
-				answers: tmplVars{"var1": "1", "var2": "2", "var3": "3"},
-				TmplJson: tmplJson{
+				answersJson: &answersJson{
+					Placeholders: tmplVars{"var1": "1", "var2": "2", "var3": "3"},
+				},
+				TmplJson: &tmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -325,13 +329,13 @@ func TestQuestionsInput(tester *testing.T) {
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
 		resetTmpFile()
-		err := getPlaceholderInput(&fxtr.config.TmplJson, &fxtr.config.answers, tmpFile)
+		err := getPlaceholderInput(fxtr.config.TmplJson, &fxtr.config.answersJson.Placeholders, tmpFile)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())
 		}
 
-		if fxtr.config.answers[fxtr.want] != "1" {
+		if fxtr.config.answersJson.Placeholders[fxtr.want] != "1" {
 			test.Errorf("failed to answer missing question %v using file as input", fxtr.want)
 		}
 	})
