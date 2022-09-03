@@ -11,6 +11,8 @@ import (
 	"os"
 )
 
+const cmdConfig = "config"
+
 // define All application flags.
 func (cfg *Config) define() {
 	// TODO: add flag to set a default values for -skip-un-answered and use a -default-value questions.
@@ -25,6 +27,8 @@ func (cfg *Config) define() {
 	flag.StringVar(&cfg.tmplType, "tmpl-type", "git", usageMsgs["tmpl-type"])
 	flag.IntVar(&verbosityLevel, "verbosity", 0, usageMsgs["verbosity"])
 	flag.BoolVar(&cfg.version, "version", false, usageMsgs["version"])
+	cfg.subCmdConfig.flagSet = flag.NewFlagSet(cmdConfig, flag.ExitOnError)
+	cfg.subCmdConfig.flagSet.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 }
 
 // flagMain Process and validate all CLI flags.
@@ -49,6 +53,15 @@ func flagMain(config *Config) error {
 		})
 	}
 
+	// process sub-commands
+	switch pArgs[0] {
+	case "config":
+		return config.subCmdConfigMain(pArgs[1:])
+	}
+
+	//TODO: Move this a function who's description is parsing global flags and arguments
+
+	// throw an error when a flag comes after any arguments.
 	for i := 0; i < len(pArgs); i++ {
 		v := pArgs[i]
 		if v[0] == '-' {

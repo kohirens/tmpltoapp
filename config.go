@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/kohirens/stdlib"
 	"io/ioutil"
@@ -21,12 +22,20 @@ type Config struct {
 	IncludeFileExtensions *[]string    // Files to include when sending to the go parsing engine.
 	TmplJson              *tmplJson    // Question for requesting input for the template.
 	branch                string       // flag to set the desired branch to clone.
+	subCmd                string       // sub-command to execute
 	tmplLocation          string       // Indicates local or remote location to downloaded
 	tmplType              string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
 	CurrentVersion        string
 	CommitHash            string
-	help                  bool // flag to show the usage for all flags.
-	version               bool // flag to show the current version
+	help                  bool   // flag to show the usage for all flags.
+	path                  string // Path to configuration file.
+	version               bool   // flag to show the current version
+	subCmdConfig          struct {
+		flagSet *flag.FlagSet
+		key     string // config setting
+		method  string // method to call
+		value   string // value to update config setting
+	}
 }
 
 // configMain initialize the application configuration
@@ -71,6 +80,21 @@ func initConfigFile(file string) (err error) {
 	return
 }
 
+// save configuration file.
+func saveConfigFile(file string, defCfg *userOptions) error {
+	data, err := json.Marshal(defCfg)
+	if err != nil {
+		return fmt.Errorf("could not convert coniguration to JSON string: %v", err)
+	}
+
+	if e := os.WriteFile(file, data, DirMode); e != nil {
+		return fmt.Errorf("could not save configuration: %v", e.Error())
+	}
+
+	return nil
+}
+
+// TODO: Rename to loadUserSettings as a method of Config
 // settings runtime options are a mix of config and command line arguments.
 func settings(filename string, cfg *Config) (err error) {
 	content, er := ioutil.ReadFile(filename)
