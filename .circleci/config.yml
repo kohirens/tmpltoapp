@@ -26,7 +26,7 @@ filter-semantic-tag: &filter-semantic-tag
 jobs:
   co:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/go:1.19
     steps:
       - checkout
       - restore_cache:
