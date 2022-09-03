@@ -25,7 +25,7 @@ func (h HttpMock) Head(url string) (*http.Response, error) {
 }
 
 func TestDownload(tester *testing.T) {
-	defer quiet()()
+	defer testSilencer()()
 
 	var err error
 	fixtures := HttpMock{
@@ -86,7 +86,7 @@ func ExampleExtract() {
 }
 
 func TestParseDir2(tester *testing.T) {
-	defer quiet()()
+	defer testSilencer()()
 
 	fixtures := []struct {
 		dstDir,

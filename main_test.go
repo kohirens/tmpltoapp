@@ -163,7 +163,12 @@ func runMain(testFunc string, args []string) *exec.Cmd {
 	return cmd
 }
 
-func quiet() func() {
+// testSilencer return a function that prevents output during a test run.
+func testSilencer() func() {
+	// Abort in verbose mode.
+	if testing.Verbose() {
+		return func() {}
+	}
 	null, _ := os.Open(os.DevNull)
 	sOut := os.Stdout
 	sErr := os.Stderr
