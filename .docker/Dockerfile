@@ -5,7 +5,7 @@ ARG USER_GROUP='app_users'
 ARG REPO='github.com/kohirens/tmpltoapp'
 ARG GLIBC_VER='2.35-r0'
 
-FROM golang:1.17-alpine3.15 AS dev
+FROM golang:1.19-alpine3.16 AS dev
 
 ARG USER_NAME
 ARG USER_UID
