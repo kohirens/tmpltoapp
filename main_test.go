@@ -29,9 +29,9 @@ func TestMain(m *testing.M) {
 		runAppMain()
 	}
 	// call flag.Parse() here if TestMain uses flags
-	os.RemoveAll(testTmp)
+	_ = os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
-	os.Mkdir(testTmp, DirMode) // set up a temporary dir for generate files
+	_ = os.Mkdir(testTmp, DirMode) // set up a temporary dir for generate files
 	// Run all tests
 	exitCode := m.Run()
 	// Clean up
@@ -165,15 +165,15 @@ func runMain(testFunc string, args []string) *exec.Cmd {
 
 func quiet() func() {
 	null, _ := os.Open(os.DevNull)
-	sout := os.Stdout
-	serr := os.Stderr
+	sOut := os.Stdout
+	sErr := os.Stderr
 	os.Stdout = null
 	os.Stderr = null
 	log.SetOutput(null)
 	return func() {
 		defer null.Close()
-		os.Stdout = sout
-		os.Stderr = serr
+		os.Stdout = sOut
+		os.Stderr = sErr
 		log.SetOutput(os.Stderr)
 	}
 }

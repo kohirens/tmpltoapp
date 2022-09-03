@@ -273,13 +273,21 @@ func TestReadTemplateJson(tester *testing.T) {
 }
 
 func TestQuestionsInput(tester *testing.T) {
+	defer testSilencer()()
 	// Use a temp file to simulate input on the command line.
 	tmpFile, err := ioutil.TempFile(testTmp, "qi-01")
 	if err != nil {
 		tester.Errorf("failed to make temp file %v", err.Error())
 	}
 
-	defer os.Remove(tmpFile.Name())
+	defer func() {
+		if e := tmpFile.Close(); e != nil {
+			tester.Errorf("failed to close tmp file: %v", e.Error())
+		}
+		if e := os.Remove(tmpFile.Name()); e != nil {
+			tester.Errorf("failed to remove tmp file: %v", e.Error())
+		}
+	}()
 
 	if _, e := tmpFile.Write([]byte("1\n")); e != nil {
 		tester.Errorf("failed to write content to temp file %v, error: %v", tmpFile.Name(), e.Error())
