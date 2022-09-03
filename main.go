@@ -68,6 +68,12 @@ func main() {
 
 	mainErr = configMain(appDataDir)
 
+	// Exit if we are just printing help usage
+	if appConfig.help {
+		Usage(appConfig)
+		return
+	}
+
 	// process sub-commands
 	switch appConfig.subCmd {
 	case "config":
