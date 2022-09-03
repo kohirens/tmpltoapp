@@ -55,18 +55,26 @@ func main() {
 	}
 
 	// Make a configuration file when there is not one.
-	configFile := appDataDir + PS + "config.json"
-	mainErr = initConfigFile(configFile)
+	appConfig.path = appDataDir + PS + "config.json"
+	mainErr = initConfigFile(appConfig.path)
 	if mainErr != nil {
 		return
 	}
 
-	mainErr = settings(configFile, appConfig)
+	mainErr = settings(appConfig.path, appConfig)
 	if mainErr != nil {
 		return
 	}
 
 	mainErr = configMain(appDataDir)
+
+	// process sub-commands
+	switch appConfig.subCmd {
+	case "config":
+		// store or get the key and return
+		mainErr = runSubCmdConfig(appConfig)
+		return
+	}
 
 	if appConfig.tmplType == "zip" {
 		var zipFile string

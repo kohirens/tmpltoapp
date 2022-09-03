@@ -6,7 +6,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -16,10 +18,16 @@ const (
 	testTmp     = "tmp"
 	// SubCmdFlags space separated list of command line flags.
 	SubCmdFlags = "SUB_CMD_FLAGS"
+	// subCmdFlags space separated list of command line flags.
+	subCmdFlags = "RECURSIVE_TEST_FLAGS"
 	testRemotes = testTmp + PS + "remotes"
 )
 
 func TestMain(m *testing.M) {
+	// Only runs when this environment variable is set.
+	if _, ok := os.LookupEnv(subCmdFlags); ok {
+		runAppMain()
+	}
 	// call flag.Parse() here if TestMain uses flags
 	os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
@@ -113,6 +121,38 @@ func TestCallingMain(tester *testing.T) {
 	}
 }
 
+// getTestBinCmd return a command to run the test binary in a sub-process, passing it flags as fixtures to produce expected output; `TestMain`, will be run automatically.
+func getTestBinCmd(args []string) *exec.Cmd {
+	// call the generated test binary directly
+	// Have it the function runAppMain.
+	cmd := exec.Command(os.Args[0])
+	// Run in the context of the source directory.
+	_, filename, _, _ := runtime.Caller(0)
+	cmd.Dir = path.Dir(filename)
+	// Set an environment variable
+	// 1. Only exist for the life of the test that calls this function.
+	// 2. Passes arguments/flag to your app
+	// 3. Lets TestMain know when to run the main function.
+	subEnvVar := subCmdFlags + "=" + strings.Join(args, " ")
+	cmd.Env = append(os.Environ(), subEnvVar)
+
+	return cmd
+}
+
+// runAppMain run main passing only the fixture flags
+func runAppMain() {
+	// Get fixture flags set in the unit test.
+	args := strings.Split(os.Getenv(subCmdFlags), " ")
+	// replace the test flaga and arts with the test fixture flags and args.
+	os.Args = append([]string{os.Args[0]}, args...)
+
+	// Debug stmt
+	//fmt.Printf("\nsub os.Args = %v\n", os.Args)
+
+	main()
+}
+
+// runMain execute main in a sub process
 func runMain(testFunc string, args []string) *exec.Cmd {
 	// Run the test binary and tell it to run just this test with environment set.
 	cmd := exec.Command(os.Args[0], "-test.run", testFunc)
