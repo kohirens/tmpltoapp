@@ -70,8 +70,8 @@ func flagMain(config *Config) error {
 	}
 
 	if config.help {
-		Usage()
-		os.Exit(0)
+		Usage(config)
+		return nil
 	}
 
 	if config.version {
@@ -122,7 +122,12 @@ func (cfg *Config) validate() error {
 	return nil
 }
 
-func Usage() {
+func Usage(cfg *Config) {
+	switch cfg.subCmd {
+	case cmdConfig:
+		subCmdConfigUsage()
+		return
+	}
 	fmt.Printf("Usage: tmpltoapp -[options] [args]\n\n")
 	fmt.Print("example: tmpltoapp -answers \"answers.json\" -out-path \"../new-app\" \"https://github.com/kohirens/tmpl-go-web\"\n\n")
 
