@@ -77,7 +77,7 @@ func main() {
 
 	// process sub-commands
 	switch appConfig.subCmd {
-	case "config":
+	case cmdConfig:
 		// store or get the key and return
 		mainErr = updateUserSettings(appConfig)
 		return
