@@ -17,8 +17,8 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 		args     []string
 		expected string
 	}{
-		{"noArgs", 1, []string{"config"}, "usage: config"},
-		{"keyDoesNotExist", 1, []string{"config", "set", "key", "value"}, "no \"key\" setting found"},
+		{"noArgs", 1, []string{cmdConfig}, "usage: config"},
+		{"keyDoesNotExist", 1, []string{cmdConfig, "set", "key", "value"}, "no \"key\" setting found"},
 	}
 
 	for _, test := range tests {
@@ -60,8 +60,8 @@ func xTestSubCmdConfigBadExit(tester *testing.T) {
 		args     []string
 		expected string
 	}{
-		{"noArgs", 1, []string{oldArgs[0], "config"}, "usage: config"},
-		{"keyDoesNotExist", 1, []string{oldArgs[0], "config", "set", "key", "value"}, "no config setting \"keyDoesNotExist\" found"},
+		{"noArgs", 1, []string{oldArgs[0], cmdConfig}, "usage: config"},
+		{"keyDoesNotExist", 1, []string{oldArgs[0], cmdConfig, "set", "key", "value"}, "no config setting \"keyDoesNotExist\" found"},
 	}
 
 	for _, test := range tests {
@@ -108,9 +108,9 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 		args     []string
 		contains string
 	}{
-		{"setCache", 0, []string{"config", "set", "cacheDir", "/tmp"}, ""},
-		{"help", 0, []string{"config", "-help"}, ""},
-		//{"getCache", 0, []string{"config", "get", "cacheDir"}, "/tmp"},
+		{"setCache", 0, []string{cmdConfig, "set", "cacheDir", "/tmp"}, ""},
+		{"help", 0, []string{cmdConfig, "-help"}, ""},
+		//{"getCache", 0, []string{cmdConfig, "get", "cacheDir"}, "/tmp"},
 	}
 
 	for _, test := range tests {

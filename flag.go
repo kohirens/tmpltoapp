@@ -55,7 +55,7 @@ func flagMain(config *Config) error {
 
 	// process sub-commands
 	switch pArgs[0] {
-	case "config":
+	case cmdConfig:
 		return config.parseConfigCmd(pArgs[1:])
 	}
 
