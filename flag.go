@@ -56,7 +56,7 @@ func flagMain(config *Config) error {
 	// process sub-commands
 	switch pArgs[0] {
 	case "config":
-		return config.subCmdConfigMain(pArgs[1:])
+		return config.parseConfigCmd(pArgs[1:])
 	}
 
 	//TODO: Move this a function who's description is parsing global flags and arguments

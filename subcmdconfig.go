@@ -17,8 +17,8 @@ var usrOpts = &userOptions{
 	IncludeFileExtensions: []string{},
 }
 
-// runs during flag parsing
-func (cfg *Config) subCmdConfigMain(osArgs []string) error {
+// parseConfigCmd parse the config sub-command flags/options/args but do not execute the command itself
+func (cfg *Config) parseConfigCmd(osArgs []string) error {
 	if e := cfg.subCmdConfig.flagSet.Parse(osArgs); e != nil {
 		return fmt.Errorf("error pasing sub command config flags: %v", e.Error())
 	}
