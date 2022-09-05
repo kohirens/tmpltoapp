@@ -39,16 +39,17 @@ func TestInitConfigFile(t *testing.T) {
 	var tests = []struct {
 		name, file string
 		want       error
+		cfg        *Config
 	}{
-		{"NotExist", testTmp + PS + "config-fix-01.json", nil},
+		{"NotExist", testTmp + PS + "config-fix-01.json", nil, &Config{}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// exec code.
-			got := initConfigFile(tt.file)
+			got, gotErr := tt.cfg.initConfigFile(tt.file)
 
-			if tt.want != got {
+			if tt.want != gotErr {
 				t.Errorf("got %v; want %v", got, tt.want)
 			}
 

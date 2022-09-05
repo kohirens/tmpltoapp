@@ -44,7 +44,7 @@ func main() {
 		return
 	}
 
-	mainErr = appConfig.setup()
+	mainErr = appConfig.setup(AppName, PS, DirMode)
 
 	// Exit if we are just printing help usage
 	if appConfig.help {

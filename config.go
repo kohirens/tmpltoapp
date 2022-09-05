@@ -40,34 +40,35 @@ type Config struct {
 }
 
 // setup All application configuration.
-func (cfg *Config) setup() error {
+func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 	osDataDir, err1 := stdlib.AppDataDir()
 	if err1 != nil {
 		return err1
 	}
 
+	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
+
 	// Make a directory to store data.
-	cfg.dataDir = osDataDir + PS + AppName
-	if e := os.MkdirAll(cfg.dataDir, DirMode); e != nil {
+	cfg.dataDir = osDataDir + ps + appName
+	if e := os.MkdirAll(cfg.dataDir, dirMode); e != nil {
 		return e
 	}
 
+	cfg.cacheDir = cfg.dataDir + ps + "cache"
+	if e1 := os.MkdirAll(cfg.cacheDir, dirMode); e1 != nil {
+		return fmt.Errorf("could not make cache directory, error: %s", e1.Error())
+	}
+
+	var err2 error
 	// Make a configuration file when there is none.
-	cfg.path = cfg.dataDir + PS + "config.json"
-	if e := initConfigFile(cfg.path); e != nil {
-		return e
+	cfg.path, err2 = cfg.initConfigFile(ps + "config.json")
+	if err2 != nil {
+		return err2
 	}
 
 	if e := settings(cfg.path, cfg); e != nil {
 		return e
 	}
-
-	cfg.cacheDir = cfg.dataDir + PS + "cache"
-	if e1 := os.MkdirAll(cfg.cacheDir, DirMode); e1 != nil {
-		return fmt.Errorf("could not make cache directory, error: %s", e1.Error())
-	}
-
-	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
 
 	if cfg.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
 		cfg.tmpl = filepath.Clean(cfg.tmplPath)
@@ -77,28 +78,32 @@ func (cfg *Config) setup() error {
 }
 
 // Load configuration file.
-func initConfigFile(file string) (err error) {
+func (cfg *Config) initConfigFile(filename string) (string, error) {
+	file := cfg.dataDir + filename
+
 	if stdlib.PathExist(file) {
 		infof(messages.configFileExist, file)
-		return
+		return file, nil
 	}
 
 	f, er := os.Create(file)
 
 	if er != nil {
-		err = er
-		return
+		return "", er
 	}
 
-	defer func() {
-		err = f.Close()
-	}()
+	b, e2 := f.WriteString(DEFAULT_CFG)
+	if e2 != nil {
+		return "", e2
+	}
 
-	_, err = f.WriteString(DEFAULT_CFG)
+	infof(messages.madeNewConfig, b, file)
 
-	infof(messages.madeNewConfig, file)
+	if e := f.Close(); e != nil {
+		return "", e
+	}
 
-	return
+	return file, nil
 }
 
 // save configuration file.
