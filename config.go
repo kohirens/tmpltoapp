@@ -26,11 +26,11 @@ type Config struct {
 	subCmd                string       // sub-command to execute
 	tmplLocation          string       // Indicates local or remote location to downloaded
 	tmplType              string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
-	CurrentVersion        string
-	CommitHash            string
-	help                  bool   // flag to show the usage for all flags.
-	path                  string // Path to configuration file.
-	version               bool   // flag to show the current version
+	CurrentVersion        string       // Current semantic version of the application.
+	CommitHash            string       // Git commit has of the current version.
+	help                  bool         // flag to show the usage for all flags.
+	path                  string       // Path to configuration file.
+	version               bool         // flag to show the current version
 	subCmdConfig          struct {
 		flagSet *flag.FlagSet
 		key     string // config setting
