@@ -74,7 +74,7 @@ func xTestSubCmdConfigBadExit(tester *testing.T) {
 			os.Args = test.args
 
 			testConf := &Config{}
-			testConf.define()
+			testConf.defineFlags()
 			e := testConf.parseFlags()
 			if e != nil {
 				t.Error(e)

@@ -14,7 +14,7 @@ import (
 const cmdConfig = "config"
 
 // define All application flags.
-func (cfg *Config) define() {
+func (cfg *Config) defineFlags() {
 	// TODO: add flag to set a default values for -skip-un-answered and use a -default-value questions.
 	// Note: These are defined in alphabetical order.
 	flag.StringVar(&cfg.answersPath, "answer-path", "", usageMsgs["answer-path"])

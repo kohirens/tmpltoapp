@@ -24,7 +24,7 @@ var (
 
 func init() {
 	// Define all flags
-	appConfig.define()
+	appConfig.defineFlags()
 }
 
 func main() {
