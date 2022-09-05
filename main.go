@@ -19,6 +19,7 @@ const (
 )
 
 var (
+	// appConfig Runtime settings used throughout the application.
 	appConfig = &Config{} // store all settings (including CLI flag values).
 )
 
