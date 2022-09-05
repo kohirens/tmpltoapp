@@ -15,6 +15,7 @@ type Config struct {
 	answersPath           string       // flag to get the path to a file containing values to variables to be parsed.
 	outPath               string       // flag to set the location of the processed template output.
 	cacheDir              string       // Cache for downloaded templates.
+	dataDir               string       // Directory to store app data.
 	defaultVal            string       // Flag to set a default placeholder value when a placeholder is empty.
 	tmplPath              string       // flag to set the URL or local path to a template.
 	tmpl                  string       // Path to template, this will be the cached path.
@@ -39,17 +40,37 @@ type Config struct {
 }
 
 // configMain initialize the application configuration
-func configMain(appDataDir string) error {
-	appConfig.cacheDir = appDataDir + PS + "cache"
-	e1 := os.MkdirAll(appConfig.cacheDir, DirMode)
-	if e1 != nil {
+func (cfg *Config) configMain() error {
+	osDataDir, err1 := stdlib.AppDataDir()
+	if err1 != nil {
+		return err1
+	}
+
+	// Make a directory to store data.
+	cfg.dataDir = osDataDir + PS + AppName
+	if e := os.MkdirAll(cfg.dataDir, DirMode); e != nil {
+		return e
+	}
+
+	// Make a configuration file when there is none.
+	cfg.path = cfg.dataDir + PS + "config.json"
+	if e := initConfigFile(cfg.path); e != nil {
+		return e
+	}
+
+	if e := settings(cfg.path, cfg); e != nil {
+		return e
+	}
+
+	cfg.cacheDir = cfg.dataDir + PS + "cache"
+	if e1 := os.MkdirAll(cfg.cacheDir, DirMode); e1 != nil {
 		return fmt.Errorf("could not make cache directory, error: %s", e1.Error())
 	}
 
-	appConfig.tmplLocation = getTmplLocation(appConfig.tmplPath)
+	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
 
-	if appConfig.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
-		appConfig.tmpl = filepath.Clean(appConfig.tmplPath)
+	if cfg.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
+		cfg.tmpl = filepath.Clean(cfg.tmplPath)
 	}
 
 	return nil

@@ -43,31 +43,7 @@ func main() {
 		return
 	}
 
-	appDataDir, mainErr := stdlib.AppDataDir()
-	if mainErr != nil {
-		return
-	}
-
-	// Make a directory to store data.
-	appDataDir = appDataDir + PS + AppName
-	mainErr = os.MkdirAll(appDataDir, DirMode)
-	if mainErr != nil {
-		return
-	}
-
-	// Make a configuration file when there is not one.
-	appConfig.path = appDataDir + PS + "config.json"
-	mainErr = initConfigFile(appConfig.path)
-	if mainErr != nil {
-		return
-	}
-
-	mainErr = settings(appConfig.path, appConfig)
-	if mainErr != nil {
-		return
-	}
-
-	mainErr = configMain(appDataDir)
+	mainErr = appConfig.configMain()
 
 	// Exit if we are just printing help usage
 	if appConfig.help {
