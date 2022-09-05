@@ -23,6 +23,11 @@ func (cfg *Config) subCmdConfigMain(osArgs []string) error {
 		return fmt.Errorf("error pasing sub command config flags: %v", e.Error())
 	}
 
+	if cfg.help {
+		Usage(cfg)
+		return nil
+	}
+
 	if len(osArgs) < 2 {
 		subCmdConfigUsage()
 		return fmt.Errorf("invalid number of arguments passed to config sub-command, please try config -h for usage")
@@ -33,11 +38,6 @@ func (cfg *Config) subCmdConfigMain(osArgs []string) error {
 	cfg.subCmdConfig.method = osArgs[0]
 	cfg.subCmdConfig.key = osArgs[1]
 	cfg.subCmdConfig.value = osArgs[2]
-
-	if cfg.help {
-		Usage(cfg)
-		os.Exit(0)
-	}
 
 	return nil
 }

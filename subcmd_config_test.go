@@ -109,7 +109,7 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 		contains string
 	}{
 		{"setCache", 0, []string{"config", "set", "cacheDir", "/tmp"}, ""},
-		//{"help", 0, []string{"config", "-help"}, ""},
+		{"help", 0, []string{"config", "-help"}, ""},
 		//{"getCache", 0, []string{"config", "get", "cacheDir"}, "/tmp"},
 	}
 
@@ -122,7 +122,8 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 
 			// Debug
 			if sce != nil {
-				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n", string(out))
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
 				fmt.Printf("stderr:\n%v\n", sce.Error())
 				fmt.Print("\nEND sub-command\n\n")
 			}
