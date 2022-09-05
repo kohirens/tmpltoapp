@@ -128,9 +128,9 @@ func Usage(cfg *Config) {
 		subCmdConfigUsage()
 		return
 	}
-	fmt.Printf("Usage: tmpltoapp -[options] [args]\n\n")
-	fmt.Print("example: tmpltoapp -answers \"answers.json\" -out-path \"../new-app\" \"https://github.com/kohirens/tmpl-go-web\"\n\n")
-
+	// Print the main app usage.
+	fmt.Printf("Usage: %v -[options] [args]\n\n", AppName)
+	fmt.Printf("example: %v -answers \"answers.json\" -out-path \"../new-app\" \"https://github.com/kohirens/tmpl-go-web\"\n\n", AppName)
 	fmt.Printf("Options: \n\n")
 	flag.VisitAll(func(f *flag.Flag) {
 		um, ok := usageMsgs[f.Name]

@@ -15,6 +15,7 @@ import (
 const (
 	PS      = string(os.PathSeparator)
 	DirMode = 0774
+	AppName = "tmpltoapp"
 )
 
 var (
@@ -47,8 +48,8 @@ func main() {
 		return
 	}
 
-	// Make a directory for tmpltoapp to store data.
-	appDataDir = appDataDir + PS + "tmpltoapp"
+	// Make a directory to store data.
+	appDataDir = appDataDir + PS + AppName
 	mainErr = os.MkdirAll(appDataDir, DirMode)
 	if mainErr != nil {
 		return
