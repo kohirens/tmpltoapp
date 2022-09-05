@@ -31,8 +31,8 @@ func (cfg *Config) define() {
 	cfg.subCmdConfig.flagSet.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
 }
 
-// flagMain Process and validate all CLI flags.
-func flagMain(config *Config) error {
+// parse Process and validate all CLI flags.
+func (cfg *Config) parseFlags() error {
 	// Remember that flag parsing stops just before the first argument that does not have a "-" and is also NOT the
 	// value of a flag or comes after the terminator "--".
 	// It was planed to allow for flags/arguments in any order, but it may be less confusing to only support flag first
@@ -56,7 +56,7 @@ func flagMain(config *Config) error {
 	// process sub-commands
 	switch pArgs[0] {
 	case cmdConfig:
-		return config.parseConfigCmd(pArgs[1:])
+		return cfg.parseConfigCmd(pArgs[1:])
 	}
 
 	//TODO: Move this a function who's description is parsing global flags and arguments
@@ -69,28 +69,28 @@ func flagMain(config *Config) error {
 		}
 	}
 
-	if config.help {
-		Usage(config)
+	if cfg.help {
+		Usage(cfg)
 		return nil
 	}
 
-	if config.version {
-		fmt.Printf(messages.currentVersion, config.CurrentVersion, config.CommitHash)
+	if cfg.version {
+		fmt.Printf(messages.currentVersion, cfg.CurrentVersion, cfg.CommitHash)
 		os.Exit(0)
 	}
 
 	numArgs := len(pArgs)
 	if numArgs >= 1 {
-		config.tmplPath = pArgs[0]
+		cfg.tmplPath = pArgs[0]
 	}
 	if numArgs >= 2 {
-		config.outPath = pArgs[1]
+		cfg.outPath = pArgs[1]
 	}
 	if numArgs >= 3 {
-		config.answersPath = pArgs[3]
+		cfg.answersPath = pArgs[3]
 	}
 
-	if e := config.validate(); e != nil {
+	if e := cfg.validate(); e != nil {
 		return e
 	}
 

@@ -38,7 +38,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	mainErr = flagMain(appConfig)
+	mainErr = appConfig.parseFlags()
 	if mainErr != nil {
 		return
 	}
