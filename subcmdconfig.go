@@ -42,38 +42,42 @@ func (cfg *Config) subCmdConfigMain(osArgs []string) error {
 	return nil
 }
 
-func runSubCmdConfig(cfg *Config) error {
+func updateUserSettings(cfg *Config) error {
+	fmt.Println("\ncalled updateUserSettings")
+	fmt.Printf("\ncfg.subCmdConfig.method = %v", cfg.subCmdConfig.method)
 	switch cfg.subCmdConfig.method {
 	case "set":
-		if e := setSetting(cfg.subCmdConfig.key, cfg.subCmdConfig.value); e != nil {
+		if e := usrOpts.set(cfg.subCmdConfig.key, cfg.subCmdConfig.value); e != nil {
 			return e
 		}
 		break
 	case "get":
-		fmt.Printf("%v", setting(cfg.subCmdConfig.key))
+		fmt.Printf("%v", usrOpts.get(cfg.subCmdConfig.key))
 	}
 
 	return saveConfigFile(cfg.path, usrOpts)
 }
 
+// subCmdConfigUsage print config command usage
 func subCmdConfigUsage() {
 	fmt.Println("usage: config set|get <args>")
 	fmt.Println("example: config set \"cache\" \"./path/to/a/directory\"")
 }
 
-func setSetting(key, val string) error {
+// set the value of a user setting
+func (uo *userOptions) set(key, val string) error {
 	switch key {
 	case "cacheDir":
 		usrOpts.cacheDir = val
 		break
 	default:
-		return fmt.Errorf("no setting found %v", key)
+		return fmt.Errorf("no %q setting found", key)
 	}
 	return nil
 }
 
-// setting get the value of a user setting.
-func setting(key string) error {
+// get the value of a user setting.
+func (uo *userOptions) get(key string) error {
 	switch key {
 	case "cacheDir":
 		fmt.Printf("%v", usrOpts.cacheDir)
