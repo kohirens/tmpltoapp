@@ -125,7 +125,7 @@ func (cfg *Config) validate() error {
 func Usage(cfg *Config) {
 	switch cfg.subCmd {
 	case cmdConfig:
-		subCmdConfigUsage()
+		subCmdConfigUsage(cfg)
 		return
 	}
 	// Print the main app usage.

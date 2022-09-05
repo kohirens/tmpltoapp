@@ -1,8 +1,8 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
 )
 
 // userOptions Options the user can set
@@ -29,7 +29,7 @@ func (cfg *Config) subCmdConfigMain(osArgs []string) error {
 	}
 
 	if len(osArgs) < 2 {
-		subCmdConfigUsage()
+		subCmdConfigUsage(cfg)
 		return fmt.Errorf("invalid number of arguments passed to config sub-command, please try config -h for usage")
 	}
 
@@ -59,9 +59,20 @@ func updateUserSettings(cfg *Config) error {
 }
 
 // subCmdConfigUsage print config command usage
-func subCmdConfigUsage() {
+func subCmdConfigUsage(cfg *Config) {
 	fmt.Println("usage: config set|get <args>")
-	fmt.Println("example: config set \"cache\" \"./path/to/a/directory\"")
+	fmt.Println("examples:")
+	fmt.Printf("\tconfig set \"cacheDir\" \"./path/to/a/directory\"\n")
+	fmt.Printf("\tconfig get \"cacheDir\"\n")
+	fmt.Printf("Options: \n\n")
+	// print options usage
+	cfg.subCmdConfig.flagSet.VisitAll(func(f *flag.Flag) {
+		um, ok := usageMsgs[f.Name]
+		if ok {
+			fmt.Printf("  -%-11s %v\n\n", f.Name, um)
+			f.Value.String()
+		}
+	})
 }
 
 // set the value of a user setting
