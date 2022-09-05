@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/kohirens/stdlib"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -15,7 +18,7 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 		expected string
 	}{
 		{"noArgs", 1, []string{"config"}, "usage: config"},
-		{"keyDoesNotExist", 1, []string{"config", "set", "key", "value"}, "no setting \"key\" found"},
+		{"keyDoesNotExist", 1, []string{"config", "set", "key", "value"}, "no \"key\" setting found"},
 	}
 
 	for _, test := range tests {
@@ -32,11 +35,16 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
 
-			if !strings.Contains(string(out), test.expected) {
-				t.Errorf("error output from program did not contain %q", test.expected)
+			// using bytes.NewBuffer(out).String() allows the byte array to be
+			// converted as-is and keeps chars such as newlines and quotes from
+			// being converted to '\n' or '\"', etc.
+			if !strings.Contains(bytes.NewBuffer(out).String(), test.expected) {
+				t.Errorf("std error from program did not contain %q", test.expected)
 			}
-			if sce != nil {
-				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n", string(out))
+
+			if testing.Verbose() && sce != nil {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
 				fmt.Printf("stderr:\n%v\n", sce.Error())
 				fmt.Print("\nEND sub-command\n\n")
 			}
@@ -75,15 +83,34 @@ func xTestSubCmdConfigBadExit(tester *testing.T) {
 	}
 }
 func TestSubCmdConfigSuccess(tester *testing.T) {
+	// Set the app data dir to the local test tmp.
+	if runtime.GOOS == "windows" {
+		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
+		_ = os.Setenv("LOCALAPPDATA", testTmp)
+		defer func() {
+			_ = os.Setenv("LOCALAPPDATA", oldAppData)
+		}()
+	} else {
+		oldHome, _ := os.LookupEnv("HOME")
+		_ = os.Setenv("HOME", testTmp)
+		defer func() {
+			_ = os.Setenv("HOME", oldHome)
+		}()
+	}
+
+	dir, _ := stdlib.AppDataDir()
+	// Debug
+	fmt.Printf("app data dir: %q", dir)
+
 	var tests = []struct {
 		name     string
 		wantCode int
 		args     []string
 		contains string
 	}{
-		{"setCache", 0, []string{"config", "set", "cache", "/tmp"}, ""},
-		{"help", 0, []string{"config", "-help"}, ""},
-		{"getCache", 0, []string{"config", "get", "cache"}, ""},
+		{"setCache", 0, []string{"config", "set", "cacheDir", "/tmp"}, ""},
+		//{"help", 0, []string{"config", "-help"}, ""},
+		//{"getCache", 0, []string{"config", "get", "cacheDir"}, "/tmp"},
 	}
 
 	for _, test := range tests {
@@ -94,9 +121,11 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 			out, sce := cmd.CombinedOutput()
 
 			// Debug
-			fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n\n", string(out))
-			fmt.Printf("stderr:\n%v\n", sce.Error())
-			fmt.Print("\nEND sub-command\n\n")
+			if sce != nil {
+				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n", string(out))
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
+			}
 
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
