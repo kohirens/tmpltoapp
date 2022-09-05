@@ -43,7 +43,7 @@ func main() {
 		return
 	}
 
-	mainErr = appConfig.configMain()
+	mainErr = appConfig.setup()
 
 	// Exit if we are just printing help usage
 	if appConfig.help {

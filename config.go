@@ -39,8 +39,8 @@ type Config struct {
 	}
 }
 
-// configMain initialize the application configuration
-func (cfg *Config) configMain() error {
+// setup All application configuration.
+func (cfg *Config) setup() error {
 	osDataDir, err1 := stdlib.AppDataDir()
 	if err1 != nil {
 		return err1
