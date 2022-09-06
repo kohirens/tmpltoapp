@@ -51,8 +51,8 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 		return e
 	}
 
-	cfg.usrOpts.cacheDir = cfg.dataDir + ps + "cache"
-	if e := os.MkdirAll(cfg.usrOpts.cacheDir, dirMode); e != nil {
+	cfg.usrOpts.CacheDir = cfg.dataDir + ps + "cache"
+	if e := os.MkdirAll(cfg.usrOpts.CacheDir, dirMode); e != nil {
 		return fmt.Errorf(errors.couldNotMakeCacheDir, e.Error())
 	}
 
@@ -108,14 +108,17 @@ func (cfg *Config) initFile() error {
 }
 
 // save configuration file.
-func (cfg *Config) saveUserSettings(ps string, mode os.FileMode) error {
+func (cfg *Config) saveUserSettings(mode os.FileMode) error {
 	data, err1 := json.Marshal(cfg.usrOpts)
+
+	dbugf("%s\n", data)
+
 	if err1 != nil {
 		return fmt.Errorf(errors.couldNotEncodeConfig, err1.Error())
 	}
 
 	if e := os.WriteFile(cfg.path, data, mode); e != nil {
-		return cfg.initFile()
+		return e
 	}
 
 	return nil

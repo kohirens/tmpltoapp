@@ -47,10 +47,11 @@ type tmplJson struct {
 	Excludes     []string `json:"excludes"`
 }
 
-var regExpTmplType = regexp.MustCompile("^(zip|git|dir)$")
-
-var regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
-var regExpWinDrive = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
+var (
+	regExpTmplType     = regexp.MustCompile("^(zip|git|dir)$")
+	regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
+	regExpWinDrive     = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
+)
 
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (string, error) {

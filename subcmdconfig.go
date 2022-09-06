@@ -10,7 +10,7 @@ import (
 type userOptions struct {
 	ExcludeFileExtensions *[]string
 	IncludeFileExtensions *[]string
-	cacheDir              string
+	CacheDir              string
 }
 
 // parseConfigCmd parse the config sub-command flags/options/args but do not execute the command itself
@@ -32,7 +32,14 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 
 	cfg.subCmdConfig.method = osArgs[0]
 	cfg.subCmdConfig.key = osArgs[1]
-	cfg.subCmdConfig.value = osArgs[2]
+
+	if len(osArgs) > 2 {
+		cfg.subCmdConfig.value = osArgs[2]
+	}
+
+	dbugf("cfg.subCmdConfig.method = %v\n", cfg.subCmdConfig.method)
+	dbugf("cfg.subCmdConfig.key = %v\n", cfg.subCmdConfig.key)
+	dbugf("cfg.subCmdConfig.value = %v\n", cfg.subCmdConfig.value)
 
 	return nil
 }
@@ -45,18 +52,22 @@ func (cfg *Config) updateUserSettings(ps string, mode os.FileMode) error {
 		}
 		break
 	case "get":
-		fmt.Printf("%v", cfg.get(cfg.subCmdConfig.key))
+		v, e := cfg.get(cfg.subCmdConfig.key)
+		if e != nil {
+			return e
+		}
+		fmt.Printf("%v", v)
 	}
 
-	return cfg.saveUserSettings(ps, mode)
+	return cfg.saveUserSettings(mode)
 }
 
 // subCmdConfigUsage print config command usage
 func subCmdConfigUsage(cfg *Config) {
 	fmt.Printf("usage: config set|get <args>\n\n")
 	fmt.Println("examples:")
-	fmt.Printf("\tconfig set \"cacheDir\" \"./path/to/a/directory\"\n")
-	fmt.Printf("\tconfig get \"cacheDir\"\n\n")
+	fmt.Printf("\tconfig set \"CacheDir\" \"./path/to/a/directory\"\n")
+	fmt.Printf("\tconfig get \"CacheDir\"\n\n")
 	fmt.Printf("Options: \n\n")
 	// print options usage
 	cfg.subCmdConfig.flagSet.VisitAll(func(f *flag.Flag) {
@@ -71,8 +82,8 @@ func subCmdConfigUsage(cfg *Config) {
 // set the value of a user setting
 func (cfg *Config) set(key, val string) error {
 	switch key {
-	case "cacheDir":
-		cfg.usrOpts.cacheDir = val
+	case "CacheDir":
+		cfg.usrOpts.CacheDir = val
 		break
 	default:
 		return fmt.Errorf("no %q setting found", key)
@@ -81,13 +92,16 @@ func (cfg *Config) set(key, val string) error {
 }
 
 // get the value of a user setting.
-func (cfg *Config) get(key string) error {
+func (cfg *Config) get(key string) (interface{}, error) {
+	var val interface{}
+
 	switch key {
-	case "cacheDir":
-		fmt.Printf("%v", cfg.usrOpts.cacheDir)
+	case "CacheDir":
+		val = cfg.usrOpts.CacheDir
 		break
 	default:
-		return fmt.Errorf("no setting %v found", key)
+		return "", fmt.Errorf("no setting %v found", key)
 	}
-	return nil
+
+	return val, nil
 }
