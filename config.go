@@ -78,7 +78,7 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 	return nil
 }
 
-// Load configuration file.
+// Initialize a configuration file.
 func (cfg *Config) initConfigFile(filename string) (string, error) {
 	file := cfg.dataDir + filename
 
