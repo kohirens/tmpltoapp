@@ -2,8 +2,11 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -81,6 +84,7 @@ func xTestSubCmdConfigBadExit(tester *testing.T) {
 		})
 	}
 }
+
 func TestSubCmdConfigSuccess(tester *testing.T) {
 	// Set the app data dir to the local test tmp.
 	if runtime.GOOS == "windows" {
@@ -128,9 +132,71 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 			if got != test.wantCode {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
-			fmt.Printf("stdout: %s", out)
+
 			if !strings.Contains(bytes.NewBuffer(out).String(), test.contains) {
+				//fmt.Printf("stdout = %s\n", out)
 				t.Errorf("did not contain %q", test.contains)
+			}
+		})
+	}
+}
+
+func TestSetUserOptions(tester *testing.T) {
+	// Set the app data dir to the local test tmp.
+	if runtime.GOOS == "windows" {
+		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
+		_ = os.Setenv("LOCALAPPDATA", testTmp)
+		defer func() {
+			_ = os.Setenv("LOCALAPPDATA", oldAppData)
+		}()
+	} else {
+		oldHome, _ := os.LookupEnv("HOME")
+		_ = os.Setenv("HOME", testTmp)
+		defer func() {
+			_ = os.Setenv("HOME", oldHome)
+		}()
+	}
+
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+	}{
+		{"setCache", 0, []string{cmdConfig, "set", "CacheDir", "setCache"}},
+	}
+
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+
+			cmd := getTestBinCmd(test.args)
+
+			out, sce := cmd.CombinedOutput()
+
+			// Debug
+			if sce != nil {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
+			}
+
+			// get exit code.
+			got := cmd.ProcessState.ExitCode()
+
+			if got != test.wantCode {
+				t.Errorf("got %q, want %q", got, test.wantCode)
+			}
+
+			file := testTmp + PS + "tmpltoapp" + PS + "config.json"
+			content, _ := ioutil.ReadFile(file)
+			usrOpts := &userOptions{}
+			_ = json.Unmarshal(content, usrOpts)
+
+			rUsrOpts := reflect.ValueOf(usrOpts)
+			f := reflect.Indirect(rUsrOpts).FieldByName(test.args[2])
+
+			if f.String() != test.args[3] {
+				t.Errorf("did not contai")
 			}
 		})
 	}
