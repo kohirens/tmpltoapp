@@ -37,7 +37,7 @@ var messages = struct {
 	configFileExist:       "config file %q exist",
 	currentVersion:        "%v, %v\n",
 	gitCheckout:           "git checkout %s",
-	madeNewConfig:         "wrote %d bytes to a new config file %q",
+	madeNewConfig:         "saved a new config file %q",
 	numNonFlagArgs:        "number of non-flag arguments passed in: %d",
 	numParsedFlags:        "number of parsed flags = %v",
 	outPathExist:          "out-path already exits %q",

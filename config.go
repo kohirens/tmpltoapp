@@ -31,6 +31,7 @@ type Config struct {
 	help                  bool         // flag to show the usage for all flags.
 	path                  string       // Path to configuration file.
 	version               bool         // flag to show the current version
+	usrOpts               *userOptions // options that can configured by the user.
 	subCmdConfig          struct {
 		flagSet *flag.FlagSet
 		key     string // config setting
@@ -86,22 +87,11 @@ func (cfg *Config) initConfigFile(filename string) (string, error) {
 		return file, nil
 	}
 
-	f, er := os.Create(file)
-
-	if er != nil {
-		return "", er
-	}
-
-	b, e2 := f.WriteString(DEFAULT_CFG)
-	if e2 != nil {
-		return "", e2
-	}
-
-	infof(messages.madeNewConfig, b, file)
-
-	if e := f.Close(); e != nil {
+	if e := saveConfigFile(file, cfg.usrOpts); e != nil {
 		return "", e
 	}
+
+	infof(messages.madeNewConfig, file)
 
 	return file, nil
 }
