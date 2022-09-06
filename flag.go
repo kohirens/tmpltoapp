@@ -41,7 +41,6 @@ func (cfg *Config) parseFlags() error {
 
 	infof(messages.verboseLevelInfo, verbosityLevel)
 
-	// TODO: Show order of all input here (this may not be doable or necessary)
 	pArgs := flag.Args()
 	dbugf(messages.numNonFlagArgs, len(pArgs))
 	dbugf(messages.actualArgs, pArgs)
