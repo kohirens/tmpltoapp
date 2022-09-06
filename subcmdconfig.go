@@ -43,7 +43,6 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 }
 
 func updateUserSettings(cfg *Config) error {
-	fmt.Println("\ncalled updateUserSettings")
 	fmt.Printf("\ncfg.subCmdConfig.method = %v", cfg.subCmdConfig.method)
 	switch cfg.subCmdConfig.method {
 	case "set":
