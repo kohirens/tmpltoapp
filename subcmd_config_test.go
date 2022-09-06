@@ -104,7 +104,7 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 		contains string
 	}{
 		{"setCache", 0, []string{cmdConfig, "set", "cacheDir", "/tmp"}, ""},
-		{"help", 0, []string{cmdConfig, "-help"}, ""},
+		{"help", 0, []string{cmdConfig, "-help"}, "usage: config"},
 		//{"getCache", 0, []string{cmdConfig, "get", "cacheDir"}, "/tmp"},
 	}
 
