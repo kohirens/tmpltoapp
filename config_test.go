@@ -7,28 +7,19 @@ import (
 )
 
 func TestGetSettings(t *testing.T) {
-	var tests = []struct {
-		name, file, want string
-	}{
-		{"configNotFound", "does-not-exist", "could not open"},
-	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// exec code.
-			got := &Config{}
-			gotErr := settings(tt.file, got)
+	t.Run("configNotFound", func(t *testing.T) {
+		cfgFixture := &Config{}
+		gotErr := cfgFixture.loadUserSettings("does-not-exist")
 
-			if !strings.Contains(gotErr.Error(), tt.want) {
-				t.Errorf("got %q, want %q", gotErr, tt.want)
-			}
-		})
-	}
+		if !strings.Contains(gotErr.Error(), "could not open") {
+			t.Errorf("got %q, want %q", gotErr, "could not open")
+		}
+	})
 
 	t.Run("canReadConfig", func(t *testing.T) {
-		// exec code.
-		got := &Config{}
-		err := settings(fixturesDir+"/config-01.json", got)
+		cfgFixture := &Config{}
+		err := cfgFixture.loadUserSettings(fixturesDir + PS + "config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}

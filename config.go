@@ -66,7 +66,7 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 		return err2
 	}
 
-	if e := settings(cfg.path, cfg); e != nil {
+	if e := cfg.loadUserSettings(cfg.path); e != nil {
 		return e
 	}
 
@@ -120,23 +120,19 @@ func saveConfigFile(file string, defCfg *userOptions) error {
 	return nil
 }
 
-// TODO: Rename to loadUserSettings as a method of Config
-// settings runtime options are a mix of config and command line arguments.
-func settings(filename string, cfg *Config) (err error) {
+// loadUserSettings from a file, replacing the default built-in settings.
+func (cfg *Config) loadUserSettings(filename string) error {
 	content, er := ioutil.ReadFile(filename)
 
 	if os.IsNotExist(er) {
-		err = fmt.Errorf(errors.couldNot, er.Error())
-		return
+		return fmt.Errorf(errors.couldNot, er.Error())
 	}
 
-	er = json.Unmarshal(content, cfg)
-	if er != nil {
-		err = fmt.Errorf(errors.couldNotDecode, filename, er.Error())
-		return
+	if e := json.Unmarshal(content, cfg); e != nil {
+		return fmt.Errorf(errors.couldNotDecode, filename, er.Error())
 	}
 
-	return
+	return nil
 }
 
 // loadAnswers Load key/value pairs from a JSON file to fill in placeholders (provides that data for the Go templates).

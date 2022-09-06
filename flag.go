@@ -59,8 +59,6 @@ func (cfg *Config) parseFlags() error {
 		return cfg.parseConfigCmd(pArgs[1:])
 	}
 
-	//TODO: Move this a function who's description is parsing global flags and arguments
-
 	// throw an error when a flag comes after any arguments.
 	for i := 0; i < len(pArgs); i++ {
 		v := pArgs[i]
