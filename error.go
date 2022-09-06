@@ -8,7 +8,11 @@ var errors = struct {
 	cannotDecodeAnswerFile string
 	cloning                string
 	couldNot               string
+	couldNotCloseFile      string
 	couldNotDecode         string
+	couldNotEncodeConfig   string
+	couldNotMakeCacheDir   string
+	couldNotWriteFile      string
 	flagOrderErr           string
 	gettingAnswers         string
 	gettingCommitHash      string
@@ -31,7 +35,11 @@ var errors = struct {
 	cannotDecodeAnswerFile: "could not decode JSON in answer file %q, because of: %s",
 	cloning:                "error cloning %v: %s",
 	couldNot:               "could not %s",
+	couldNotCloseFile:      "could not close file %v, %v",
 	couldNotDecode:         "could not decode %q, error: %s",
+	couldNotEncodeConfig:   "could not JSON encode user configuration settings, %v",
+	couldNotMakeCacheDir:   "could not make cache directory, error: %s",
+	couldNotWriteFile:      "could not write file %v, reason: %v",
 	flagOrderErr:           "flag %v MUST come before any non-flag arguments, a fix would be to move this flag to the left of other input arguments",
 	gettingAnswers:         "problem getting answers; error %q",
 	gettingCommitHash:      "error getting commit hash %v: %s",
