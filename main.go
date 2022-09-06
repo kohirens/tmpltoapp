@@ -20,7 +20,12 @@ const (
 
 var (
 	// appConfig Runtime settings used throughout the application.
-	appConfig = &Config{usrOpts: &userOptions{}} // store all settings (including CLI flag values).
+	appConfig = &Config{
+		usrOpts: &userOptions{
+			ExcludeFileExtensions: &[]string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"},
+			IncludeFileExtensions: &[]string{},
+		},
+	}
 )
 
 func init() {
@@ -69,7 +74,7 @@ func main() {
 		zipFile = appConfig.tmplPath
 		if appConfig.tmplLocation == "remote" {
 			client := http.Client{}
-			zipFile, iErr = download(appConfig.tmplPath, appConfig.usrOpts.cacheDir, &client)
+			zipFile, iErr = download(appConfig.tmplPath, appConfig.usrOpts.CacheDir, &client)
 			if iErr != nil {
 				mainErr = iErr
 				return
@@ -87,7 +92,7 @@ func main() {
 		var repo, commitHash string
 		var err2 error
 
-		repoDir := appConfig.usrOpts.cacheDir + PS + getRepoDir(appConfig.tmplPath)
+		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath)
 		infof("repoDir = %q\n", repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
@@ -95,7 +100,7 @@ func main() {
 			infof("pulling latest\n")
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
-			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.usrOpts.cacheDir, appConfig.branch)
+			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.usrOpts.CacheDir, appConfig.branch)
 		}
 
 		infof("repo = %q; %q", repo, commitHash)

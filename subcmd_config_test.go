@@ -103,9 +103,8 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 		args     []string
 		contains string
 	}{
-		{"setCache", 0, []string{cmdConfig, "set", "cacheDir", "/tmp"}, ""},
 		{"help", 0, []string{cmdConfig, "-help"}, "usage: config"},
-		//{"getCache", 0, []string{cmdConfig, "get", "cacheDir"}, "/tmp"},
+		{"getCache", 0, []string{cmdConfig, "get", "CacheDir"}, "tmp"},
 	}
 
 	for _, test := range tests {
@@ -129,8 +128,8 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 			if got != test.wantCode {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
-
-			if !strings.Contains(string(out), test.contains) {
+			fmt.Printf("stdout: %s", out)
+			if !strings.Contains(bytes.NewBuffer(out).String(), test.contains) {
 				t.Errorf("did not contain %q", test.contains)
 			}
 		})
