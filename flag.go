@@ -53,9 +53,11 @@ func (cfg *Config) parseFlags() error {
 	}
 
 	// process sub-commands
-	switch pArgs[0] {
-	case cmdConfig:
-		return cfg.parseConfigCmd(pArgs[1:])
+	if len(pArgs) > 0 {
+		switch pArgs[0] {
+		case cmdConfig:
+			return cfg.parseConfigCmd(pArgs[1:])
+		}
 	}
 
 	// throw an error when a flag comes after any arguments.
@@ -67,7 +69,6 @@ func (cfg *Config) parseFlags() error {
 	}
 
 	if cfg.help {
-		Usage(cfg)
 		return nil
 	}
 
@@ -136,5 +137,4 @@ func Usage(cfg *Config) {
 			f.Value.String()
 		}
 	})
-	fmt.Printf(messages.subCommands)
 }
