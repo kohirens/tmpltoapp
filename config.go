@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 type Config struct {
@@ -66,7 +67,7 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 	}
 
 	// Determine if the template is on the local file system or a remote server.
-	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
+	cfg.tmplLocation = cfg.getTmplLocation()
 
 	if cfg.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
 		cfg.tmpl = filepath.Clean(cfg.tmplPath)
@@ -118,6 +119,19 @@ func (cfg *Config) saveUserSettings(ps string, mode os.FileMode) error {
 	}
 
 	return nil
+}
+
+// getTmplLocation Determine if the template is on the local file system or a remote server.
+func (cfg *Config) getTmplLocation() string {
+	tmplPath := cfg.tmplPath
+	regExpAbsolutePath := regexp.MustCompile(`^/([a-zA-Z._\-][a-zA-Z/._\-].*)?`)
+	pathType := "remote"
+
+	if regExpAbsolutePath.MatchString(tmplPath) || regExpRelativePath.MatchString(tmplPath) || regExpWinDrive.MatchString(tmplPath) {
+		pathType = "local"
+	}
+
+	return pathType
 }
 
 // loadUserSettings from a file, replacing the default built-in settings.

@@ -166,34 +166,6 @@ func TestParse(tester *testing.T) {
 	}
 }
 
-func TestGetTmplLocation(runner *testing.T) {
-	fixtures := []struct {
-		name, path, want string
-	}{
-		{"relative", "./", "local"},
-		{"relative2", ".", "local"},
-		{"relativeUp", "..", "local"},
-		{"absolute", "/home/myuser", "local"},
-		{"windows", "C:\\Temp", "local"},
-		{"http", "http://example.com/repo1", "remote"},
-		{"https", "https://example.com/repo1", "remote"},
-		{"git", "git://example.com/repo1", "remote"},
-		{"file", "file://example.com/repo1", "remote"},
-		{"hiddenRelative", ".m/example.com/repo1", "local"},
-		{"tildeRelative", "~/repo1.git", "local"},
-	}
-
-	for _, tc := range fixtures {
-		runner.Run(tc.name, func(test *testing.T) {
-			got := getTmplLocation(tc.path)
-
-			if got != tc.want {
-				test.Errorf("got %q, want %q", got, tc.want)
-			}
-		})
-	}
-}
-
 func TestParseDir(tester *testing.T) {
 	fixturePath1, _ := filepath.Abs(fixturesDir + "/parse-dir-01")
 	tmpDir, _ := filepath.Abs(testTmp)

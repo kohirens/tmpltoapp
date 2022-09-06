@@ -50,19 +50,7 @@ type tmplJson struct {
 var regExpTmplType = regexp.MustCompile("^(zip|git|dir)$")
 
 var regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
-var regExpAbsolutePath = regexp.MustCompile(`^/([a-zA-Z._\-][a-zA-Z/._\-].*)?`)
 var regExpWinDrive = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
-
-// getTmplLocation Check if the path is an HTTP or local directory URL.
-func getTmplLocation(tmplPath string) string {
-	pathType := "remote"
-
-	if regExpAbsolutePath.MatchString(tmplPath) || regExpRelativePath.MatchString(tmplPath) || regExpWinDrive.MatchString(tmplPath) {
-		pathType = "local"
-	}
-
-	return pathType
-}
 
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (zipFile string, err error) {
