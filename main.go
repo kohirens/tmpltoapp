@@ -20,7 +20,7 @@ const (
 
 var (
 	// appConfig Runtime settings used throughout the application.
-	appConfig = &Config{} // store all settings (including CLI flag values).
+	appConfig = &Config{usrOpts: &userOptions{}} // store all settings (including CLI flag values).
 )
 
 func init() {
@@ -45,6 +45,9 @@ func main() {
 	}
 
 	mainErr = appConfig.setup(AppName, PS, DirMode)
+	if mainErr != nil {
+		return
+	}
 
 	// Exit if we are just printing help usage
 	if appConfig.help {
@@ -56,7 +59,7 @@ func main() {
 	switch appConfig.subCmd {
 	case cmdConfig:
 		// store or get the key and return
-		mainErr = updateUserSettings(appConfig)
+		mainErr = appConfig.updateUserSettings(PS, DirMode)
 		return
 	}
 
@@ -66,7 +69,7 @@ func main() {
 		zipFile = appConfig.tmplPath
 		if appConfig.tmplLocation == "remote" {
 			client := http.Client{}
-			zipFile, iErr = download(appConfig.tmplPath, appConfig.cacheDir, &client)
+			zipFile, iErr = download(appConfig.tmplPath, appConfig.usrOpts.cacheDir, &client)
 			if iErr != nil {
 				mainErr = iErr
 				return
@@ -84,7 +87,7 @@ func main() {
 		var repo, commitHash string
 		var err2 error
 
-		repoDir := appConfig.cacheDir + PS + getRepoDir(appConfig.tmplPath)
+		repoDir := appConfig.usrOpts.cacheDir + PS + getRepoDir(appConfig.tmplPath)
 		infof("repoDir = %q\n", repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
@@ -92,7 +95,7 @@ func main() {
 			infof("pulling latest\n")
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
-			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.cacheDir, appConfig.branch)
+			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.usrOpts.cacheDir, appConfig.branch)
 		}
 
 		infof("repo = %q; %q", repo, commitHash)
@@ -108,7 +111,7 @@ func main() {
 		return
 	}
 
-	fec, err1 := stdlib.NewFileExtChecker(appConfig.ExcludeFileExtensions, appConfig.IncludeFileExtensions)
+	fec, err1 := stdlib.NewFileExtChecker(appConfig.usrOpts.ExcludeFileExtensions, appConfig.usrOpts.IncludeFileExtensions)
 	if err1 != nil {
 		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
 	}

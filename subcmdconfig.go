@@ -3,18 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 // userOptions Options the user can set
 type userOptions struct {
-	ExcludeFileExtensions []string
-	IncludeFileExtensions []string
+	ExcludeFileExtensions *[]string
+	IncludeFileExtensions *[]string
 	cacheDir              string
-}
-
-var usrOpts = &userOptions{
-	ExcludeFileExtensions: []string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"},
-	IncludeFileExtensions: []string{},
 }
 
 // parseConfigCmd parse the config sub-command flags/options/args but do not execute the command itself
@@ -42,27 +38,26 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 	return nil
 }
 
-func updateUserSettings(cfg *Config) error {
-	fmt.Printf("\ncfg.subCmdConfig.method = %v", cfg.subCmdConfig.method)
+func (cfg *Config) updateUserSettings(ps string, mode os.FileMode) error {
 	switch cfg.subCmdConfig.method {
 	case "set":
-		if e := usrOpts.set(cfg.subCmdConfig.key, cfg.subCmdConfig.value); e != nil {
+		if e := cfg.set(cfg.subCmdConfig.key, cfg.subCmdConfig.value); e != nil {
 			return e
 		}
 		break
 	case "get":
-		fmt.Printf("%v", usrOpts.get(cfg.subCmdConfig.key))
+		fmt.Printf("%v", cfg.get(cfg.subCmdConfig.key))
 	}
 
-	return saveConfigFile(cfg.path, usrOpts)
+	return cfg.saveUserSettings(ps, mode)
 }
 
 // subCmdConfigUsage print config command usage
 func subCmdConfigUsage(cfg *Config) {
-	fmt.Println("usage: config set|get <args>")
+	fmt.Printf("usage: config set|get <args>\n\n")
 	fmt.Println("examples:")
 	fmt.Printf("\tconfig set \"cacheDir\" \"./path/to/a/directory\"\n")
-	fmt.Printf("\tconfig get \"cacheDir\"\n")
+	fmt.Printf("\tconfig get \"cacheDir\"\n\n")
 	fmt.Printf("Options: \n\n")
 	// print options usage
 	cfg.subCmdConfig.flagSet.VisitAll(func(f *flag.Flag) {
@@ -75,10 +70,10 @@ func subCmdConfigUsage(cfg *Config) {
 }
 
 // set the value of a user setting
-func (uo *userOptions) set(key, val string) error {
+func (cfg *Config) set(key, val string) error {
 	switch key {
 	case "cacheDir":
-		usrOpts.cacheDir = val
+		cfg.usrOpts.cacheDir = val
 		break
 	default:
 		return fmt.Errorf("no %q setting found", key)
@@ -87,10 +82,10 @@ func (uo *userOptions) set(key, val string) error {
 }
 
 // get the value of a user setting.
-func (uo *userOptions) get(key string) error {
+func (cfg *Config) get(key string) error {
 	switch key {
 	case "cacheDir":
-		fmt.Printf("%v", usrOpts.cacheDir)
+		fmt.Printf("%v", cfg.usrOpts.cacheDir)
 		break
 	default:
 		return fmt.Errorf("no setting %v found", key)

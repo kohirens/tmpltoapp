@@ -28,26 +28,25 @@ func TestGetSettings(t *testing.T) {
 
 func TestInitConfigFile(t *testing.T) {
 	var tests = []struct {
-		name, file string
-		want       error
-		cfg        *Config
+		name string
+		want error
+		cfg  *Config
 	}{
-		{"NotExist", testTmp + PS + "config-fix-01.json", nil, &Config{}},
+		{"NotExist", nil, &Config{path: testTmp + PS + "config-fix-01.json"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// exec code.
-			got, gotErr := tt.cfg.initConfigFile(tt.file)
+			gotErr := tt.cfg.initFile()
 
 			if tt.want != gotErr {
-				t.Errorf("got %v; want %v", got, tt.want)
+				t.Errorf("got %t; want %t", gotErr, tt.want)
 			}
 
-			_, err := os.Stat(tt.file)
+			_, err := os.Stat(tt.cfg.path)
 
 			if err != nil {
-				t.Errorf("got %v; want %v", got, tt.want)
+				t.Errorf("got %v; want %v", gotErr, tt.want)
 			}
 		})
 	}

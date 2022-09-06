@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/kohirens/stdlib"
 	"os"
 	"runtime"
 	"strings"
@@ -31,6 +30,13 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
 
+			if testing.Verbose() && sce != nil {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
+			}
+
 			if got != test.wantCode {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
@@ -40,13 +46,6 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 			// being converted to '\n' or '\"', etc.
 			if !strings.Contains(bytes.NewBuffer(out).String(), test.expected) {
 				t.Errorf("std error from program did not contain %q", test.expected)
-			}
-
-			if testing.Verbose() && sce != nil {
-				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", out)
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
 			}
 		})
 	}
@@ -97,10 +96,6 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 			_ = os.Setenv("HOME", oldHome)
 		}()
 	}
-
-	dir, _ := stdlib.AppDataDir()
-	// Debug
-	fmt.Printf("app data dir: %q", dir)
 
 	var tests = []struct {
 		name     string

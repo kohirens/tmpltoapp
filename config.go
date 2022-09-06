@@ -11,28 +11,25 @@ import (
 )
 
 type Config struct {
-	answersJson           *answersJson // data use for template processing
-	answersPath           string       // flag to get the path to a file containing values to variables to be parsed.
-	outPath               string       // flag to set the location of the processed template output.
-	cacheDir              string       // Cache for downloaded templates.
-	dataDir               string       // Directory to store app data.
-	defaultVal            string       // Flag to set a default placeholder value when a placeholder is empty.
-	tmplPath              string       // flag to set the URL or local path to a template.
-	tmpl                  string       // Path to template, this will be the cached path.
-	ExcludeFileExtensions *[]string    // Files to skip when sending to the go parsing engine.
-	IncludeFileExtensions *[]string    // Files to include when sending to the go parsing engine.
-	TmplJson              *tmplJson    // Question for requesting input for the template.
-	branch                string       // flag to set the desired branch to clone.
-	subCmd                string       // sub-command to execute
-	tmplLocation          string       // Indicates local or remote location to downloaded
-	tmplType              string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
-	CurrentVersion        string       // Current semantic version of the application.
-	CommitHash            string       // Git commit has of the current version.
-	help                  bool         // flag to show the usage for all flags.
-	path                  string       // Path to configuration file.
-	version               bool         // flag to show the current version
-	usrOpts               *userOptions // options that can configured by the user.
-	subCmdConfig          struct {
+	answersJson    *answersJson // data use for template processing
+	answersPath    string       // flag to get the path to a file containing values to variables to be parsed.
+	outPath        string       // flag to set the location of the processed template output.
+	dataDir        string       // Directory to store app data.
+	defaultVal     string       // Flag to set a default placeholder value when a placeholder is empty.
+	tmplPath       string       // flag to set the URL or local path to a template.
+	tmpl           string       // Path to template, this will be the cached path.
+	TmplJson       *tmplJson    // Question for requesting input for the template.
+	branch         string       // flag to set the desired branch to clone.
+	subCmd         string       // sub-command to execute
+	tmplLocation   string       // Indicates local or remote location to downloaded
+	tmplType       string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
+	CurrentVersion string       // Current semantic version of the application.
+	CommitHash     string       // Git commit has of the current version.
+	help           bool         // flag to show the usage for all flags.
+	path           string       // Path to configuration file.
+	version        bool         // flag to show the current version
+	usrOpts        *userOptions // options that can configured by the user.
+	subCmdConfig   struct {
 		flagSet *flag.FlagSet
 		key     string // config setting
 		method  string // method to call
@@ -47,29 +44,29 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 		return err1
 	}
 
-	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
-
 	// Make a directory to store data.
 	cfg.dataDir = osDataDir + ps + appName
 	if e := os.MkdirAll(cfg.dataDir, dirMode); e != nil {
 		return e
 	}
 
-	cfg.cacheDir = cfg.dataDir + ps + "cache"
-	if e1 := os.MkdirAll(cfg.cacheDir, dirMode); e1 != nil {
-		return fmt.Errorf("could not make cache directory, error: %s", e1.Error())
+	cfg.usrOpts.cacheDir = cfg.dataDir + ps + "cache"
+	if e := os.MkdirAll(cfg.usrOpts.cacheDir, dirMode); e != nil {
+		return fmt.Errorf(errors.couldNotMakeCacheDir, e.Error())
 	}
 
-	var err2 error
+	cfg.path = cfg.dataDir + ps + "config.json"
 	// Make a configuration file when there is none.
-	cfg.path, err2 = cfg.initConfigFile(ps + "config.json")
-	if err2 != nil {
-		return err2
+	if e := cfg.initFile(); e != nil {
+		return e
 	}
 
 	if e := cfg.loadUserSettings(cfg.path); e != nil {
 		return e
 	}
+
+	// Determine if the template is on the local file system or a remote server.
+	cfg.tmplLocation = getTmplLocation(cfg.tmplPath)
 
 	if cfg.tmplType == "dir" { // TODO: Auto detect if the template is a git repo (look for .git), a zip (look for .zip), or dir (assume dir)
 		cfg.tmpl = filepath.Clean(cfg.tmplPath)
@@ -79,32 +76,45 @@ func (cfg *Config) setup(appName, ps string, dirMode os.FileMode) error {
 }
 
 // Initialize a configuration file.
-func (cfg *Config) initConfigFile(filename string) (string, error) {
-	file := cfg.dataDir + filename
-
-	if stdlib.PathExist(file) {
-		infof(messages.configFileExist, file)
-		return file, nil
+func (cfg *Config) initFile() error {
+	if stdlib.PathExist(cfg.path) {
+		infof(messages.configFileExist, cfg.path)
+		return nil
 	}
 
-	if e := saveConfigFile(file, cfg.usrOpts); e != nil {
-		return "", e
+	f, err1 := os.Create(cfg.path)
+	if err1 != nil {
+		return fmt.Errorf(errors.couldNot, "save initial config file, reason: "+err1.Error())
 	}
 
-	infof(messages.madeNewConfig, file)
+	data, err2 := json.Marshal(cfg.usrOpts)
+	if err2 != nil {
+		return fmt.Errorf(errors.couldNotEncodeConfig, err2.Error())
+	}
 
-	return file, nil
+	b, err3 := f.Write(data)
+	if err3 != nil {
+		return fmt.Errorf(errors.couldNotWriteFile, cfg.path, err3.Error())
+	}
+
+	if e := f.Close(); e != nil {
+		return fmt.Errorf(errors.couldNotCloseFile, cfg.path, e.Error())
+	}
+
+	infof(messages.madeNewConfig, b, cfg.path)
+
+	return nil
 }
 
 // save configuration file.
-func saveConfigFile(file string, defCfg *userOptions) error {
-	data, err := json.Marshal(defCfg)
-	if err != nil {
-		return fmt.Errorf("could not convert coniguration to JSON string: %v", err)
+func (cfg *Config) saveUserSettings(ps string, mode os.FileMode) error {
+	data, err1 := json.Marshal(cfg.usrOpts)
+	if err1 != nil {
+		return fmt.Errorf(errors.couldNotEncodeConfig, err1.Error())
 	}
 
-	if e := os.WriteFile(file, data, DirMode); e != nil {
-		return fmt.Errorf("could not save configuration: %v", e.Error())
+	if e := os.WriteFile(cfg.path, data, mode); e != nil {
+		return cfg.initFile()
 	}
 
 	return nil
