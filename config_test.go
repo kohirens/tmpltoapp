@@ -6,6 +6,35 @@ import (
 	"testing"
 )
 
+func TestGetTmplLocation(runner *testing.T) {
+	fixtures := []struct {
+		name, want string
+		cfg        *Config
+	}{
+		{"relative", "local", &Config{tmplPath: "./"}},
+		{"relative2", "local", &Config{tmplPath: "."}},
+		{"relativeUp", "local", &Config{tmplPath: ".."}},
+		{"absolute", "local", &Config{tmplPath: "/home/myuser"}},
+		{"windows", "local", &Config{tmplPath: "C:\\Temp"}},
+		{"http", "remote", &Config{tmplPath: "http://example.com/repo1"}},
+		{"https", "remote", &Config{tmplPath: "https://example.com/repo1"}},
+		{"git", "remote", &Config{tmplPath: "git://example.com/repo1"}},
+		{"file", "remote", &Config{tmplPath: "file://example.com/repo1"}},
+		{"hiddenRelative", "local", &Config{tmplPath: ".m/example.com/repo1"}},
+		{"tildeRelative", "local", &Config{tmplPath: "~/repo1.git"}},
+	}
+
+	for _, tc := range fixtures {
+		runner.Run(tc.name, func(test *testing.T) {
+			got := tc.cfg.getTmplLocation()
+
+			if got != tc.want {
+				test.Errorf("got %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestGetSettings(t *testing.T) {
 
 	t.Run("configNotFound", func(t *testing.T) {
