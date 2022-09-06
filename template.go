@@ -53,37 +53,45 @@ var regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
 var regExpWinDrive = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
 
 // download a template from a URL to a local directory.
-func download(url, dstDir string, client Client) (zipFile string, err error) {
+func download(url, dstDir string, client Client) (string, error) {
 	// Save to a unique filename in the cache.
 	dest := strings.ReplaceAll(url, "https://", "")
 	dest = strings.ReplaceAll(dest, "/", "-")
-	// HTTP Request
-	resp, err := client.Get(url)
-	if err != nil {
-		return
+
+	// Make the HTTP request
+	resp, err1 := client.Get(url)
+	if err1 != nil {
+		return "", err1
 	}
 
 	if resp.StatusCode > 300 || resp.StatusCode < 200 {
-		err = fmt.Errorf(errors.tmplPath, resp.Status, resp.StatusCode)
-		return
+		return "", fmt.Errorf(errors.tmplPath, resp.Status, resp.StatusCode)
 	}
 
-	defer resp.Body.Close()
-
-	zipFile = dstDir + PS + dest
+	zipFile := dstDir + PS + dest
 	// make handle to the file.
-	out, err := os.Create(zipFile)
-	if err != nil {
-		return
+	out, err2 := os.Create(zipFile)
+	if err2 != nil {
+		return "", err2
 	}
-	defer out.Close()
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
+	// Write the body to a file
+	_, err3 := io.Copy(out, resp.Body)
+	if err3 != nil {
+		return "", err3
+	}
+
+	if e := out.Close(); e != nil {
+		return "", e
+	}
+
+	if e := resp.Body.Close(); e != nil {
+		return "", e
+	}
 
 	infof("downloading %v to %v\n", url, dest)
 
-	return
+	return zipFile, nil
 }
 
 func extract(archivePath string) (string, error) {
