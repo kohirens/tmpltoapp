@@ -21,6 +21,7 @@ const (
 	MaxTplSize   = 1e+7
 	TmplManifest = "template.json"
 	EmptyFile    = ".empty"
+	gitDir       = ".git"
 )
 
 // Client specify the methods reqruied by an HTTP client
@@ -189,7 +190,7 @@ func extract(archivePath string) (string, error) {
 
 // parse a file as a Go template.
 func parse(tplFile, dstDir string, vars tmplVars) error {
-
+	infof("parsing %v", tplFile)
 	parser, err1 := template.ParseFiles(tplFile)
 
 	if err1 != nil {
@@ -233,7 +234,7 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 			return
 		}
 
-		infof("processing: %q\n", sourcePath)
+		infof("\nprocessing: %q", sourcePath)
 
 		// Do not parse directories.
 		if fi.IsDir() {
@@ -248,7 +249,7 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 
 		currFile := filepath.Base(sourcePath)
 		// Skip non-text files.
-		// TODO: Remove FileExtensionCheck in favor of exclude/include list, once globbing is added.
+		// TODO: Add globbing is added. filepath.Glob(pattern)
 		if currFile != EmptyFile && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
 			infof(messages.unknownFileType, sourcePath)
 			return
@@ -266,6 +267,12 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		saveDir := filepath.Clean(outDir + filepath.Dir(partial))
 		infof("partial dir: %v", partial)
 		infof("save dir: %v", saveDir)
+
+		// skip any files in the .git dir
+		if strings.Contains(partial, PS+gitDir+PS) {
+			infof(messages.skipFile, partial)
+			return
+		}
 
 		// Make the subdirectories in the new savePath.
 		err = os.MkdirAll(saveDir, DirMode)
