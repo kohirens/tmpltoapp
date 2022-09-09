@@ -31,6 +31,7 @@ var messages = struct {
 	refInfo               string
 	repoDir               string
 	runningCommand        string
+	skipFile              string
 	subCommands           string
 	unknownFileType       string
 	verboseLevelInfo      string
@@ -52,6 +53,7 @@ var messages = struct {
 	refInfo:               "ref = %v ",
 	repoDir:               "repoDir = %q\n",
 	runningCommand:        "running command %s",
+	skipFile:              "skipping: %v",
 	subCommands:           "sub-commands:\n\n",
 	unknownFileType:       "will skip and not process through template engine; could not detect file type for %v",
 	verboseLevelInfo:      "verbose level: %v",
