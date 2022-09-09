@@ -23,6 +23,15 @@
             },
             "minItems": 1,
             "uniqueItems": true
+        },
+        "skip": {
+            "description": "A list of files and directories to completely skip, will not be processed or copied",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 0,
+            "uniqueItems": true
         }
     }
 }
