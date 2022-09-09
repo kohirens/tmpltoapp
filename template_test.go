@@ -244,7 +244,7 @@ func TestReadTemplateJson(tester *testing.T) {
 	})
 }
 
-func TestQuestionsInput(tester *testing.T) {
+func TestPlaceholderInput(tester *testing.T) {
 	defer testSilencer()()
 	// Use a temp file to simulate input on the command line.
 	tmpFile, err := ioutil.TempFile(testTmp, "qi-01")
@@ -316,7 +316,7 @@ func TestQuestionsInput(tester *testing.T) {
 		}
 
 		if fxtr.config.answersJson.Placeholders[fxtr.want] != "1" {
-			test.Errorf("failed to answer missing question %v using file as input", fxtr.want)
+			test.Errorf("failed to get a value for placeholder %v using file as input", fxtr.want)
 		}
 	})
 }

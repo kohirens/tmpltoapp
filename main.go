@@ -93,11 +93,9 @@ func main() {
 		var err2 error
 
 		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath)
-		infof("repoDir = %q\n", repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
 		if stdlib.DirExist(repoDir + "/.git") {
-			infof("pulling latest\n")
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
 			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.usrOpts.CacheDir, appConfig.branch)
@@ -144,7 +142,7 @@ func main() {
 		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
 	}
 
-	//showAllQuestionsAndAnswer(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
+	showAllPlaceholderValues(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
 
 	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
 }

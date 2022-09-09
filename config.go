@@ -17,10 +17,10 @@ type Config struct {
 	outPath        string       // flag to set the location of the processed template output.
 	dataDir        string       // Directory to store app data.
 	defaultVal     string       // Flag to set a default placeholder value when a placeholder is empty.
-	tmplPath       string       // flag to set the URL or local path to a template.
+	tmplPath       string       // flag to set the URL or local template path to a template.
 	tmpl           string       // Path to template, this will be the cached path.
-	TmplJson       *tmplJson    // Question for requesting input for the template.
-	branch         string       // flag to set the desired branch to clone.
+	TmplJson       *tmplJson    // Data about the template such as placeholders, their descriptions, version, etc.
+	branch         string       // flag to set the desired branch of the template to .
 	subCmd         string       // sub-command to execute
 	tmplLocation   string       // Indicates local or remote location to downloaded
 	tmplType       string       // Flag to indicate the type of package for a template, such as a zip to extract or a repository to download.
@@ -85,7 +85,7 @@ func (cfg *Config) initFile() error {
 
 	f, err1 := os.Create(cfg.path)
 	if err1 != nil {
-		return fmt.Errorf(errors.couldNot, "save initial config file, reason: "+err1.Error())
+		return fmt.Errorf(errors.couldNotSaveConf, err1.Error())
 	}
 
 	data, err2 := json.Marshal(cfg.usrOpts)
