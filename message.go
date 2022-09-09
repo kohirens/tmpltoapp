@@ -22,15 +22,17 @@ var messages = struct {
 	numNonFlagArgs        string
 	numParsedFlags        string
 	outPathExist          string
-	pleaseAnswerQuestions string
+	provideValues         string
 	printAllFlags         string
 	printFlag             string
-	questionAnsweredWith  string
-	questionAnswerStat    string
-	questionHasAnAnswer   string
+	placeholderAnswer     string
+	placeholderAnswerStat string
+	placeholderHasAnswer  string
 	refInfo               string
+	repoDir               string
 	runningCommand        string
 	subCommands           string
+	unknownFileType       string
 	verboseLevelInfo      string
 }{
 	actualArgs:            "actual arguments passed in: %v",
@@ -41,14 +43,16 @@ var messages = struct {
 	numNonFlagArgs:        "number of non-flag arguments passed in: %d",
 	numParsedFlags:        "number of parsed flags = %v",
 	outPathExist:          "out-path already exits %q",
-	pleaseAnswerQuestions: "please answer the following\nnote: providing no value will render an empty string in its place",
+	provideValues:         "note: entering no value will render the placeholder with an empty string",
 	printAllFlags:         "printing all flags set:",
 	printFlag:             "\t%s = %v (default= %v)\n",
-	questionAnsweredWith:  "%q was answered with %q",
-	questionAnswerStat:    "there are %v placeholders and %v values",
-	questionHasAnAnswer:   "question %q already has an answer of %q, so skipping",
+	placeholderAnswer:     "%v = %q\n",
+	placeholderAnswerStat: "please provide values for %v placeholders",
+	placeholderHasAnswer:  "placeholder %v has a value of %q, so skipping",
 	refInfo:               "ref = %v ",
+	repoDir:               "repoDir = %q\n",
 	runningCommand:        "running command %s",
 	subCommands:           "sub-commands:\n\n",
+	unknownFileType:       "will skip and not process through template engine; could not detect file type for %v",
 	verboseLevelInfo:      "verbose level: %v",
 }

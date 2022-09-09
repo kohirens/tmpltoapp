@@ -34,6 +34,7 @@ func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
 
 // gitCheckout Open an existing repo and checkout commit by full ref-name
 func gitCheckout(repoLocalPath, ref string) (string, string, error) {
+	infof("pulling latest\n")
 	_, e1 := gitCmd(repoLocalPath, "fetch", "--all", "-p")
 	if e1 != nil {
 		return "", "", fmt.Errorf(errors.gitFetchFailed, repoLocalPath, ref, e1.Error())
@@ -102,6 +103,8 @@ func getRepoDir(repoLocation string) string {
 	if isGitUri.MatchString(repoLocation) {
 		return strings.Replace(baseName, ".git", "", 1)
 	}
+
+	infof(messages.repoDir, baseName)
 
 	return baseName
 }

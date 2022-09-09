@@ -35,12 +35,6 @@ type answersJson struct {
 	Placeholders tmplVars `json:"placeholders"`
 }
 
-func newAnswerJson() *answersJson {
-	return &answersJson{
-		Placeholders: make(tmplVars),
-	}
-}
-
 type tmplJson struct {
 	Version      string   `json:"version"`
 	Placeholders tmplVars `json:"placeholders"`
@@ -52,6 +46,12 @@ var (
 	regExpRelativePath = regexp.MustCompile(`^(\.\.|\.|~)(/[a-zA-Z/._\-].*)?`)
 	regExpWinDrive     = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
 )
+
+func newAnswerJson() *answersJson {
+	return &answersJson{
+		Placeholders: make(tmplVars),
+	}
+}
 
 // download a template from a URL to a local directory.
 func download(url, dstDir string, client Client) (string, error) {
@@ -220,7 +220,7 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 
 		// Stop processing files if a template file is too big.
 		if fi.Size() > MaxTplSize {
-			rErr = fmt.Errorf("template file too big to parse, must be less thatn %v bytes", MaxTplSize)
+			rErr = fmt.Errorf(errors.fileTooBig, MaxTplSize)
 			return
 		}
 
@@ -228,7 +228,7 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		// Skip non-text files.
 		// TODO: Remove FileExtensionCheck in favor of exclude/include list, once globbing is added.
 		if currFile != EmptyFile && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
-			infof("will skipp and not process through template engine; could not detect file type for %v", sourcePath)
+			infof(messages.unknownFileType, sourcePath)
 			return
 		}
 
@@ -242,8 +242,10 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		partial := strings.ReplaceAll(normSourcePath, normTplDir, "")
 		//partial = strings.ReplaceAll(partial, PS, "/")
 		saveDir := filepath.Clean(outDir + filepath.Dir(partial))
+		infof("partial dir: %v", partial)
+		infof("save dir: %v", saveDir)
 
-		// TODO: Make the subdirectories in the new savePath.
+		// Make the subdirectories in the new savePath.
 		err = os.MkdirAll(saveDir, DirMode)
 		if err != nil || currFile == EmptyFile {
 			return
@@ -307,49 +309,51 @@ func readTemplateJson(filePath string) (*tmplJson, error) {
 }
 
 // getPlaceholderInput Checks for any missing placeholder values waits for their input from the CLI.
-func getPlaceholderInput(questions *tmplJson, answers *tmplVars, r *os.File, defaultVal string) error {
-	numPlaceholder := len(questions.Placeholders)
-	numValues := len(*answers)
+func getPlaceholderInput(placeholders *tmplJson, tmplValues *tmplVars, r *os.File, defaultVal string) error {
+	numPlaceholder := len(placeholders.Placeholders)
+	numValues := len(*tmplValues)
 
-	logf(messages.questionAnswerStat, numPlaceholder, numValues)
+	logf(messages.placeholderAnswerStat, numPlaceholder)
 
 	if numPlaceholder == numValues {
 		return nil
 	}
 
-	logf(messages.pleaseAnswerQuestions)
+	logf(messages.provideValues)
 
-	anwrs := *answers
+	tVals := *tmplValues
 	nPut := bufio.NewScanner(r)
 
-	for placeholder, question := range questions.Placeholders {
-		a, answered := anwrs[placeholder]
+	for placeholder, desc := range placeholders.Placeholders {
+		a, answered := tVals[placeholder]
 		// skip placeholder that have been supplied with an answer from an answer file.
 		if answered {
-			infof(messages.questionHasAnAnswer, question, a)
+			infof(messages.placeholderHasAnswer, desc, a)
 			continue
 		}
 
 		// Just use the default value for all un-set placeholders.
 		if defaultVal != " " {
-			anwrs[placeholder] = defaultVal
+			tVals[placeholder] = defaultVal
 			infof("using default value for placeholder %v", placeholder)
 			continue
 		}
 
-		fmt.Printf("\n%v; %v: ", placeholder, question)
+		// Ask client for input.
+		fmt.Printf("\n%v - %v: ", placeholder, desc)
 		nPut.Scan()
-		anwrs[placeholder] = nPut.Text()
-		infof(messages.questionAnsweredWith, question, anwrs[placeholder])
-		infof("%v = %q", placeholder, anwrs[placeholder])
+		tVals[placeholder] = nPut.Text()
+		infof(messages.placeholderAnswer, desc, tVals[placeholder])
+		infof("%v = %q\n", placeholder, tVals[placeholder])
 	}
 
 	return nil
 }
 
-func showAllQuestionsAndAnswer(questions *tmplJson, answers *tmplVars) {
-	anwrs := *answers
-	for placeholder, question := range questions.Placeholders {
-		logf(messages.questionAnsweredWith, question, anwrs[placeholder])
+func showAllPlaceholderValues(placeholders *tmplJson, tmplValues *tmplVars) {
+	tVals := *tmplValues
+	logf("the following values have been provided\n")
+	for placeholder, _ := range placeholders.Placeholders {
+		logf(messages.placeholderAnswer, placeholder, tVals[placeholder])
 	}
 }
