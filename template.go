@@ -47,6 +47,28 @@ var (
 	regExpWinDrive     = regexp.MustCompile(`^[a-zA-Z]:\\[a-zA-Z/._\\-].*$`)
 )
 
+// CopyToDir copy a file to a directory
+func CopyToDir(sourcePath, destDir, separator string) (int64, error) {
+	//TODO: Move to stdlib.
+	sFile, err1 := os.Open(sourcePath)
+	if err1 != nil {
+		return 0, err1
+	}
+
+	fileStats, err2 := os.Stat(sourcePath)
+	if err2 != nil {
+		return 0, err2
+	}
+
+	dstFile := destDir + separator + fileStats.Name()
+	dFile, err3 := os.Create(dstFile)
+	if err3 != nil {
+		return 0, err3
+	}
+
+	return io.Copy(dFile, sFile)
+}
+
 func newAnswerJson() *answersJson {
 	return &answersJson{
 		Placeholders: make(tmplVars),
@@ -251,17 +273,19 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 			return
 		}
 
+		// exclude from parsing, but copy as-is.
 		if excludes != nil {
 			// TODO: Replace with better method of comparing files.
 			fileToCheck := strings.ReplaceAll(normSourcePath, normTplDir, "")
+			infof("fileToCheck: %q against excludes", fileToCheck)
 			fileToCheck = strings.ReplaceAll(fileToCheck, PS, "")
 			for _, exclude := range excludes {
 				fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
 				fileToCheckB = strings.ReplaceAll(exclude, "/", "")
-				infof("fileToCheck: %q; exclude: %v\n", fileToCheck, fileToCheckB)
 				if fileToCheckB == fileToCheck {
-					infof("excluding file %q", sourcePath)
-					return
+					infof("will copy as-is: %q", sourcePath)
+					_, errC := CopyToDir(sourcePath, saveDir, PS)
+					return errC
 				}
 			}
 		}
