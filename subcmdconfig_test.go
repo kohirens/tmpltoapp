@@ -134,7 +134,6 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 			}
 
 			if !strings.Contains(bytes.NewBuffer(out).String(), test.contains) {
-				//fmt.Printf("stdout = %s\n", out)
 				t.Errorf("did not contain %q", test.contains)
 			}
 		})
@@ -163,6 +162,7 @@ func TestSetUserOptions(tester *testing.T) {
 		args     []string
 	}{
 		{"setCache", 0, []string{cmdConfig, "set", "CacheDir", "setCache"}},
+		{"setExcludeFileExtensions", 0, []string{cmdConfig, "set", "ExcludeFileExtensions", "md,txt"}},
 	}
 
 	for _, test := range tests {
@@ -170,29 +170,28 @@ func TestSetUserOptions(tester *testing.T) {
 
 			cmd := getTestBinCmd(test.args)
 
-			out, sce := cmd.CombinedOutput()
+			gotOut, sce := cmd.CombinedOutput()
 
 			// Debug
 			if sce != nil {
 				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", out)
+				fmt.Printf("stdout:\n%s\n", gotOut)
 				fmt.Printf("stderr:\n%v\n", sce.Error())
 				fmt.Print("\nEND sub-command\n\n")
 			}
 
 			// get exit code.
-			got := cmd.ProcessState.ExitCode()
+			gotExit := cmd.ProcessState.ExitCode()
 
-			if got != test.wantCode {
-				t.Errorf("got %q, want %q", got, test.wantCode)
+			if gotExit != test.wantCode {
+				t.Errorf("got %q, want %q", gotExit, test.wantCode)
 			}
 
 			file := testTmp + PS + "tmpltoapp" + PS + "config.json"
-			content, _ := ioutil.ReadFile(file)
-			usrOpts := &userOptions{}
-			_ = json.Unmarshal(content, usrOpts)
 
-			rUsrOpts := reflect.ValueOf(usrOpts)
+			gotCfg := &Config{}
+			_ = gotCfg.loadUserSettings(file)
+			rUsrOpts := reflect.ValueOf(gotCfg.usrOpts)
 			f := reflect.Indirect(rUsrOpts).FieldByName(test.args[2])
 
 			if f.String() != test.args[3] {
