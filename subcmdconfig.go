@@ -16,7 +16,7 @@ type userOptions struct {
 // parseConfigCmd parse the config sub-command flags/options/args but do not execute the command itself
 func (cfg *Config) parseConfigCmd(osArgs []string) error {
 	if e := cfg.subCmdConfig.flagSet.Parse(osArgs); e != nil {
-		return fmt.Errorf("error pasing sub command config flags: %v", e.Error())
+		return fmt.Errorf(errors.parsingConfigArgs, e.Error())
 	}
 
 	cfg.subCmd = cmdConfig
@@ -27,7 +27,7 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 
 	if len(osArgs) < 2 {
 		subCmdConfigUsage(cfg)
-		return fmt.Errorf("invalid number of arguments passed to config sub-command, please try config -h for usage")
+		return fmt.Errorf(errors.invalidNoArgs)
 	}
 
 	cfg.subCmdConfig.method = osArgs[0]

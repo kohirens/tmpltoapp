@@ -21,8 +21,10 @@ var errors = struct {
 	gitCheckoutFailed      string
 	gitFetchFailed         string
 	gitExitErrCode         string
+	invalidNoArgs          string
 	localOutPath           string
 	missingTmplJson        string
+	parsingConfigArgs      string
 	pathNotAllowed         string
 	runGitFailed           string
 	tmplManifest404        string
@@ -50,8 +52,10 @@ var errors = struct {
 	gitCheckoutFailed:      "git checkout failed: %s",
 	gitExitErrCode:         "git %v returned exit code %q",
 	gitFetchFailed:         "fetch failed on %s and %s; %s",
+	invalidNoArgs:          "invalid number of arguments passed to config sub-command, please try config -h for usage",
 	localOutPath:           "enter a local path to output the app",
 	missingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",
+	parsingConfigArgs:      "error parsing config command args: %v",
 	pathNotAllowed:         "path/URL to template is not in the allow-list",
 	runGitFailed:           "error running git %v: %v",
 	tmplManifest404:        "the required manifest template.json file was not %s found",
