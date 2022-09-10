@@ -23,7 +23,6 @@ var (
 	appConfig = &Config{
 		usrOpts: &userOptions{
 			ExcludeFileExtensions: &[]string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"},
-			IncludeFileExtensions: &[]string{},
 		},
 	}
 )
@@ -114,7 +113,7 @@ func main() {
 		return
 	}
 
-	fec, err1 := stdlib.NewFileExtChecker(appConfig.usrOpts.ExcludeFileExtensions, appConfig.usrOpts.IncludeFileExtensions)
+	fec, err1 := stdlib.NewFileExtChecker(appConfig.usrOpts.ExcludeFileExtensions, &[]string{})
 	if err1 != nil {
 		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
 	}
