@@ -4,12 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 )
 
 // userOptions Options the user can set
 type userOptions struct {
 	ExcludeFileExtensions *[]string
-	IncludeFileExtensions *[]string
 	CacheDir              string
 }
 
