@@ -69,7 +69,10 @@ func subCmdConfigUsage(cfg *Config) {
 	fmt.Println("examples:")
 	fmt.Printf("\tconfig set \"CacheDir\" \"./path/to/a/directory\"\n")
 	fmt.Printf("\tconfig get \"CacheDir\"\n\n")
-	fmt.Printf("Options: \n\n")
+	fmt.Printf("Settings: \n")
+	fmt.Printf("\tCacheDir - Path to store template downloaded\n")
+	fmt.Printf("\tExcludeFileExtensions - Files ending with these extensions will be excluded from parsing and copied as-is\n\n")
+	fmt.Printf("Options: \n")
 	// print options usage
 	cfg.subCmdConfig.flagSet.VisitAll(func(f *flag.Flag) {
 		um, ok := usageMsgs[f.Name]
@@ -86,6 +89,10 @@ func (cfg *Config) set(key, val string) error {
 	case "CacheDir":
 		cfg.usrOpts.CacheDir = val
 		break
+	case "ExcludeFileExtensions":
+		tmp := strings.Split(val, ",")
+		cfg.usrOpts.ExcludeFileExtensions = &tmp
+		break
 	default:
 		return fmt.Errorf("no %q setting found", key)
 	}
@@ -99,6 +106,14 @@ func (cfg *Config) get(key string) (interface{}, error) {
 	switch key {
 	case "CacheDir":
 		val = cfg.usrOpts.CacheDir
+		break
+	case "ExcludeFileExtensions":
+		v2 := fmt.Sprintf("%v", val)
+		ok, _ := regexp.Match("^[a-zA-Z0-9-.]+(?:,[a-zA-Z0-9-.]+)*", []byte(v2))
+		if !ok {
+			return nil, fmt.Errorf(errors.badExcludeFileExt, val)
+		}
+		val = strings.Join(*cfg.usrOpts.ExcludeFileExtensions, ",")
 		break
 	default:
 		return "", fmt.Errorf("no setting %v found", key)
