@@ -139,13 +139,14 @@ func (cfg *Config) getTmplLocation() string {
 
 // loadUserSettings from a file, replacing the default built-in settings.
 func (cfg *Config) loadUserSettings(filename string) error {
+	infof("reading config file %v\n", filename)
 	content, er := ioutil.ReadFile(filename)
 
 	if os.IsNotExist(er) {
 		return fmt.Errorf(errors.couldNot, er.Error())
 	}
 
-	if e := json.Unmarshal(content, cfg); e != nil {
+	if e := json.Unmarshal(content, &cfg.usrOpts); e != nil {
 		return fmt.Errorf(errors.couldNotDecode, filename, er.Error())
 	}
 
