@@ -63,7 +63,7 @@ func main() {
 	switch appConfig.subCmd {
 	case cmdConfig:
 		// store or get the key and return
-		mainErr = appConfig.updateUserSettings(PS, DirMode)
+		mainErr = updateUserSettings(appConfig, DirMode)
 		return
 	}
 

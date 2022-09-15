@@ -45,7 +45,7 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 	return nil
 }
 
-func (cfg *Config) updateUserSettings(ps string, mode os.FileMode) error {
+func updateUserSettings(cfg *Config, mode os.FileMode) error {
 	switch cfg.subCmdConfig.method {
 	case "set":
 		if e := cfg.set(cfg.subCmdConfig.key, cfg.subCmdConfig.value); e != nil {
