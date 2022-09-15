@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -160,9 +158,10 @@ func TestSetUserOptions(tester *testing.T) {
 		name     string
 		wantCode int
 		args     []string
+		want     string
 	}{
-		{"setCache", 0, []string{cmdConfig, "set", "CacheDir", "setCache"}},
-		{"setExcludeFileExtensions", 0, []string{cmdConfig, "set", "ExcludeFileExtensions", "md,txt"}},
+		{"setCache", 0, []string{cmdConfig, "set", "CacheDir", "setCache"}, "setCache"},
+		{"setExcludeFileExtensions", 0, []string{cmdConfig, "set", "ExcludeFileExtensions", "md,txt"}, `"ExcludeFileExtensions":["md","txt"]`},
 	}
 
 	for _, test := range tests {
@@ -180,7 +179,6 @@ func TestSetUserOptions(tester *testing.T) {
 				fmt.Print("\nEND sub-command\n\n")
 			}
 
-			// get exit code.
 			gotExit := cmd.ProcessState.ExitCode()
 
 			if gotExit != test.wantCode {
@@ -191,11 +189,67 @@ func TestSetUserOptions(tester *testing.T) {
 
 			gotCfg := &Config{}
 			_ = gotCfg.loadUserSettings(file)
-			rUsrOpts := reflect.ValueOf(gotCfg.usrOpts)
-			f := reflect.Indirect(rUsrOpts).FieldByName(test.args[2])
+			ec, _ := json.Marshal(gotCfg.usrOpts)
 
-			if f.String() != test.args[3] {
-				t.Errorf("did not contai")
+			if !strings.Contains(string(ec), test.want) {
+				t.Errorf("the config %s did not contain %v set to %v", ec, test.args[2], test.want)
+			}
+		})
+	}
+}
+
+func xTestLoadUserSettings(tester *testing.T) {
+	// Set the app data dir to the local test tmp.
+	if runtime.GOOS == "windows" {
+		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
+		_ = os.Setenv("LOCALAPPDATA", testTmp)
+		defer func() {
+			_ = os.Setenv("LOCALAPPDATA", oldAppData)
+		}()
+	} else {
+		oldHome, _ := os.LookupEnv("HOME")
+		_ = os.Setenv("HOME", testTmp)
+		defer func() {
+			_ = os.Setenv("HOME", oldHome)
+		}()
+	}
+
+	var tests = []struct {
+		name     string
+		filename string
+		want     *Config
+	}{
+		{
+			"goodFile",
+			fixturesDir + PS + "good-config-01.json",
+			&Config{
+				usrOpts: &userOptions{
+					ExcludeFileExtensions: &[]string{""},
+					CacheDir:              "",
+				},
+			},
+		},
+		{
+			"badFile",
+			fixturesDir + PS + "bad-config-01.json",
+			&Config{
+				usrOpts: &userOptions{
+					ExcludeFileExtensions: &[]string{""},
+					CacheDir:              "",
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+			gotCfg := &Config{}
+			err := gotCfg.loadUserSettings(test.filename)
+
+			if err != nil { // test bad values
+
+			} else { // test good values
+
 			}
 		})
 	}
