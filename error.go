@@ -5,8 +5,9 @@ var errors = struct {
 	appDataDir             string
 	badExcludeFileExt      string
 	badTmplType            string
-	cannotReadAnswerFile   string
 	cannotDecodeAnswerFile string
+	cannotInitFileChecker  string
+	cannotReadAnswerFile   string
 	cloning                string
 	couldNot               string
 	couldNotCloseFile      string
@@ -23,6 +24,7 @@ var errors = struct {
 	gitFetchFailed         string
 	gitExitErrCode         string
 	invalidNoArgs          string
+	invalidTmplDir         string
 	localOutPath           string
 	missingTmplJson        string
 	parsingConfigArgs      string
@@ -37,8 +39,9 @@ var errors = struct {
 	appDataDir:             "the following error occurred trying to get the app data directory: %q",
 	badExcludeFileExt:      "invalid ExcludeFileExtensions, check format, for example: item1,item2,item3",
 	badTmplType:            "%q is an invalid value for flag tmplType, or it was not set, must be zip|git",
-	cannotReadAnswerFile:   "there was an error reading the answer file %q: %s",
 	cannotDecodeAnswerFile: "could not decode JSON in answer file %q, because of: %s",
+	cannotInitFileChecker:  "cannot instantiate file extension checker: %v",
+	cannotReadAnswerFile:   "there was an error reading the answer file %q: %s",
 	cloning:                "error cloning %v: %s",
 	couldNot:               "could not %s",
 	couldNotCloseFile:      "could not close file %v, %v",
@@ -55,6 +58,7 @@ var errors = struct {
 	gitExitErrCode:         "git %v returned exit code %q",
 	gitFetchFailed:         "fetch failed on %s and %s; %s",
 	invalidNoArgs:          "invalid number of arguments passed to config sub-command, please try config -h for usage",
+	invalidTmplDir:         "invalid template directory %q",
 	localOutPath:           "enter a local path to output the app",
 	missingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",
 	parsingConfigArgs:      "error parsing config command args: %v",

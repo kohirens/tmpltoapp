@@ -109,13 +109,13 @@ func main() {
 	}
 
 	if !stdlib.DirExist(appConfig.tmpl) {
-		mainErr = fmt.Errorf("invalid template directory %q", appConfig.tmpl)
+		mainErr = fmt.Errorf(errors.invalidTmplDir, appConfig.tmpl)
 		return
 	}
 
 	fec, err1 := stdlib.NewFileExtChecker(appConfig.usrOpts.ExcludeFileExtensions, &[]string{})
 	if err1 != nil {
-		mainErr = fmt.Errorf("error instantiating file extension checker: %v", err1.Error())
+		mainErr = fmt.Errorf(errors.cannotInitFileChecker, err1.Error())
 	}
 
 	// Require template directories to have a specific file in order to be processed to prevent processing directories unintentionally.
