@@ -94,6 +94,8 @@ func main() {
 		var repo, commitHash string
 		var err2 error
 
+		// Determine the cache location
+		//TODO: this is where you can append the branch-version
 		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.

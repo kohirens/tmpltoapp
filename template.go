@@ -248,7 +248,7 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		}
 
 		currFile := filepath.Base(sourcePath)
-		// Skip non-text files.
+		// Skip files by extension.
 		// TODO: Add globbing is added. filepath.Glob(pattern)
 		if currFile != EmptyFile && !fec.IsValid(sourcePath) { // Use an exclusion list, include every file by default.
 			infof(messages.unknownFileType, sourcePath)
