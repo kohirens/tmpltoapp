@@ -60,6 +60,8 @@ func main() {
 		return
 	}
 
+	infof(messages.currentVersionInfo, appConfig.CurrentVersion, appConfig.CommitHash)
+
 	// process sub-commands
 	switch appConfig.subCmd {
 	case cmdConfig:

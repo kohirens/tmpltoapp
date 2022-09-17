@@ -18,6 +18,7 @@ var messages = struct {
 	cloningToCache        string
 	configFileExist       string
 	currentVersion        string
+	currentVersionInfo    string
 	gitCheckout           string
 	madeNewConfig         string
 	numNonFlagArgs        string
@@ -42,6 +43,7 @@ var messages = struct {
 	cloningToCache:        "no cache; cloning %v to %v",
 	configFileExist:       "config file %q exist",
 	currentVersion:        "%v, %v\n",
+	currentVersionInfo:    "version: %v, %v\n",
 	gitCheckout:           "git checkout %s",
 	madeNewConfig:         "saved %d bytes to a new config %q",
 	numNonFlagArgs:        "number of non-flag arguments passed in: %d",
