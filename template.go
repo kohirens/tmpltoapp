@@ -268,8 +268,8 @@ func parseDir(tplDir, outDir string, vars tmplVars, fec *stdlib.FileExtChecker, 
 		infof("partial dir: %v", partial)
 		infof("save dir: %v", saveDir)
 
-		// skip any files in the .git dir
-		if strings.Contains(partial, PS+gitDir+PS) {
+		// skip certain files/directories
+		if currFile == TmplManifest || strings.Contains(partial, PS+gitDir+PS) {
 			infof(messages.skipFile, partial)
 			return
 		}
