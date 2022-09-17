@@ -15,6 +15,7 @@ var usageMsgs = map[string]string{
 // messages helpful info to std out
 var messages = struct {
 	actualArgs            string
+	cloningToCache        string
 	configFileExist       string
 	currentVersion        string
 	gitCheckout           string
@@ -34,9 +35,11 @@ var messages = struct {
 	skipFile              string
 	subCommands           string
 	unknownFileType       string
+	usingCache            string
 	verboseLevelInfo      string
 }{
 	actualArgs:            "actual arguments passed in: %v",
+	cloningToCache:        "no cache; cloning %v to %v",
 	configFileExist:       "config file %q exist",
 	currentVersion:        "%v, %v\n",
 	gitCheckout:           "git checkout %s",
@@ -55,6 +58,7 @@ var messages = struct {
 	runningCommand:        "running command %s",
 	skipFile:              "skipping: %v",
 	subCommands:           "sub-commands:\n\n",
+	usingCache:            "using cache %v",
 	unknownFileType:       "will skip and not process through template engine; could not detect file type for %v",
 	verboseLevelInfo:      "verbose level: %v",
 }
