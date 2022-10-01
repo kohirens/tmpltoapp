@@ -111,7 +111,7 @@ workflows:
   quality-control:
     jobs:
       - co:
-          filters: { branches: { ignore: main } }
+          filters: { branches: { ignore: /main|auto-update-changelog/ } }
       - run-test:
           requires: [ co ]
 
