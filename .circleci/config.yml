@@ -115,32 +115,32 @@ workflows:
       - run-test:
           requires: [ co ]
 
-#  publish-changelog:
-#    when:
-#      and:
-#        - equal: [main, << pipeline.git.branch >>]
-#        - equal: [webhook, << pipeline.trigger_source >>]
-#    jobs:
-#        - vro/publish-changelog:
-#            context: orb-publishing
-#            ssh_finger: << pipeline.parameters.ssh_finger >>
-#
-#  publish-release-tag:
-#    when:
-#      and:
-#        - equal: [main, << pipeline.git.branch >>]
-#        - << pipeline.parameters.triggered_by_bot >>
-#    jobs:
-#      - vro/tag-and-release:
-#          context: orb-publishing
-#
-#  on-tag-release:
-#    jobs:
-#      - publish-image:
-#          context: orb-publishing
-#          filters:
-#            <<: *filter-semantic-tag
-#      - publish-execs:
-#          context: orb-publishing
-#          filters:
-#            <<: *filter-semantic-tag
+  publish-changelog:
+    when:
+      and:
+        - equal: [main, << pipeline.git.branch >>]
+        - equal: [webhook, << pipeline.trigger_source >>]
+    jobs:
+        - vro/publish-changelog:
+            context: orb-publishing
+            ssh_finger: << pipeline.parameters.ssh_finger >>
+
+  publish-release-tag:
+    when:
+      and:
+        - equal: [main, << pipeline.git.branch >>]
+        - << pipeline.parameters.triggered_by_bot >>
+    jobs:
+      - vro/tag-and-release:
+          context: orb-publishing
+
+  on-tag-release:
+    jobs:
+      - publish-image:
+          context: orb-publishing
+          filters:
+            <<: *filter-semantic-tag
+      - publish-execs:
+          context: orb-publishing
+          filters:
+            <<: *filter-semantic-tag
