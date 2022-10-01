@@ -1,9 +1,13 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@2.2.1
+  vro: kohirens/version-release@2.2.2
 
 parameters:
+  secrets:
+    default: orb-publishing
+    description: Secrets context
+    type: string
   ssh_finger:
     description: SSH fingerprint.
     type: string
@@ -122,7 +126,7 @@ workflows:
         - equal: [webhook, << pipeline.trigger_source >>]
     jobs:
         - vro/publish-changelog:
-            context: orb-publishing
+            context: << pipeline.parameters.secrets >>
             ssh_finger: << pipeline.parameters.ssh_finger >>
 
   publish-release-tag:
@@ -132,15 +136,15 @@ workflows:
         - << pipeline.parameters.triggered_by_bot >>
     jobs:
       - vro/tag-and-release:
-          context: orb-publishing
+          context: << pipeline.parameters.secrets >>
 
   on-tag-release:
     jobs:
       - publish-image:
-          context: orb-publishing
+          context: << pipeline.parameters.secrets >>
           filters:
             <<: *filter-semantic-tag
       - publish-execs:
-          context: orb-publishing
+          context: << pipeline.parameters.secrets >>
           filters:
             <<: *filter-semantic-tag
