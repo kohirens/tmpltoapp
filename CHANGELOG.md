@@ -2,6 +2,47 @@
 ## [Unreleased]
 
 
+<a name="2.0.0"></a>
+## [2.0.0] - 2022-10-01
+### Added
+- Version to verbosity output.
+- Message to inicate cahcue use in verbose logging.
+- Error message.
+- skip to template schema to skip files or directories.
+- Copy files excluded from parsing as-is.
+- config sub-command.
+- Flag default-val to aid automation.
+- Doc for building a template.json.
+- JSON schemas for the template.json and answers JSON files.
+- logf function for rendering message to the user.
+
+### Changed
+- Exclude template.json from out-path.
+- Update config usage.
+- Skip .git directory from copying or parsing.
+- Config stderr messages.
+- Pass custom Usage method the configration.
+- Migrate various log messages to errors and messages structures.
+- Show errir for incorrect CLI order.
+- Flag names.
+- Make answers.json file optional.
+- Template schema JSON.
+- From -a to -i for answer short flag.
+- Add more feedback when user needs to add values for missing placeholders.
+- Move code to generate semver info to main.go.
+- Move load anwwer errors to the error file.
+
+### Fixed
+- Merging user settings into the configuration.
+- Printing usage info.
+- config sub-command returned 1 when only help flag passed in.
+
+### Removed
+- Informational logging preventing template output.
+- Config from verbosity output.
+- Use of allowed URLs.
+
+
 <a name="1.0.0"></a>
 ## [1.0.0] - 2022-06-26
 ### Added
@@ -178,7 +219,8 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.1...1.0.0
 [0.3.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.2.1...0.3.0
