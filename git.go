@@ -10,11 +10,22 @@ import (
 )
 
 // gitClone Clone a repo from a path/URL to a local directory.
-func gitClone(repoUrl, localCache, branchName string) (string, string, error) {
-	infof("branch to clone is %q", branchName)
+func gitClone(repoUrl, localCache, refName string) (string, string, error) {
+	infof("branch to clone is %q", refName)
 	infof("git clone %s", repoUrl)
 
-	sco, e1 := gitCmd(localCache, "clone", repoUrl)
+	var sco []byte
+	var e1 error
+
+	re := regexp.MustCompile("(refs/)?(head/)?main")
+
+	if !re.MatchString(refName) {
+		// git clone --depth 1 --branch <tag_name> <repo_url>
+		sco, e1 = gitCmd(localCache, "clone", "--depth", "1", "--branch", refName, repoUrl)
+	} else {
+		// git clone <repo_url>
+		sco, e1 = gitCmd(localCache, "clone", repoUrl)
+	}
 
 	if e1 != nil {
 		return "", "", fmt.Errorf(errors.cloning, repoUrl, e1.Error())
@@ -72,7 +83,7 @@ func gitCmd(repoPath string, args ...string) ([]byte, error) {
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if cmdErr != nil {
-		return nil, fmt.Errorf(errors.runGitFailed, args, cmdErr.Error())
+		return nil, fmt.Errorf(errors.runGitFailed, args, cmdErr.Error(), cmdOut)
 	}
 
 	if exitCode != 0 {
@@ -90,6 +101,39 @@ func getLastCommitHash(repoDir string) (string, error) {
 	}
 
 	return strings.Trim(string(latestCommitHash), "\n"), nil
+}
+
+// getLatestTag Will return the latest tag or an empty string from a repository.
+func getLatestTag(repoDir string) (string, error) {
+	tags, e1 := getRemoteTags(repoDir)
+	if e1 != nil {
+		return "", fmt.Errorf(errors.getLatestTag, repoDir, e1.Error())
+	}
+
+	return tags[0], nil
+}
+
+// getRemoteTags Get the remote tags on a repo using git ls-remote.
+func getRemoteTags(repo string) ([]string, error) {
+	// Even without cloning or fetching, you can check the list of tags on the upstream repo with git ls-remote:
+	sco, e1 := gitCmd(repo, "ls-remote", "--sort=-version:refname", "--tags")
+	if e1 != nil {
+		return nil, fmt.Errorf(errors.getRemoteTags, e1.Error())
+	}
+
+	reTags := regexp.MustCompile("[a-f0-9]+\\s+refs/tags/(\\S+)")
+	mat := reTags.FindAllSubmatch(sco, -1)
+	if mat == nil {
+		return nil, fmt.Errorf("%s", "no tags found")
+	}
+
+	ret := make([]string, len(mat))
+	for i, v := range mat {
+		dbugf(messages.remoteTagDbug1, string(v[1]))
+		ret[i] = string(v[1])
+	}
+
+	return ret, nil
 }
 
 // getRepoDir extract a local dirname from a Git URL.

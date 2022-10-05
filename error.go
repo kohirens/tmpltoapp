@@ -23,10 +23,13 @@ var errors = struct {
 	gitCheckoutFailed      string
 	gitFetchFailed         string
 	gitExitErrCode         string
+	getLatestTag           string
+	getRemoteTags          string
 	invalidNoArgs          string
 	invalidTmplDir         string
 	localOutPath           string
 	missingTmplJson        string
+	noGitTagFound          string
 	parsingConfigArgs      string
 	pathNotAllowed         string
 	runGitFailed           string
@@ -55,15 +58,18 @@ var errors = struct {
 	gettingAnswers:         "problem getting answers; error %q",
 	gettingCommitHash:      "error getting commit hash %v: %s",
 	gitCheckoutFailed:      "git checkout failed: %s",
+	getLatestTag:           "failed to get latest tag from %v: %v",
+	getRemoteTags:          "could not get remote tags, please check for a typo, it exist, and is readable: %v",
 	gitExitErrCode:         "git %v returned exit code %q",
 	gitFetchFailed:         "fetch failed on %s and %s; %s",
 	invalidNoArgs:          "invalid number of arguments passed to config sub-command, please try config -h for usage",
 	invalidTmplDir:         "invalid template directory %q",
 	localOutPath:           "enter a local path to output the app",
 	missingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",
+	noGitTagFound:          "no tag found in %v",
 	parsingConfigArgs:      "error parsing config command args: %v",
 	pathNotAllowed:         "path/URL to template is not in the allow-list",
-	runGitFailed:           "error running git %v: %v",
+	runGitFailed:           "error running git %v: %v\n%s",
 	tmplManifest404:        "the required manifest template.json file was not %s found",
 	tmplOutput:             "template has NOT been cloned locally",
 	tmplPath:               "please specify a path (or URL) to a template",
