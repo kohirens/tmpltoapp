@@ -31,6 +31,7 @@ var messages = struct {
 	placeholderAnswerStat string
 	placeholderHasAnswer  string
 	refInfo               string
+	remoteTagDbug1        string
 	repoDir               string
 	runningCommand        string
 	skipFile              string
@@ -56,6 +57,7 @@ var messages = struct {
 	placeholderAnswerStat: "please provide values for %v placeholders",
 	placeholderHasAnswer:  "placeholder %v has a value of %q, so skipping",
 	refInfo:               "ref = %v ",
+	remoteTagDbug1:        "remote tag: %v\n",
 	repoDir:               "repoDir = %q\n",
 	runningCommand:        "running command %s",
 	skipFile:              "skipping: %v",

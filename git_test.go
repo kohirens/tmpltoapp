@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -95,6 +97,87 @@ func TestGetRepoDir2(tester *testing.T) {
 
 			if gotHash != tc.wantHash {
 				t.Errorf("got %v, want %v", gotHash, tc.wantHash)
+			}
+		})
+	}
+}
+
+func TestGetLatestTag(tester *testing.T) {
+	var testCases = []struct {
+		name   string
+		bundle string
+		want   string
+	}{
+		{"found", "repo-03", "0.1.0"},
+	}
+
+	for i, tc := range testCases {
+		repoPath := setupARepository(tc.bundle)
+
+		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
+			got, gotErr := getLatestTag(repoPath)
+
+			if gotErr != nil {
+				t.Errorf("unexpected error in test %q", gotErr.Error())
+			}
+
+			if got != tc.want {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestGetLatestTagError(tester *testing.T) {
+	var testCases = []struct {
+		name   string
+		bundle string
+		want   string
+	}{
+		{"doesNotExist", "repo-dne", ""},
+	}
+
+	for i, tc := range testCases {
+		repoPath := setupARepository(tc.bundle)
+
+		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
+			got, gotErr := getLatestTag(repoPath)
+
+			if gotErr == nil {
+				t.Errorf("unexpected error in test %q", gotErr.Error())
+			}
+
+			if got != tc.want {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestGetRemoteTags(tester *testing.T) {
+	var testCases = []struct {
+		name      string
+		bundle    string
+		want      string
+		shouldErr bool
+	}{
+		{"hasTags", "repo-04", "1.0.0,0.2.0,0.1.1,0.1.0", false},
+		{"noTags", "repo-05", "", true},
+	}
+
+	for i, tc := range testCases {
+		repoPath := setupARepository(tc.bundle)
+
+		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
+			got, gotErr := getRemoteTags(repoPath)
+
+			if !tc.shouldErr && gotErr != nil {
+				t.Errorf("unexpected error in test %q", gotErr.Error())
+			}
+
+			t1 := strings.Join(got, ",")
+			if got != nil && t1 != tc.want {
+				t.Errorf("got %v, want %v", t1, tc.want)
 			}
 		})
 	}
