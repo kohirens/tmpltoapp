@@ -16,10 +16,9 @@ func TestGitClone(tester *testing.T) {
 		branch    string
 		shouldErr bool
 		wantHash  string
-		wantOut   string
 	}{
-		{"cloneRepo1", "repo-01.git", testTmp, "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050", testTmp + PS + "repo-01"},
-		{"clone404", fixturesDir + "/does-not-exit.git", testTmp, "", true, "", ""},
+		{"cloneRepo1", "repo-01.git", testTmp + PS + "repo-01-refs-heads-main", "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050"},
+		{"clone404", fixturesDir + "/does-not-exit.git", "", "", true, ""},
 	}
 
 	for _, tc := range testCases {
@@ -40,8 +39,8 @@ func TestGitClone(tester *testing.T) {
 				t.Errorf("got %v, want %v", gotHash, tc.wantHash)
 			}
 
-			if gotPath != tc.wantOut {
-				t.Errorf("got %v, want %v", gotPath, tc.wantOut)
+			if gotPath != tc.outPath {
+				t.Errorf("got %v, want %v", gotPath, tc.outPath)
 			}
 		})
 	}
@@ -49,19 +48,23 @@ func TestGitClone(tester *testing.T) {
 
 func TestGetRepoDir(tester *testing.T) {
 	var testCases = []struct {
-		name string
-		repo string
-		want string
+		name    string
+		repo    string
+		refName string
+		want    string
 	}{
-		{"local", "/repo-01", "repo-01"},
-		{"url", "https://example.com/repo-01.git", "repo-01"},
-		{"bareRepo", "/repo-01.git", "repo-01"},
+		{"local", "/repo-01", "", "repo-01"},
+		{"url", "https://example.com/repo-01.git", "", "repo-01"},
+		{"bareRepo", "/repo-01.git", "", "repo-01"},
+		{"bareRepo", "/repo-02.git", "refs/heads/main", "repo-02-refs-heads-main"},
+		{"bareRepo", "/repo-02.git", "refs/tags/0.1.0", "repo-02-refs-tags-0.1.0"},
+		{"bareRepo", "/repo-02.git", "refs/remotes/origin/HEAD", "repo-02-refs-remotes-origin-HEAD"},
 	}
 
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
 
-			got := getRepoDir(tc.repo)
+			got := getRepoDir(tc.repo, tc.refName)
 			if got != tc.want {
 				t.Errorf("got %v, want %v", got, tc.want)
 			}

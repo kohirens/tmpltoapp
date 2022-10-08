@@ -94,9 +94,18 @@ func main() {
 		var repo, commitHash string
 		var err2 error
 
+		if appConfig.branch == "latest" {
+			latestTag, e3 := getLatestTag(appConfig.tmplPath)
+			// This error is informative, but not worth stopping the program.
+			logf(e3.Error())
+			if latestTag != "" {
+				appConfig.branch = latestTag
+			}
+		}
+
 		// Determine the cache location
-		//TODO: this is where you can append the branch-version
-		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath)
+		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath, appConfig.branch)
+		infof(messages.outRepoDir, repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
 		if stdlib.DirExist(repoDir + PS + gitConfDir) {
@@ -104,10 +113,10 @@ func main() {
 			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
 		} else {
 			infof(messages.cloningToCache, repoDir)
-			repo, commitHash, err2 = gitClone(appConfig.tmplPath, appConfig.usrOpts.CacheDir, appConfig.branch)
+			repo, commitHash, err2 = gitClone(appConfig.tmplPath, repoDir, appConfig.branch)
 		}
 
-		infof("repo = %q; %q", repo, commitHash)
+		infof(messages.repoInfo, repo, commitHash)
 		if err2 != nil {
 			mainErr = err2
 			return
