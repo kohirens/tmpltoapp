@@ -18,7 +18,7 @@
   ```
   7z e archive.zip
   ```
-  The documentation stats "extracts all files from archive archive.zip to
+  The documentation stats "extracts all files from archive.zip to
   the current directory."
 * Since the template should be the only object at the root of the
   `archive.zip`; the program would have to work in the `cache/templates/`
