@@ -24,6 +24,7 @@ var messages = struct {
 	numNonFlagArgs        string
 	numParsedFlags        string
 	outPathExist          string
+	outRepoDir            string
 	provideValues         string
 	printAllFlags         string
 	printFlag             string
@@ -33,6 +34,7 @@ var messages = struct {
 	refInfo               string
 	remoteTagDbug1        string
 	repoDir               string
+	repoInfo              string
 	runningCommand        string
 	skipFile              string
 	subCommands           string
@@ -49,6 +51,7 @@ var messages = struct {
 	madeNewConfig:         "saved %d bytes to a new config %q",
 	numNonFlagArgs:        "number of non-flag arguments passed in: %d",
 	numParsedFlags:        "number of parsed flags = %v",
+	outRepoDir:            "repoDir = %v",
 	outPathExist:          "out-path already exits %q",
 	provideValues:         "note: entering no value will render the placeholder with an empty string",
 	printAllFlags:         "printing all flags set:",
@@ -59,6 +62,7 @@ var messages = struct {
 	refInfo:               "ref = %v ",
 	remoteTagDbug1:        "remote tag: %v\n",
 	repoDir:               "repoDir = %q\n",
+	repoInfo:              "repo = %q; %q",
 	runningCommand:        "running command %s",
 	skipFile:              "skipping: %v",
 	subCommands:           "sub-commands:\n\n",
