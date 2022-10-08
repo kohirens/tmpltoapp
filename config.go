@@ -154,19 +154,18 @@ func (cfg *Config) loadUserSettings(filename string) error {
 }
 
 // loadAnswers Load key/value pairs from a JSON file to fill in placeholders (provides that data for the Go templates).
-func loadAnswers(filename string) (aj *answersJson, err error) {
+func loadAnswers(filename string) (*answersJson, error) {
 	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
-		err = fmt.Errorf(errors.cannotReadAnswerFile, filename, err.Error())
-		return
+		return nil, fmt.Errorf(errors.cannotReadAnswerFile, filename, err.Error())
+
 	}
 
-	err = json.Unmarshal(content, &aj)
-	if err != nil {
-		err = fmt.Errorf(errors.cannotDecodeAnswerFile, filename, err.Error())
-		return
+	var aj *answersJson
+	if e := json.Unmarshal(content, &aj); e != nil {
+		return nil, fmt.Errorf(errors.cannotDecodeAnswerFile, filename, e.Error())
 	}
 
-	return
+	return aj, nil
 }
