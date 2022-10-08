@@ -38,7 +38,7 @@ func main() {
 
 	defer func() {
 		if mainErr != nil {
-			fmt.Print("\nfatal error detected: ")
+			logf(errors.fatalHeader)
 			log.Fatalln(mainErr.Error())
 		}
 		os.Exit(0)
@@ -56,7 +56,7 @@ func main() {
 
 	// Exit if we are just printing help usage
 	if appConfig.help {
-		Usage(appConfig)
+		mainErr = Usage(appConfig)
 		return
 	}
 
