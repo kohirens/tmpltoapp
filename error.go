@@ -16,6 +16,7 @@ var errors = struct {
 	couldNotMakeCacheDir   string
 	couldNotSaveConf       string
 	couldNotWriteFile      string
+	fatalHeader            string
 	flagOrderErr           string
 	fileTooBig             string
 	gettingAnswers         string
@@ -53,6 +54,7 @@ var errors = struct {
 	couldNotMakeCacheDir:   "could not make cache directory, error: %s",
 	couldNotSaveConf:       "could not save a config file, reason: %v",
 	couldNotWriteFile:      "could not write file %v, reason: %v",
+	fatalHeader:            "\nfatal error detected: ",
 	flagOrderErr:           "flag %v MUST come before any non-flag arguments, a fix would be to move this flag to the left of other input arguments",
 	fileTooBig:             "template file too big to parse, must be less thatn %v bytes",
 	gettingAnswers:         "problem getting answers; error %q",

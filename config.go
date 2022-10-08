@@ -111,7 +111,7 @@ func (cfg *Config) initFile() error {
 func (cfg *Config) saveUserSettings(mode os.FileMode) error {
 	data, err1 := json.Marshal(cfg.usrOpts)
 
-	dbugf("%s\n", data)
+	dbugf(messages.saveData, data)
 
 	if err1 != nil {
 		return fmt.Errorf(errors.couldNotEncodeConfig, err1.Error())
@@ -139,7 +139,7 @@ func (cfg *Config) getTmplLocation() string {
 
 // loadUserSettings from a file, replacing the default built-in settings.
 func (cfg *Config) loadUserSettings(filename string) error {
-	infof("reading config file %v\n", filename)
+	infof(messages.readConfig, filename)
 	content, er := ioutil.ReadFile(filename)
 
 	if os.IsNotExist(er) {

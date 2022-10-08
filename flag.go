@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/kohirens/stdlib"
 	"os"
+	"text/template"
 )
 
 const cmdConfig = "config"
@@ -72,7 +73,7 @@ func (cfg *Config) parseFlags() error {
 	}
 
 	if cfg.version {
-		fmt.Printf(messages.currentVersion, cfg.CurrentVersion, cfg.CommitHash)
+		logf(messages.currentVersion, cfg.CurrentVersion, cfg.CommitHash)
 		os.Exit(0)
 	}
 
@@ -119,21 +120,47 @@ func (cfg *Config) validate() error {
 	return nil
 }
 
-func Usage(cfg *Config) {
+// Usage Print app usage documentation.
+func Usage(cfg *Config) error {
 	switch cfg.subCmd {
 	case cmdConfig:
 		subCmdConfigUsage(cfg)
-		return
+		return nil
 	}
-	// Print the main app usage.
-	fmt.Printf("Usage: %v -[options] [args]\n\n", AppName)
-	fmt.Printf("example: %v -answers \"answers.json\" -out-path \"../new-app\" \"https://github.com/kohirens/tmpl-go-web\"\n\n", AppName)
-	fmt.Printf("Options: \n\n")
+
+	tmpl := template.New("usage")
+
+	uTmplData := map[string]string{
+		"appName": AppName,
+	}
+
+	_, err := tmpl.Parse(usageTmpl)
+	if err != nil {
+		return fmt.Errorf("error parsing the usage template: %v", err.Error())
+	}
+
+	if e := tmpl.Execute(os.Stdout, uTmplData); e != nil {
+		return fmt.Errorf("error executing the usage template %v", e.Error())
+	}
+
+	var mE error
 	flag.VisitAll(func(f *flag.Flag) {
 		um, ok := usageMsgs[f.Name]
 		if ok {
-			fmt.Printf("  -%-11s %v\n\n", f.Name, um)
-			f.Value.String()
+			td := map[string]string{
+				"option": f.Name, "info": um, "dv": f.Value.String(),
+			}
+
+			if e := tmpl.ExecuteTemplate(os.Stdout, "option", td); e != nil {
+				mE = e
+				return
+			}
 		}
 	})
+
+	if mE != nil {
+		return mE
+	}
+
+	return nil
 }
