@@ -27,6 +27,7 @@ var errors = struct {
 	getLatestTag           string
 	getRemoteTags          string
 	invalidNoArgs          string
+	invalidNoSubCmdArgs    string
 	invalidTmplDir         string
 	localOutPath           string
 	missingTmplJson        string
@@ -65,6 +66,7 @@ var errors = struct {
 	gitExitErrCode:         "git %v returned exit code %q",
 	gitFetchFailed:         "fetch failed on %s and %s; %s",
 	invalidNoArgs:          "invalid number of arguments passed to config sub-command, please try config -h for usage",
+	invalidNoSubCmdArgs:    "sub-command %v takes %v number of arguments, try \"%[1]s -h\" for usage",
 	invalidTmplDir:         "invalid template directory %q",
 	localOutPath:           "enter a local path to output the app",
 	missingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",

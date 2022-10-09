@@ -97,6 +97,8 @@ func TestCallingMain(tester *testing.T) {
 				"-branch", "refs/tags/0.3.0",
 			},
 		},
+		{"manifest0", 0, []string{"manifest", "-h"}},
+		{"manifest0", 1, []string{"manifest"}},
 	}
 
 	for _, test := range tests {
@@ -112,7 +114,7 @@ func TestCallingMain(tester *testing.T) {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
 
-			if sce != nil {
+			if testing.Verbose() && sce != nil {
 				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n\n", string(out))
 				fmt.Printf("stderr:\n%v\n", sce.Error())
 				fmt.Print("\nEND sub-command\n\n")

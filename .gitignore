@@ -1,8 +1,10 @@
 # Directories
 # -----------
 /.idea/
+/internal/command/tmp/
 /out/
 /testdata/repo-*/
+/testdata/internal/command/repo-*/
 /tmp/
 /vendor/
 

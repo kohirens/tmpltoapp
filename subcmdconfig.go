@@ -45,6 +45,31 @@ func (cfg *Config) parseConfigCmd(osArgs []string) error {
 	return nil
 }
 
+// parseManifestCmd parse the config sub-command flags/options/args but do not execute the command itself
+func (cfg *Config) parseManifestCmd(osArgs []string) error {
+	cfg.subCmd = cmdManifest
+	if e := cfg.subCmdManifest.flagSet.Parse(osArgs); e != nil {
+		fmt.Printf("here")
+		os.Exit(0)
+		return fmt.Errorf(errors.parsingConfigArgs, e.Error())
+	}
+
+	if cfg.help {
+		return Usage(cfg)
+	}
+
+	if len(osArgs) < 2 {
+		Usage(cfg)
+		return fmt.Errorf(errors.invalidNoSubCmdArgs, cmdManifest, 1)
+	}
+
+	cfg.subCmdManifest.path = osArgs[0]
+
+	dbugf("cfg.subCmdManifest.path = %v\n", cfg.subCmdManifest.path)
+
+	return nil
+}
+
 func updateUserSettings(cfg *Config, mode os.FileMode) error {
 	switch cfg.subCmdConfig.method {
 	case "set":
