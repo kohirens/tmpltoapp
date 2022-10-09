@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"github.com/kohirens/stdlib"
+	"github.com/kohirens/tmpltoapp/internal/command"
 	"log"
 	"net/http"
 	"os"
@@ -67,6 +68,11 @@ func main() {
 	case cmdConfig:
 		// store or get the key and return
 		mainErr = updateUserSettings(appConfig, DirMode)
+		return
+	case cmdManifest:
+		// store or get the key and return
+		fec, _ := stdlib.NewFileExtChecker(&[]string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"}, &[]string{})
+		_, mainErr = command.GenerateATemplateManifest(appConfig.subCmdManifest.path, fec, []string{})
 		return
 	}
 

@@ -13,6 +13,7 @@ import (
 )
 
 const cmdConfig = "config"
+const cmdManifest = "manifest"
 
 // define All application flags.
 func (cfg *Config) defineFlags() {
@@ -29,6 +30,11 @@ func (cfg *Config) defineFlags() {
 	flag.BoolVar(&cfg.version, "version", false, usageMsgs["version"])
 	cfg.subCmdConfig.flagSet = flag.NewFlagSet(cmdConfig, flag.ExitOnError)
 	cfg.subCmdConfig.flagSet.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
+	cfg.subCmdManifest.flagSet = flag.NewFlagSet(cmdManifest, flag.ExitOnError)
+	cfg.subCmdManifest.flagSet.BoolVar(&cfg.help, "help", false, usageMsgs["help"])
+	cfg.subCmdManifest.flagSet.Usage = func() {
+		Usage(cfg)
+	}
 }
 
 // parse Process and validate all CLI flags.
@@ -57,6 +63,8 @@ func (cfg *Config) parseFlags() error {
 		switch pArgs[0] {
 		case cmdConfig:
 			return cfg.parseConfigCmd(pArgs[1:])
+		case cmdManifest:
+			return cfg.parseManifestCmd(pArgs[1:])
 		}
 	}
 
@@ -122,13 +130,16 @@ func (cfg *Config) validate() error {
 
 // Usage Print app usage documentation.
 func Usage(cfg *Config) error {
+	tmpl := template.New("usage")
+
 	switch cfg.subCmd {
 	case cmdConfig:
 		subCmdConfigUsage(cfg)
 		return nil
+	case cmdManifest:
+		template.Must(tmpl.Parse(usageManifest))
+		return UsageTmpl(cfg, tmpl)
 	}
-
-	tmpl := template.New("usage")
 
 	uTmplData := map[string]string{
 		"appName": AppName,
@@ -137,6 +148,37 @@ func Usage(cfg *Config) error {
 	_, err := tmpl.Parse(usageTmpl)
 	if err != nil {
 		return fmt.Errorf("error parsing the usage template: %v", err.Error())
+	}
+
+	if e := tmpl.Execute(os.Stdout, uTmplData); e != nil {
+		return fmt.Errorf("error executing the usage template %v", e.Error())
+	}
+
+	var mE error
+	flag.VisitAll(func(f *flag.Flag) {
+		um, ok := usageMsgs[f.Name]
+		if ok {
+			td := map[string]string{
+				"option": f.Name, "info": um, "dv": f.Value.String(),
+			}
+
+			if e := tmpl.ExecuteTemplate(os.Stdout, "option", td); e != nil {
+				mE = e
+				return
+			}
+		}
+	})
+
+	if mE != nil {
+		return mE
+	}
+
+	return nil
+}
+
+func UsageTmpl(cfg *Config, tmpl *template.Template) error {
+	uTmplData := map[string]string{
+		"appName": AppName,
 	}
 
 	if e := tmpl.Execute(os.Stdout, uTmplData); e != nil {

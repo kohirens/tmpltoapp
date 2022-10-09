@@ -10,3 +10,13 @@ example: {{ .appName }} -answers "answers.json" -out-path "/tmp/new-app" "https:
 
 Options:
 `
+
+var usageManifest = `
+Generate a template.json in the {{.appName}} schema format containing all the specified templates placeholders.
+This is meant for template designers to reduce error in adding placeholders to your file manually.
+Placeholders are also known ad "Actions"--data evaluations-- in Go.
+
+Usage: {{.appName}} <path>
+
+example: {{.appName}} ./
+`

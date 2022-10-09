@@ -36,6 +36,10 @@ type Config struct {
 		method  string // method to call
 		value   string // value to update config setting
 	}
+	subCmdManifest struct {
+		flagSet *flag.FlagSet
+		path    string // path to generate a manifest for.
+	}
 }
 
 // setup All application configuration.
