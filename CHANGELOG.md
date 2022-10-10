@@ -3,8 +3,10 @@
 
 
 <a name="2.0.0"></a>
-## [2.0.0] - 2022-10-01
+## [2.0.0] - 2022-10-10
 ### Added
+- Command To Generate A Manifest
+- Append git ref name (tag) to cache folder.
 - Version to verbosity output.
 - Message to inicate cahcue use in verbose logging.
 - Error message.
@@ -17,6 +19,8 @@
 - logf function for rendering message to the user.
 
 ### Changed
+- Migrate Messaging to Various Arrays
+- Append Version to Cached Download
 - Exclude template.json from out-path.
 - Update config usage.
 - Skip .git directory from copying or parsing.
