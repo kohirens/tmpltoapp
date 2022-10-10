@@ -57,9 +57,13 @@ jobs:
             keys:
                 - go-mod-v1-{{ checksum "go.mod" }}
       - run:
-          name: "Unit test"
+          name: "Unit Test"
           command: |
-            go test -v
+              go test -v
+      - run:
+          name: "Internal Unit Test"
+          command: |
+              go test -v ./internal/command
 
   publish-image:
     docker:
