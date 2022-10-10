@@ -40,7 +40,7 @@ RUN apk --no-progress --purge --no-cache upgrade \
 # Install vanilla GLibC: https://github.com/sgerrand/alpine-pkg-glibc
 RUN curl -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
  && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
- && apk add glibc-${GLIBC_VER}.apk \
+ && apk add --force-overwrite glibc-${GLIBC_VER}.apk \
  && rm glibc-${GLIBC_VER}.apk \
        /etc/apk/keys/sgerrand.rsa.pub
 
@@ -96,7 +96,7 @@ COPY --chown=${USER_NAME}:${USER_GROUP} . .
 
 RUN go mod tidy && go build && go install
 
-FROM alpine:3.15 AS release
+FROM alpine:3.16 AS release
 
 ARG USER_NAME
 ARG USER_UID
