@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="2.0.1"></a>
+## [2.0.1] - 2022-10-10
+### Fixed
+- Building Docker Image
+
+
 <a name="2.0.0"></a>
 ## [2.0.0] - 2022-10-10
 ### Added
@@ -223,7 +229,8 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.1...HEAD
+[2.0.1]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.1...1.0.0
 [0.3.1]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.0...0.3.1
