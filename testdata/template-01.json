@@ -1,0 +1,24 @@
+{
+    "$schema": "https://raw.githubusercontent.com/kohirens/tmpltoapp/2.0.1/template.schema.json",
+    "version": "1.1",
+    "placeholders": {
+        "appName": "Application name, the formal name with capitalization and spaces",
+        "codeName": "Application name to be used with automation, lowercase alpha-numeric and dashes",
+        "repoOrg": "Repository organization, for example `github.com/kohirens`"
+    },
+    "excludes": [
+        ".chglog/CHANGELOG.tpl.md",
+        ".devcontainer/download-vs-code-server.sh"
+    ],
+    "validation": [
+        {
+            "kind": "alpha-numeric",
+            "fields": ["app-name"]
+        },
+        {
+            "kind": "reg-exp",
+            "fields": ["codeName"],
+            "expression": "^[a-z0-9][a-z0-9\\-]$"
+        }
+    ]
+}
