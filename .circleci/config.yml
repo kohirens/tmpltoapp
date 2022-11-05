@@ -68,6 +68,11 @@ jobs:
           name: "Internal Unit Test"
           command: |
               go test -v ./internal/command
+      - run:
+          name: "Validate Answers/Template Schemas"
+          command: |
+              yajsv -s template.schema.json testdata\template-01.json
+              yajsv -s answers.schema.json testdata\answers-01.json
 
   publish-image:
     docker:

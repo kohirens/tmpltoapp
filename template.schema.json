@@ -1,4 +1,5 @@
 {
+    "$comment": "see here for clarity: https://json-schema.org/understanding-json-schema/index.html",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://github.com/kohirens/tmpltoapp/blob/main/template.schema.json",
     "title": "Template Placeholder Manifest",
@@ -9,7 +10,8 @@
     "properties": {
         "version": {
             "description": "The semantic version of the template.json schema used",
-            "type": "string"
+            "type": "string",
+            "pattern": "\\d\\.\\d(\\.\\d)?"
         },
         "placeholders": {
             "description": "A map where the keys are the placeholder names and the values are strings to present as a question to ask for the value in a CLI prompt",
@@ -32,6 +34,42 @@
             },
             "minItems": 0,
             "uniqueItems": true
+        },
+        "validation": {
+            "description": "Validation for placeholder values.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "$ref": "#/$defs/validator"
+            }
+        }
+    },
+    "$defs": {
+        "validator": {
+            "$anchor": "validator",
+            "type": "object",
+            "required": ["fields", "kind"],
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "minItems": 1
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": ["alpha-numeric", "reg-exp"]
+                },
+                "expression": {
+                    "type": "string",
+                    "format": "regex"
+                }
+            },
+            "if": {
+                "properties": { "kind": { "const": "reg-exp"} }
+            },
+            "then": {
+                "required": [ "expression" ]
+            }
         }
     }
 }
