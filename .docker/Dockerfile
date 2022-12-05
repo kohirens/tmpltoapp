@@ -5,7 +5,7 @@ ARG USER_GROUP='app_users'
 ARG REPO='github.com/kohirens/tmpltoapp'
 ARG GLIBC_VER='2.35-r0'
 
-FROM golang:1.19-alpine3.16 AS dev
+FROM golang:1.19-alpine3.17 AS dev
 
 ARG USER_NAME
 ARG USER_UID
@@ -96,7 +96,7 @@ COPY --chown=${USER_NAME}:${USER_GROUP} . .
 
 RUN go mod tidy && go build && go install
 
-FROM alpine:3.16 AS release
+FROM alpine:3.17 AS release
 
 ARG USER_NAME
 ARG USER_UID
