@@ -4,6 +4,9 @@
 
 <a name="2.0.2"></a>
 ## [2.0.2] - 2022-12-05
+### Changed
+- Upgrade Docker iamge to Alpine 3.17
+
 
 <a name="2.0.1"></a>
 ## [2.0.1] - 2022-10-10
