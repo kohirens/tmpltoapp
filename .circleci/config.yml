@@ -1,11 +1,15 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@2.2.2
+  vro: kohirens/version-release@2.3.3
 
 parameters:
   secrets:
-    default: orb-publishing
+    default: kohirens-automation
+    description: Secrets context
+    type: string
+  secrets_dockerhub:
+    default: kohirens-automation-dockerhub
     description: Secrets context
     type: string
   ssh_finger:
@@ -145,7 +149,9 @@ workflows:
   on-tag-release:
     jobs:
       - publish-image:
-          context: << pipeline.parameters.secrets >>
+          context:
+              - << pipeline.parameters.secrets >>
+              - << pipeline.parameters.secrets_dockerhub >>
           filters:
             <<: *filter-semantic-tag
       - publish-execs:
