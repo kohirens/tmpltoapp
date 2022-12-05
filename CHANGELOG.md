@@ -2,6 +2,9 @@
 ## [Unreleased]
 
 
+<a name="2.0.2"></a>
+## [2.0.2] - 2022-12-05
+
 <a name="2.0.1"></a>
 ## [2.0.1] - 2022-10-10
 ### Fixed
@@ -229,7 +232,8 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.1...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.2...HEAD
+[2.0.2]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/0.3.1...1.0.0
