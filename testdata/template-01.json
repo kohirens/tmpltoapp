@@ -3,7 +3,7 @@
     "version": "1.1",
     "placeholders": {
         "appName": "Application name, the formal name with capitalization and spaces",
-        "codeName": "Application name to be used with automation, lowercase alpha-numeric and dashes",
+        "codeName": "Programmatic name to be used",
         "repoOrg": "Repository organization, for example `github.com/kohirens`"
     },
     "excludes": [
@@ -12,13 +12,15 @@
     ],
     "validation": [
         {
-            "kind": "alpha-numeric",
-            "fields": ["app-name"]
+            "rule": "alphaNumeric",
+            "fields": ["appName"],
+            "message": "human readable name with capitalization and spaces"
         },
         {
-            "kind": "reg-exp",
+            "rule": "regExp",
             "fields": ["codeName"],
-            "expression": "^[a-z0-9][a-z0-9\\-]$"
+            "pattern": "^[a-z0-9][a-z0-9\\-]$",
+            "message": "must begin with a letter and can have lowercase alpha-numeric and dashes"
         }
     ]
 }
