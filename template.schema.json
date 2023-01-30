@@ -49,13 +49,13 @@
         "validator": {
             "$anchor": "validator",
             "type": "object",
-            "required": ["fields", "kind"],
+            "required": ["fields", "rule"],
             "properties": {
                 "fields": {
                     "type": "array",
                     "minItems": 1
                 },
-                "kind": {
+                "rule": {
                     "type": "string",
                     "enum": ["alpha-numeric", "reg-exp"]
                 },
@@ -65,7 +65,7 @@
                 }
             },
             "if": {
-                "properties": { "kind": { "const": "reg-exp"} }
+                "properties": { "rule": { "const": "reg-exp"} }
             },
             "then": {
                 "required": [ "expression" ]
