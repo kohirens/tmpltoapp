@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/kohirens/stdlib"
 	"github.com/kohirens/tmpltoapp/internal"
+	"github.com/kohirens/tmpltoapp/internal/test"
 	"reflect"
 	"testing"
 )
@@ -24,7 +25,7 @@ func TestGenerateATemplateJson(runner *testing.T) {
 
 	for _, tc := range testCases {
 		runner.Run(tc.name, func(t *testing.T) {
-			repoPath := internal.SetupARepository(tc.repo)
+			repoPath := test.SetupARepository(tc.repo)
 			got, err := GenerateATemplateManifest(repoPath, fec, []string{})
 			f := repoPath + internal.PS + "template.json"
 

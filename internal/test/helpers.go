@@ -1,8 +1,9 @@
-package internal
+package test
 
 import (
 	"fmt"
 	"github.com/kohirens/stdlib"
+	"github.com/kohirens/tmpltoapp/internal"
 	"log"
 	"os"
 	"os/exec"
@@ -16,11 +17,11 @@ const (
 	SubCmdFlags = "SUB_CMD_FLAGS"
 	// subCmdFlags space separated list of command line flags.
 	subCmdFlags = "RECURSIVE_TEST_FLAGS"
-	testRemotes = testTmp + PS + "remotes"
+	testRemotes = testTmp + internal.PS + "remotes"
 )
 
 func SetupARepository(bundleName string) string {
-	repoPath := testRemotes + PS + bundleName
+	repoPath := testRemotes + internal.PS + bundleName
 	// It may have already been unbundled.
 	fileInfo, err1 := os.Stat(repoPath)
 	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
@@ -36,7 +37,7 @@ func SetupARepository(bundleName string) string {
 		panic(fmt.Sprintf("%v failed to get working directory", e.Error()))
 	}
 
-	srcRepo := wd + PS + fixturesDir + PS + bundleName + ".bundle"
+	srcRepo := wd + internal.PS + fixturesDir + internal.PS + bundleName + ".bundle"
 	// It may not exist.
 	if !stdlib.PathExist(srcRepo) {
 		panic(fmt.Sprintf("%v bundle not found", srcRepo))
