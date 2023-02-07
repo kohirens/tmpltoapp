@@ -7,7 +7,7 @@ var usageMsgs = map[string]string{
 	"help":        "(or -h) Prints usage information and exit 0.",
 	"out-path":    "Path to output the new project.",
 	"tmpl-path":   "URL to a zip or a local path to a directory.",
-	"tmpl-type":   "Can be of git|zip|local.",
+	"tmpl-type":   "Can be of git|zip.",
 	"verbosity":   "Set the level of information printed when running.",
 	"version":     "Print build version information and exit 0.",
 }

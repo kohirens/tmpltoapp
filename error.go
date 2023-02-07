@@ -43,7 +43,7 @@ var errors = struct {
 	answerFile404:          "could not find the answer file %q, please specify a path to a valid answer file that exist: given %q",
 	appDataDir:             "the following error occurred trying to get the app data directory: %q",
 	badExcludeFileExt:      "invalid ExcludeFileExtensions, check format, for example: item1,item2,item3",
-	badTmplType:            "%q is an invalid value for flag tmplType, or it was not set, must be zip|git",
+	badTmplType:            "%q is an invalid value for flag tmpl-type, or it was not set, must be zip|git",
 	cannotDecodeAnswerFile: "could not decode JSON in answer file %q, because of: %s",
 	cannotInitFileChecker:  "cannot instantiate file extension checker: %v",
 	cannotReadAnswerFile:   "there was an error reading the answer file %q: %s",
