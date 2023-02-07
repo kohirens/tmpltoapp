@@ -3,9 +3,12 @@
 
 
 <a name="2.0.2"></a>
-## [2.0.2] - 2022-12-05
+## [2.0.2] - 2023-02-07
 ### Changed
 - Upgrade Docker iamge to Alpine 3.17
+
+### Fixed
+- Typos In tmplt-type Messages
 
 
 <a name="2.0.1"></a>
