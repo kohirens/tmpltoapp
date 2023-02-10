@@ -1,4 +1,4 @@
-package command
+package cli
 
 var tmplJsonTmpl = `{
     "$schema": "https://github.com/kohirens/tmpltoapp/blob/main/template.schema.json",

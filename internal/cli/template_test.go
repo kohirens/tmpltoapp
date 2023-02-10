@@ -1,6 +1,7 @@
-package main
+package cli
 
 import (
+	"github.com/kohirens/tmpltoapp/internal/test"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -24,8 +25,8 @@ func (h HttpMock) Head(url string) (*http.Response, error) {
 	return h.Resp, h.Err
 }
 
-func TestDownload(tester *testing.T) {
-	defer testSilencer()()
+func TestDownload(runner *testing.T) {
+	defer test.Silencer()()
 
 	var err error
 	fixtures := HttpMock{
@@ -36,24 +37,24 @@ func TestDownload(tester *testing.T) {
 		err,
 	}
 
-	tester.Run("canDownload", func(test *testing.T) {
-		got, err := download("/fake_dl", testTmp, &fixtures)
+	runner.Run("canDownload", func(t *testing.T) {
+		got, err := Download("/fake_dl", test.TmpDir, &fixtures)
 		if err != nil {
-			test.Errorf("got %q, want nil", err.Error())
+			t.Errorf("got %q, want nil", err.Error())
 		}
 		_, err = os.Stat(got)
 
 		if os.IsNotExist(err) {
-			test.Errorf("got %q, want nil", got)
+			t.Errorf("got %q, want nil", got)
 		}
 	})
 }
 
 func ExampleDownload() {
 	client := http.Client{}
-	_, err := download(
+	_, err := Download(
 		"https://github.com/kohirens/tmpltoapp-test-tpl/archive/main.zip",
-		testTmp,
+		test.TmpDir,
 		&client,
 	)
 
@@ -62,22 +63,22 @@ func ExampleDownload() {
 	}
 }
 
-func TestExtract(test *testing.T) {
-	test.Run("canExtractDownload", func(t *testing.T) {
+func TestExtract(runner *testing.T) {
+	runner.Run("canExtractDownload", func(t *testing.T) {
 		wd, _ := os.Getwd()
-		fixture := wd + PS + fixturesDir + PS + "001.zip"
-		want := testTmp + PS + "001"
-		_, err := extract(fixture)
+		fixture := wd + PS + test.FixturesDir + PS + "001.zip"
+		want := test.TmpDir + PS + "001"
+		_, err := Extract(fixture)
 
 		if err != nil {
-			t.Errorf("could not extract %s, error: %v", want, err.Error())
+			t.Errorf("could not Extract %s, error: %v", want, err.Error())
 		}
 	})
 }
 
 func ExampleExtract() {
-	_, err := extract(
-		testTmp + PS + "001.zip",
+	_, err := Extract(
+		test.TmpDir + PS + "001.zip",
 	)
 
 	if err != nil {
@@ -86,7 +87,7 @@ func ExampleExtract() {
 }
 
 func TestParseDir2(tester *testing.T) {
-	defer testSilencer()()
+	defer test.Silencer()()
 
 	fixtures := []struct {
 		dstDir,
@@ -96,11 +97,11 @@ func TestParseDir2(tester *testing.T) {
 		vars tmplVars
 	}{
 		{
-			testTmp + PS + "template-04-out",
+			test.TmpDir + PS + "template-04-out",
 			"dir1IsEmpty",
-			fixturesDir + "/template-04",
+			test.FixturesDir + "/template-04",
 			func(e error) bool {
-				return !stdlib.PathExist(testTmp + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
+				return !stdlib.PathExist(test.TmpDir + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
 			},
 			tmplVars{},
 		},
@@ -109,7 +110,7 @@ func TestParseDir2(tester *testing.T) {
 	fileChkr, _ := stdlib.NewFileExtChecker(&[]string{}, &[]string{"tpl"})
 	for _, fxtr := range fixtures {
 		tester.Run(fxtr.name, func(test *testing.T) {
-			err := parseDir(fxtr.srcDir, fxtr.dstDir, fxtr.vars, fileChkr, []string{})
+			err := ParseDir(fxtr.srcDir, fxtr.dstDir, fxtr.vars, fileChkr, []string{})
 			isAllGood := fxtr.want(err)
 
 			if !isAllGood {
@@ -138,11 +139,11 @@ func TestParse(tester *testing.T) {
 		},
 		{
 			"validInput",
-			fixturesDir + "/template-02/file-01.tpl",
-			testTmp + "/appDirParse-01",
+			test.FixturesDir + "/template-02/file-01.tpl",
+			test.TmpDir + "/appDirParse-01",
 			tmplVars{"var1": "1234"},
 			func(err error) bool {
-				f, _ := ioutil.ReadFile(testTmp + "/appDirParse-01/file-01.tpl")
+				f, _ := ioutil.ReadFile(test.TmpDir + "/appDirParse-01/file-01.tpl")
 				s := string(f)
 				return s == "testings 1234"
 			},
@@ -150,14 +151,14 @@ func TestParse(tester *testing.T) {
 		},
 	}
 
-	err := os.MkdirAll(testTmp+"/appDirParse-01", os.FileMode(DirMode))
+	err := os.MkdirAll(test.TmpDir+"/appDirParse-01", os.FileMode(DirMode))
 	if err != nil {
 		tester.Errorf("Could not copy dir, err: %s", err.Error())
 	}
 
 	for _, fxtr := range fixtures {
 		tester.Run(fxtr.name, func(test *testing.T) {
-			err := parse(fxtr.tplFile, fxtr.appDir, fxtr.vars)
+			err := Parse(fxtr.tplFile, fxtr.appDir, fxtr.vars)
 
 			if !fxtr.gotWhatIWant(err) {
 				test.Error(fxtr.failMsg)
@@ -167,8 +168,8 @@ func TestParse(tester *testing.T) {
 }
 
 func TestParseDir(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(fixturesDir + "/parse-dir-01")
-	tmpDir, _ := filepath.Abs(testTmp)
+	fixturePath1, _ := filepath.Abs(test.FixturesDir + "/parse-dir-01")
+	tmpDir, _ := filepath.Abs(test.TmpDir)
 
 	fixtures := []struct {
 		name, tmplPath, outPath string
@@ -186,7 +187,7 @@ func TestParseDir(tester *testing.T) {
 	tester.Run(fxtr.name, func(test *testing.T) {
 		fec, _ := stdlib.NewFileExtChecker(nil, &[]string{"md", "yml"})
 
-		err := parseDir(fxtr.tmplPath, fxtr.outPath, fxtr.tplVars, fec, nil)
+		err := ParseDir(fxtr.tmplPath, fxtr.outPath, fxtr.tplVars, fec, nil)
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())
@@ -207,7 +208,7 @@ func TestParseDir(tester *testing.T) {
 }
 
 func TestReadTemplateJson(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(fixturesDir + "/template-03")
+	fixturePath1, _ := filepath.Abs(test.FixturesDir + "/template-03")
 
 	fixtures := []struct {
 		name      string
@@ -217,7 +218,7 @@ func TestReadTemplateJson(tester *testing.T) {
 		{
 			"canBeFound",
 			&Config{
-				tmplPath: fixturePath1,
+				TmplPath: fixturePath1,
 			},
 			false,
 		},
@@ -225,7 +226,7 @@ func TestReadTemplateJson(tester *testing.T) {
 
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
-		got, err := readTemplateJson(fxtr.config.tmplPath + PS + TmplManifest)
+		got, err := ReadTemplateJson(fxtr.config.TmplPath + PS + TmplManifest)
 
 		if fxtr.shouldErr && err == nil {
 			test.Errorf("expected an error, but got nil")
@@ -245,9 +246,9 @@ func TestReadTemplateJson(tester *testing.T) {
 }
 
 func TestPlaceholderInput(tester *testing.T) {
-	defer testSilencer()()
+	defer test.Silencer()()
 	// Use a temp file to simulate input on the command line.
-	tmpFile, err := ioutil.TempFile(testTmp, "qi-01")
+	tmpFile, err := ioutil.TempFile(test.TmpDir, "qi-01")
 	if err != nil {
 		tester.Errorf("failed to make temp file %v", err.Error())
 	}
@@ -279,10 +280,10 @@ func TestPlaceholderInput(tester *testing.T) {
 		{
 			"missingAnAnswer",
 			&Config{
-				answersJson: &answersJson{
+				AnswersJson: &AnswersJson{
 					Placeholders: tmplVars{"var1": "", "var2": ""},
 				},
-				TmplJson: &tmplJson{
+				TmplJson: &TmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -293,10 +294,10 @@ func TestPlaceholderInput(tester *testing.T) {
 		{
 			"noMissingAnswers",
 			&Config{
-				answersJson: &answersJson{
+				AnswersJson: &AnswersJson{
 					Placeholders: tmplVars{"var1": "1", "var2": "2", "var3": "3"},
 				},
-				TmplJson: &tmplJson{
+				TmplJson: &TmplJson{
 					Version:      "0.1.0",
 					Placeholders: tmplVars{"var1": "var1", "var2": "var2", "var3": "var3"},
 					Excludes:     nil,
@@ -309,13 +310,13 @@ func TestPlaceholderInput(tester *testing.T) {
 	fxtr := fixtures[0]
 	tester.Run(fxtr.name, func(test *testing.T) {
 		resetTmpFile()
-		err := getPlaceholderInput(fxtr.config.TmplJson, &fxtr.config.answersJson.Placeholders, tmpFile, " ")
+		err := GetPlaceholderInput(fxtr.config.TmplJson, &fxtr.config.AnswersJson.Placeholders, tmpFile, " ")
 
 		if err != nil {
 			test.Errorf("got an error %q", err.Error())
 		}
 
-		if fxtr.config.answersJson.Placeholders[fxtr.want] != "1" {
+		if fxtr.config.AnswersJson.Placeholders[fxtr.want] != "1" {
 			test.Errorf("failed to get a value for placeholder %v using file as input", fxtr.want)
 		}
 	})

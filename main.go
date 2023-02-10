@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 	"github.com/kohirens/stdlib"
-	"github.com/kohirens/tmpltoapp/internal/command"
+	"github.com/kohirens/tmpltoapp/internal/cli"
 	"log"
 	"net/http"
 	"os"
@@ -14,16 +14,14 @@ import (
 // TODO: Change name to tmplpress
 
 const (
-	PS         = string(os.PathSeparator)
-	DirMode    = 0774
 	AppName    = "tmpltoapp"
 	gitConfDir = ".git"
 )
 
 var (
 	// appConfig Runtime settings used throughout the application.
-	appConfig = &Config{
-		usrOpts: &userOptions{
+	appConfig = &cli.Config{
+		UsrOpts: &cli.UserOptions{
 			ExcludeFileExtensions: &[]string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"},
 		},
 	}
@@ -31,7 +29,7 @@ var (
 
 func init() {
 	// Define all flags
-	appConfig.defineFlags()
+	defineFlags(appConfig)
 }
 
 func main() {
@@ -39,131 +37,131 @@ func main() {
 
 	defer func() {
 		if mainErr != nil {
-			logf(errors.fatalHeader)
+			logf(cli.Errors.FatalHeader)
 			log.Fatalln(mainErr.Error())
 		}
 		os.Exit(0)
 	}()
 
-	mainErr = appConfig.parseFlags()
+	mainErr = parseFlags(appConfig)
 	if mainErr != nil {
 		return
 	}
 
-	mainErr = appConfig.setup(AppName, PS, DirMode)
+	mainErr = appConfig.Setup(AppName, cli.PS, cli.DirMode)
 	if mainErr != nil {
 		return
 	}
 
 	// Exit if we are just printing help usage
-	if appConfig.help {
+	if appConfig.Help {
 		mainErr = Usage(appConfig)
 		return
 	}
 
-	infof(messages.currentVersionInfo, appConfig.CurrentVersion, appConfig.CommitHash)
+	infof(cli.Messages.CurrentVersionInfo, appConfig.CurrentVersion, appConfig.CommitHash)
 
 	// process sub-commands
-	switch appConfig.subCmd {
-	case cmdConfig:
+	switch appConfig.SubCmd {
+	case cli.CmdConfig:
 		// store or get the key and return
-		mainErr = updateUserSettings(appConfig, DirMode)
+		mainErr = cli.UpdateUserSettings(appConfig, cli.DirMode)
 		return
-	case cmdManifest:
+	case cli.CmdManifest:
 		// store or get the key and return
 		fec, _ := stdlib.NewFileExtChecker(&[]string{".empty", "exe", "gif", "jpg", "mp3", "pdf", "png", "tiff", "wmv"}, &[]string{})
-		_, mainErr = command.GenerateATemplateManifest(appConfig.subCmdManifest.path, fec, []string{})
+		_, mainErr = cli.GenerateATemplateManifest(appConfig.SubCmdManifest.Path, fec, []string{})
 		return
 	}
 
-	if appConfig.tmplType == "zip" {
+	if appConfig.TmplType == "zip" {
 		var zipFile string
 		var iErr error
-		zipFile = appConfig.tmplPath
-		if appConfig.tmplLocation == "remote" {
+		zipFile = appConfig.TmplPath
+		if appConfig.TmplLocation == "remote" {
 			client := http.Client{}
-			zipFile, iErr = download(appConfig.tmplPath, appConfig.usrOpts.CacheDir, &client)
+			zipFile, iErr = cli.Download(appConfig.TmplPath, appConfig.UsrOpts.CacheDir, &client)
 			if iErr != nil {
 				mainErr = iErr
 				return
 			}
 		}
 
-		appConfig.tmpl, iErr = extract(zipFile)
+		appConfig.Tmpl, iErr = cli.Extract(zipFile)
 		if iErr != nil {
 			mainErr = iErr
 			return
 		}
 	}
 
-	if appConfig.tmplType == "git" {
+	if appConfig.TmplType == "git" {
 		var repo, commitHash string
 		var err2 error
 
-		if appConfig.branch == "latest" {
-			latestTag, e3 := getLatestTag(appConfig.tmplPath)
+		if appConfig.Branch == "latest" {
+			latestTag, e3 := getLatestTag(appConfig.TmplPath)
 			// This error is informative, but not worth stopping the program.
 			logf(e3.Error())
 			if latestTag != "" {
-				appConfig.branch = latestTag
+				appConfig.Branch = latestTag
 			}
 		}
 
 		// Determine the cache location
-		repoDir := appConfig.usrOpts.CacheDir + PS + getRepoDir(appConfig.tmplPath, appConfig.branch)
-		infof(messages.outRepoDir, repoDir)
+		repoDir := appConfig.UsrOpts.CacheDir + cli.PS + getRepoDir(appConfig.TmplPath, appConfig.Branch)
+		infof(cli.Messages.OutRepoDir, repoDir)
 
 		// Do a pull when the repo already exists. This will fail if it downloaded a zip.
-		if stdlib.DirExist(repoDir + PS + gitConfDir) {
-			infof(messages.usingCache, repoDir)
-			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.branch)
+		if stdlib.DirExist(repoDir + cli.PS + gitConfDir) {
+			infof(cli.Messages.UsingCache, repoDir)
+			repo, commitHash, err2 = gitCheckout(repoDir, appConfig.Branch)
 		} else {
-			infof(messages.cloningToCache, repoDir)
-			repo, commitHash, err2 = gitClone(appConfig.tmplPath, repoDir, appConfig.branch)
+			infof(cli.Messages.CloningToCache, repoDir)
+			repo, commitHash, err2 = gitClone(appConfig.TmplPath, repoDir, appConfig.Branch)
 		}
 
-		infof(messages.repoInfo, repo, commitHash)
+		infof(cli.Messages.RepoInfo, repo, commitHash)
 		if err2 != nil {
 			mainErr = err2
 			return
 		}
-		appConfig.tmpl = repo
+		appConfig.Tmpl = repo
 	}
 
-	if !stdlib.DirExist(appConfig.tmpl) {
-		mainErr = fmt.Errorf(errors.invalidTmplDir, appConfig.tmpl)
+	if !stdlib.DirExist(appConfig.Tmpl) {
+		mainErr = fmt.Errorf(cli.Errors.InvalidTmplDir, appConfig.Tmpl)
 		return
 	}
 
-	fec, err1 := stdlib.NewFileExtChecker(appConfig.usrOpts.ExcludeFileExtensions, &[]string{})
+	fec, err1 := stdlib.NewFileExtChecker(appConfig.UsrOpts.ExcludeFileExtensions, &[]string{})
 	if err1 != nil {
-		mainErr = fmt.Errorf(errors.cannotInitFileChecker, err1.Error())
+		mainErr = fmt.Errorf(cli.Errors.CannotInitFileChecker, err1.Error())
 	}
 
 	// Require template directories to have a specific file in order to be processed to prevent processing directories unintentionally.
-	tmplManifestFile := appConfig.tmpl + PS + TmplManifest
-	tmplManifest, errX := readTemplateJson(tmplManifestFile)
+	tmplManifestFile := appConfig.Tmpl + cli.PS + cli.TmplManifest
+	tmplManifest, errX := cli.ReadTemplateJson(tmplManifestFile)
 	if errX != nil {
-		mainErr = fmt.Errorf(errors.missingTmplJson, TmplManifest, tmplManifestFile, errX.Error())
+		mainErr = fmt.Errorf(cli.Errors.MissingTmplJson, cli.TmplManifest, tmplManifestFile, errX.Error())
 		return
 	}
 
 	appConfig.TmplJson = tmplManifest
-	appConfig.answersJson = newAnswerJson()
+	appConfig.AnswersJson = cli.NewAnswerJson()
 
-	if stdlib.PathExist(appConfig.answersPath) {
-		appConfig.answersJson, mainErr = loadAnswers(appConfig.answersPath)
+	if stdlib.PathExist(appConfig.AnswersPath) {
+		appConfig.AnswersJson, mainErr = cli.LoadAnswers(appConfig.AnswersPath)
 		if mainErr != nil {
 			return
 		}
 	}
 
 	// Checks for any missing placeholder values waits for their input from the CLI.
-	if e := getPlaceholderInput(appConfig.TmplJson, &appConfig.answersJson.Placeholders, os.Stdin, appConfig.defaultVal); e != nil {
-		mainErr = fmt.Errorf(errors.gettingAnswers, e.Error())
+	if e := cli.GetPlaceholderInput(appConfig.TmplJson, &appConfig.AnswersJson.Placeholders, os.Stdin, appConfig.DefaultVal); e != nil {
+		mainErr = fmt.Errorf(cli.Errors.GettingAnswers, e.Error())
 	}
 
-	showAllPlaceholderValues(appConfig.TmplJson, &appConfig.answersJson.Placeholders)
+	cli.ShowAllPlaceholderValues(appConfig.TmplJson, &appConfig.AnswersJson.Placeholders)
 
-	mainErr = parseDir(appConfig.tmpl, appConfig.outPath, appConfig.answersJson.Placeholders, fec, tmplManifest.Excludes)
+	mainErr = cli.ParseDir(appConfig.Tmpl, appConfig.OutPath, appConfig.AnswersJson.Placeholders, fec, tmplManifest.Excludes)
 }

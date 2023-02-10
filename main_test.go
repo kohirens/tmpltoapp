@@ -2,36 +2,23 @@ package main
 
 import (
 	"fmt"
-	"github.com/kohirens/stdlib"
-	"log"
+	"github.com/kohirens/tmpltoapp/internal/cli"
+	"github.com/kohirens/tmpltoapp/internal/test"
 	"os"
 	"os/exec"
-	"path"
-	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 )
 
-const (
-	fixturesDir = "testdata"
-	testTmp     = "tmp"
-	// SubCmdFlags space separated list of command line flags.
-	SubCmdFlags = "SUB_CMD_FLAGS"
-	// subCmdFlags space separated list of command line flags.
-	subCmdFlags = "RECURSIVE_TEST_FLAGS"
-	testRemotes = testTmp + PS + "remotes"
-)
-
 func TestMain(m *testing.M) {
 	// Only runs when this environment variable is set.
-	if _, ok := os.LookupEnv(subCmdFlags); ok {
+	if _, ok := os.LookupEnv(test.SubCmdFlags); ok {
 		runAppMain()
 	}
 	// call flag.Parse() here if TestMain uses flags
-	_ = os.RemoveAll(testTmp)
+	_ = os.RemoveAll(test.TmpDir)
 	// Set up a temporary dir for generate files
-	_ = os.Mkdir(testTmp, DirMode) // set up a temporary dir for generate files
+	_ = os.Mkdir(test.TmpDir, cli.DirMode) // set up a temporary dir for generate files
 	// Run all tests
 	exitCode := m.Run()
 	// Clean up
@@ -43,11 +30,11 @@ func TestCallingMain(tester *testing.T) {
 	// This is called recursively, because we will have this test call itself
 	// in a sub-command with the environment variable `GO_CHILD_FLAG` set.
 	// Note that a call to `main()` MUST exit or you'll spin out of control.
-	if os.Getenv(SubCmdFlags) != "" {
+	if os.Getenv(test.SubCmdFlags) != "" {
 		// We're in the test binary, so test flags are set, lets reset it
 		// so that only the program is set
 		// and whatever flags we want.
-		args := strings.Split(os.Getenv(SubCmdFlags), " ")
+		args := strings.Split(os.Getenv(test.SubCmdFlags), " ")
 		os.Args = append([]string{os.Args[0]}, args...)
 
 		// Anything you print here will be passed back to the cmd.Stderr and
@@ -70,9 +57,9 @@ func TestCallingMain(tester *testing.T) {
 			"localTemplate",
 			0,
 			[]string{
-				"-answer-path", fixturesDir + PS + "answers-parse-dir-02.json",
-				"-tmpl-path", fixturesDir + PS + "parse-dir-02",
-				"-out-path", testTmp + PS + "app-parse-dir-02",
+				"-answer-path", test.FixturesDir + cli.PS + "answers-parse-dir-02.json",
+				"-tmpl-path", test.FixturesDir + cli.PS + "parse-dir-02",
+				"-out-path", test.TmpDir + cli.PS + "app-parse-dir-02",
 				"-tmpl-type", "dir",
 			},
 		},
@@ -81,8 +68,8 @@ func TestCallingMain(tester *testing.T) {
 			0,
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
-				"-out-path", testTmp + PS + "tmpl-go-web-02",
-				"-answer-path", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-out-path", test.TmpDir + cli.PS + "tmpl-go-web-02",
+				"-answer-path", test.FixturesDir + cli.PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "zip",
 			},
 		},
@@ -91,8 +78,8 @@ func TestCallingMain(tester *testing.T) {
 			0,
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web.git",
-				"-out-path", testTmp + PS + "tmpl-go-web-03",
-				"-answer-path", fixturesDir + PS + "answers-tmpl-go-web.json",
+				"-out-path", test.TmpDir + cli.PS + "tmpl-go-web-03",
+				"-answer-path", test.FixturesDir + cli.PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "git",
 				"-branch", "refs/tags/0.3.0",
 			},
@@ -123,28 +110,10 @@ func TestCallingMain(tester *testing.T) {
 	}
 }
 
-// getTestBinCmd return a command to run the test binary in a sub-process, passing it flags as fixtures to produce expected output; `TestMain`, will be run automatically.
-func getTestBinCmd(args []string) *exec.Cmd {
-	// call the generated test binary directly
-	// Have it the function runAppMain.
-	cmd := exec.Command(os.Args[0])
-	// Run in the context of the source directory.
-	_, filename, _, _ := runtime.Caller(0)
-	cmd.Dir = path.Dir(filename)
-	// Set an environment variable
-	// 1. Only exist for the life of the test that calls this function.
-	// 2. Passes arguments/flag to your app
-	// 3. Lets TestMain know when to run the main function.
-	subEnvVar := subCmdFlags + "=" + strings.Join(args, " ")
-	cmd.Env = append(os.Environ(), subEnvVar)
-
-	return cmd
-}
-
 // runAppMain run main passing only the fixture flags
 func runAppMain() {
 	// Get fixture flags set in the unit test.
-	args := strings.Split(os.Getenv(subCmdFlags), " ")
+	args := strings.Split(os.Getenv(test.SubCmdFlags), " ")
 	// replace the test flaga and arts with the test fixture flags and args.
 	os.Args = append([]string{os.Args[0]}, args...)
 
@@ -159,62 +128,8 @@ func runMain(testFunc string, args []string) *exec.Cmd {
 	// Run the test binary and tell it to run just this test with environment set.
 	cmd := exec.Command(os.Args[0], "-test.run", testFunc)
 
-	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
+	subEnvVar := test.SubCmdFlags + "=" + strings.Join(args, " ")
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd
-}
-
-// testSilencer return a function that prevents output during a test run.
-func testSilencer() func() {
-	// Abort in verbose mode.
-	if testing.Verbose() {
-		return func() {}
-	}
-	null, _ := os.Open(os.DevNull)
-	sOut := os.Stdout
-	sErr := os.Stderr
-	os.Stdout = null
-	os.Stderr = null
-	log.SetOutput(null)
-	return func() {
-		defer null.Close()
-		os.Stdout = sOut
-		os.Stderr = sErr
-		log.SetOutput(os.Stderr)
-	}
-}
-
-func setupARepository(bundleName string) string {
-	repoPath := testRemotes + PS + bundleName
-
-	// It may have already been unbundled.
-	fileInfo, err1 := os.Stat(repoPath)
-	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
-		absPath, e2 := filepath.Abs(repoPath)
-		if e2 == nil {
-			return absPath
-		}
-		return repoPath
-	}
-
-	srcRepo := "." + PS + fixturesDir + PS + bundleName + ".bundle"
-
-	// It may not exist.
-	if !stdlib.PathExist(srcRepo) {
-		return bundleName
-	}
-
-	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, repoPath)
-	}
-
-	absPath, e2 := filepath.Abs(repoPath)
-	if e2 == nil {
-		return absPath
-	}
-
-	return repoPath
 }
