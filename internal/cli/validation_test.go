@@ -1,6 +1,8 @@
-package template
+package cli
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestValidateAlphaNumeric(t *testing.T) {
 	rule := "alphaNumeric"

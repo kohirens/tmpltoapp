@@ -1,4 +1,4 @@
-package template
+package cli
 
 import (
 	"regexp"

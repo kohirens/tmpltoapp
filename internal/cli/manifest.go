@@ -1,10 +1,9 @@
-package command
+package cli
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/kohirens/stdlib"
-	"github.com/kohirens/tmpltoapp/internal"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -15,18 +14,16 @@ import (
 
 const (
 	TmplManifest = "template.json"
-	EmptyFile    = ".empty"
-	gitDir       = ".git"
 )
 
 // GenerateATemplateManifest Make a JSON file with your templates placeholders.
 func GenerateATemplateManifest(tmplPath string, fec *stdlib.FileExtChecker, excludes []string) (map[string]string, error) {
 	if !stdlib.PathExist(tmplPath) {
-		return nil, fmt.Errorf(errors.pathNotExist, tmplPath)
+		return nil, fmt.Errorf(Errors.pathNotExist, tmplPath)
 	}
 
 	// Traverse the path recursively, filtering out files that should be excluded
-	templates, err := ParseDir(tmplPath, fec, excludes)
+	templates, err := ManifestParseDir(tmplPath, fec, excludes)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +36,13 @@ func GenerateATemplateManifest(tmplPath string, fec *stdlib.FileExtChecker, excl
 
 		t, e := template.ParseFiles(tmpl)
 		if e != nil {
-			return nil, fmt.Errorf(errors.parsingFile, tmpl, e.Error())
+			return nil, fmt.Errorf(Errors.parsingFile, tmpl, e.Error())
 		}
 
 		ListTemplateFields(t, actions)
 	}
 
-	if e := saveFile(tmplPath+internal.PS+TmplManifest, actions); e != nil {
+	if e := saveFile(tmplPath+PS+TmplManifest, actions); e != nil {
 		return nil, e
 	}
 
@@ -58,11 +55,11 @@ func ListTemplateFields(t *template.Template, res map[string]string) {
 	listNodeFields(t.Tree.Root, res)
 }
 
-// ParseDir Recursively walk a directory parsing all files along the way as Go templates.
-func ParseDir(path string, fec *stdlib.FileExtChecker, excludes []string) ([]string, error) {
+// ManifestParseDir Recursively walk a directory parsing all files along the way as Go templates.
+func ManifestParseDir(path string, fec *stdlib.FileExtChecker, excludes []string) ([]string, error) {
 	// Normalize the path separator in these 2 variables before comparing them.
-	nPath := strings.ReplaceAll(path, "/", internal.PS)
-	nPath = strings.ReplaceAll(nPath, "\\", internal.PS)
+	nPath := strings.ReplaceAll(path, "/", PS)
+	nPath = strings.ReplaceAll(nPath, "\\", PS)
 
 	var files []string
 	i := 0
@@ -101,7 +98,7 @@ func filterFile(sourcePath, nPath string, info os.FileInfo, wErr error, fec *std
 	}
 
 	// skip certain .git files/directories
-	if strings.Contains(sourcePath, internal.PS+gitDir+internal.PS) {
+	if strings.Contains(sourcePath, PS+gitDir+PS) {
 		return "", nil
 	}
 
@@ -114,13 +111,13 @@ func filterFile(sourcePath, nPath string, info os.FileInfo, wErr error, fec *std
 	}
 
 	// Normalize the path separator in these 2 variables before comparing them.
-	normSourcePath := strings.ReplaceAll(sourcePath, "/", internal.PS)
-	normSourcePath = strings.ReplaceAll(normSourcePath, "\\", internal.PS)
+	normSourcePath := strings.ReplaceAll(sourcePath, "/", PS)
+	normSourcePath = strings.ReplaceAll(normSourcePath, "\\", PS)
 
 	// Skip files that are listed in the excludes.
 	if excludes != nil {
 		fileToCheck := strings.ReplaceAll(normSourcePath, nPath, "")
-		fileToCheck = strings.ReplaceAll(fileToCheck, internal.PS, "")
+		fileToCheck = strings.ReplaceAll(fileToCheck, PS, "")
 
 		for _, exclude := range excludes {
 			fileToCheckB := strings.ReplaceAll(exclude, "\\", "")
@@ -157,7 +154,7 @@ func saveFile(jsonFile string, actions map[string]string) error {
 	data, e1 := json.Marshal(actions)
 
 	if e1 != nil {
-		return fmt.Errorf(errors.encodingJson, jsonFile, e1.Error())
+		return fmt.Errorf(Errors.encodingJson, jsonFile, e1.Error())
 	}
 
 	tmpl := template.Must(template.New(tmplJsonTmpl).Parse(tmplJsonTmpl))
@@ -169,7 +166,7 @@ func saveFile(jsonFile string, actions map[string]string) error {
 
 	// Write the template.json manifest to disk.
 	if e := tmpl.Execute(f, templateSchema{Placeholders: data}); e != nil {
-		return fmt.Errorf(errors.savingManifest, jsonFile, e.Error())
+		return fmt.Errorf(Errors.savingManifest, jsonFile, e.Error())
 	}
 
 	return nil

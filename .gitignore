@@ -1,6 +1,7 @@
 # Directories
 # -----------
 /.idea/
+/internal/cli/tmp/
 /internal/command/tmp/
 /out/
 /testdata/repo-*/

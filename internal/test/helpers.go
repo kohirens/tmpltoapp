@@ -3,25 +3,46 @@ package test
 import (
 	"fmt"
 	"github.com/kohirens/stdlib"
-	"github.com/kohirens/tmpltoapp/internal"
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
 )
 
 const (
-	fixturesDir = "testdata"
-	testTmp     = "tmp"
-	// SubCmdFlags space separated list of command line flags.
+	FixturesDir = "testdata"
 	SubCmdFlags = "SUB_CMD_FLAGS"
-	// subCmdFlags space separated list of command line flags.
-	subCmdFlags = "RECURSIVE_TEST_FLAGS"
-	testRemotes = testTmp + internal.PS + "remotes"
+	TmpDir      = "tmp"
+	Remotes     = TmpDir + PS + "remotes"
+	PS          = string(os.PathSeparator)
 )
 
+// Silencer return a function that prevents output during a test run.
+func Silencer() func() {
+	// Abort in verbose mode.
+	if testing.Verbose() {
+		return func() {}
+	}
+	null, _ := os.Open(os.DevNull)
+	sOut := os.Stdout
+	sErr := os.Stderr
+	os.Stdout = null
+	os.Stderr = null
+	log.SetOutput(null)
+	return func() {
+		defer null.Close()
+		os.Stdout = sOut
+		os.Stderr = sErr
+		log.SetOutput(os.Stderr)
+	}
+}
+
 func SetupARepository(bundleName string) string {
-	repoPath := testRemotes + internal.PS + bundleName
+	repoPath := Remotes + PS + bundleName
 	// It may have already been unbundled.
 	fileInfo, err1 := os.Stat(repoPath)
 	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
@@ -37,7 +58,7 @@ func SetupARepository(bundleName string) string {
 		panic(fmt.Sprintf("%v failed to get working directory", e.Error()))
 	}
 
-	srcRepo := wd + internal.PS + fixturesDir + internal.PS + bundleName + ".bundle"
+	srcRepo := wd + PS + FixturesDir + PS + bundleName + ".bundle"
 	// It may not exist.
 	if !stdlib.PathExist(srcRepo) {
 		panic(fmt.Sprintf("%v bundle not found", srcRepo))
@@ -57,4 +78,56 @@ func SetupARepository(bundleName string) string {
 
 	fmt.Printf("\nabsPath = %v\n", absPath)
 	return absPath
+}
+
+func SetupARepositoryOld(bundleName string) string {
+	repoPath := Remotes + PS + bundleName
+
+	// It may have already been unbundled.
+	fileInfo, err1 := os.Stat(repoPath)
+	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
+		absPath, e2 := filepath.Abs(repoPath)
+		if e2 == nil {
+			return absPath
+		}
+		return repoPath
+	}
+
+	srcRepo := "." + PS + FixturesDir + PS + bundleName + ".bundle"
+
+	// It may not exist.
+	if !stdlib.PathExist(srcRepo) {
+		return bundleName
+	}
+
+	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
+	_, _ = cmd.CombinedOutput()
+	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
+		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, repoPath)
+	}
+
+	absPath, e2 := filepath.Abs(repoPath)
+	if e2 == nil {
+		return absPath
+	}
+
+	return repoPath
+}
+
+// GetTestBinCmd return a command to run the test binary in a sub-process, passing it flags as fixtures to produce expected output; `TestMain`, will be run automatically.
+func GetTestBinCmd(args []string) *exec.Cmd {
+	// call the generated test binary directly
+	// Have it the function runAppMain.
+	cmd := exec.Command(os.Args[0])
+	// Run in the context of the source directory.
+	_, filename, _, _ := runtime.Caller(0)
+	cmd.Dir = path.Dir(filename)
+	// Set an environment variable
+	// 1. Only exist for the life of the test that calls this function.
+	// 2. Passes arguments/flag to your app
+	// 3. Lets TestMain know when to run the main function.
+	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
+	cmd.Env = append(os.Environ(), subEnvVar)
+
+	return cmd
 }

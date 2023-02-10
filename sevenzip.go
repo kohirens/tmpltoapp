@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/kohirens/tmpltoapp/internal/cli"
 	"os"
 	"os/exec"
 	"runtime"
@@ -20,7 +21,7 @@ func isSevenZipInstalled() (string, error) {
 	dbugf("7zip check exit code : %v\n\n", ec)
 
 	if ec != 0 && runtime.GOOS == "windows" {
-		winPath := os.Getenv("ProgramFiles") + PS + "7-zip" + PS + "7z.exe"
+		winPath := os.Getenv("ProgramFiles") + cli.PS + "7-zip" + cli.PS + "7z.exe"
 		// On Windows, passing it through CMD works, otherwise you get an error.
 		cmd := exec.Command("cmd", cmdPath, "-i")
 		out2, err2 := cmd.CombinedOutput()

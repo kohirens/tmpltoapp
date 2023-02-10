@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/kohirens/tmpltoapp/internal/cli"
+	"github.com/kohirens/tmpltoapp/internal/test"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -17,13 +19,57 @@ func TestGitClone(tester *testing.T) {
 		shouldErr bool
 		wantHash  string
 	}{
-		{"cloneRepo1", "repo-01.git", testTmp + PS + "repo-01-refs-heads-main", "refs/heads/main", false, "b7e42844c597d2beaf774eddfdcb653a2a4b0050"},
-		{"clone404", fixturesDir + "/does-not-exit.git", "", "", true, ""},
+		{
+			"cloneRepo1",
+			"repo-01.git",
+			test.TmpDir + cli.PS + "repo-01-refs-heads-main",
+			"refs/heads/main",
+			false,
+			"b7e42844c597d2beaf774eddfdcb653a2a4b0050",
+		},
 	}
 
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
-			repoPath := setupARepository(tc.repo)
+			repoPath := test.SetupARepository(tc.repo)
+
+			gotPath, gotHash, err := gitClone(repoPath, tc.outPath, tc.branch)
+
+			if tc.shouldErr == true && err == nil {
+				t.Error("did not get expected err")
+			}
+
+			if tc.shouldErr == false && err != nil {
+				t.Errorf("got an unexpected err: %s", err)
+			}
+
+			if gotHash != tc.wantHash {
+				t.Errorf("got %v, want %v", gotHash, tc.wantHash)
+			}
+
+			if gotPath != tc.outPath {
+				t.Errorf("got %v, want %v", gotPath, tc.outPath)
+			}
+		})
+	}
+}
+
+// Clone a repo
+func TestGitCannotClone(tester *testing.T) {
+	var testCases = []struct {
+		name      string
+		repo      string
+		outPath   string
+		branch    string
+		shouldErr bool
+		wantHash  string
+	}{
+		{"clone404", "does-not-exit.git", "", "", true, ""},
+	}
+
+	for _, tc := range testCases {
+		tester.Run(tc.name, func(t *testing.T) {
+			repoPath := test.SetupARepositoryOld(tc.repo)
 
 			gotPath, gotHash, err := gitClone(repoPath, tc.outPath, tc.branch)
 
@@ -73,7 +119,7 @@ func TestGetRepoDir(tester *testing.T) {
 }
 
 func TestGetRepoDir2(tester *testing.T) {
-	absTestTmp, _ := filepath.Abs(testTmp)
+	absTestTmp, _ := filepath.Abs(test.TmpDir)
 	var testCases = []struct {
 		name     string
 		bundle   string
@@ -81,11 +127,11 @@ func TestGetRepoDir2(tester *testing.T) {
 		want     string
 		wantHash string
 	}{
-		{"local", "repo-02", "refs/remotes/origin/third-commit", absTestTmp + PS + "remotes" + PS + "repo-02", "bfeb0a45c027420e4df286dc089965599e350bf9"},
+		{"local", "repo-02", "refs/remotes/origin/third-commit", absTestTmp + cli.PS + "remotes" + cli.PS + "repo-02", "bfeb0a45c027420e4df286dc089965599e350bf9"},
 	}
 
 	for _, tc := range testCases {
-		repoPath := setupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle)
 
 		tester.Run(tc.name, func(t *testing.T) {
 			gotRepo, gotHash, gotErr := gitCheckout(repoPath, tc.branch)
@@ -115,7 +161,7 @@ func TestGetLatestTag(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := setupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle)
 
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getLatestTag(repoPath)
@@ -141,7 +187,7 @@ func TestGetLatestTagError(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := setupARepository(tc.bundle)
+		repoPath := test.SetupARepositoryOld(tc.bundle)
 
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getLatestTag(repoPath)
@@ -169,7 +215,7 @@ func TestGetRemoteTags(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := setupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle)
 
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getRemoteTags(repoPath)

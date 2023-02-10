@@ -1,8 +1,7 @@
-package command
+package cli
 
 import (
 	"github.com/kohirens/stdlib"
-	"github.com/kohirens/tmpltoapp/internal"
 	"github.com/kohirens/tmpltoapp/internal/test"
 	"reflect"
 	"testing"
@@ -27,7 +26,7 @@ func TestGenerateATemplateJson(runner *testing.T) {
 		runner.Run(tc.name, func(t *testing.T) {
 			repoPath := test.SetupARepository(tc.repo)
 			got, err := GenerateATemplateManifest(repoPath, fec, []string{})
-			f := repoPath + internal.PS + "template.json"
+			f := repoPath + PS + "template.json"
 
 			if err != nil {
 				t.Errorf("want nil, got: %q", err.Error())

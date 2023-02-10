@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kohirens/tmpltoapp/internal/cli"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,7 +34,7 @@ func gitClone(repoUri, repoDir, refName string) (string, string, error) {
 		// git clone <repo_url>
 		sco, e1 = gitCmd(".", "clone", repoUri, repoDir)
 		if e1 != nil {
-			return "", "", fmt.Errorf(errors.cloning, repoUri, e1.Error())
+			return "", "", fmt.Errorf(cli.Errors.Cloning, repoUri, e1.Error())
 		}
 
 		infof("clone output \n%s", sco)
@@ -41,7 +42,7 @@ func gitClone(repoUri, repoDir, refName string) (string, string, error) {
 		// git checkout <ref_name>
 		sco3, e3 := gitCmd(repoDir, "checkout", "-b", refName)
 		if e3 != nil {
-			return "", "", fmt.Errorf(errors.cloning, repoUri, e1.Error(), sco3)
+			return "", "", fmt.Errorf(cli.Errors.Cloning, repoUri, e1.Error(), sco3)
 		}
 
 		infof("clone output \n%s", sco3)
@@ -49,7 +50,7 @@ func gitClone(repoUri, repoDir, refName string) (string, string, error) {
 
 	latestCommitHash, e2 := getLastCommitHash(repoDir)
 	if e2 != nil {
-		return "", "", fmt.Errorf(errors.gettingCommitHash, repoDir, e2.Error())
+		return "", "", fmt.Errorf(cli.Errors.GettingCommitHash, repoDir, e2.Error())
 	}
 
 	return repoDir, latestCommitHash, nil
@@ -60,15 +61,15 @@ func gitCheckout(repoLocalPath, ref string) (string, string, error) {
 	infof("pulling latest\n")
 	_, e1 := gitCmd(repoLocalPath, "fetch", "--all", "-p")
 	if e1 != nil {
-		return "", "", fmt.Errorf(errors.gitFetchFailed, repoLocalPath, ref, e1.Error())
+		return "", "", fmt.Errorf(cli.Errors.GitFetchFailed, repoLocalPath, ref, e1.Error())
 	}
 
-	infof(messages.refInfo, ref)
-	infof(messages.gitCheckout, ref)
+	infof(cli.Messages.RefInfo, ref)
+	infof(cli.Messages.GitCheckout, ref)
 
 	_, e2 := gitCmd(repoLocalPath, "checkout", ""+ref)
 	if e2 != nil {
-		return "", "", fmt.Errorf(errors.gitCheckoutFailed, e2.Error())
+		return "", "", fmt.Errorf(cli.Errors.GitCheckoutFailed, e2.Error())
 	}
 
 	repoDir, e8 := filepath.Abs(repoLocalPath)
@@ -90,16 +91,16 @@ func gitCmd(repoPath string, args ...string) ([]byte, error) {
 	cmd.Env = os.Environ()
 	cmd.Dir = repoPath
 	cmdStr := cmd.String()
-	infof(messages.runningCommand, cmdStr)
+	infof(cli.Messages.RunningCommand, cmdStr)
 	cmdOut, cmdErr := cmd.CombinedOutput()
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if cmdErr != nil {
-		return nil, fmt.Errorf(errors.runGitFailed, args, cmdErr.Error(), cmdOut)
+		return nil, fmt.Errorf(cli.Errors.RunGitFailed, args, cmdErr.Error(), cmdOut)
 	}
 
 	if exitCode != 0 {
-		return nil, fmt.Errorf(errors.gitExitErrCode, args, exitCode)
+		return nil, fmt.Errorf(cli.Errors.GitExitErrCode, args, exitCode)
 	}
 
 	return cmdOut, nil
@@ -109,7 +110,7 @@ func gitCmd(repoPath string, args ...string) ([]byte, error) {
 func getLastCommitHash(repoDir string) (string, error) {
 	latestCommitHash, e1 := gitCmd(repoDir, "rev-parse", "HEAD")
 	if e1 != nil {
-		return "", fmt.Errorf(errors.gettingCommitHash, repoDir, e1.Error())
+		return "", fmt.Errorf(cli.Errors.GettingCommitHash, repoDir, e1.Error())
 	}
 
 	return strings.Trim(string(latestCommitHash), "\n"), nil
@@ -119,7 +120,7 @@ func getLastCommitHash(repoDir string) (string, error) {
 func getLatestTag(repoDir string) (string, error) {
 	tags, e1 := getRemoteTags(repoDir)
 	if e1 != nil {
-		return "", fmt.Errorf(errors.getLatestTag, repoDir, e1.Error())
+		return "", fmt.Errorf(cli.Errors.GetLatestTag, repoDir, e1.Error())
 	}
 
 	return tags[0], nil
@@ -130,7 +131,7 @@ func getRemoteTags(repo string) ([]string, error) {
 	// Even without cloning or fetching, you can check the list of tags on the upstream repo with git ls-remote:
 	sco, e1 := gitCmd(repo, "ls-remote", "--sort=-version:refname", "--tags")
 	if e1 != nil {
-		return nil, fmt.Errorf(errors.getRemoteTags, e1.Error())
+		return nil, fmt.Errorf(cli.Errors.GetRemoteTags, e1.Error())
 	}
 
 	reTags := regexp.MustCompile("[a-f0-9]+\\s+refs/tags/(\\S+)")
@@ -141,14 +142,14 @@ func getRemoteTags(repo string) ([]string, error) {
 
 	ret := make([]string, len(mat))
 	for i, v := range mat {
-		dbugf(messages.remoteTagDbug1, string(v[1]))
+		dbugf(cli.Messages.RemoteTagDbug1, string(v[1]))
 		ret[i] = string(v[1])
 	}
 
 	return ret, nil
 }
 
-// getRepoDir extract a local dirname from a Git URL.
+// getRepoDir Extract a local dirname from a Git URL.
 func getRepoDir(repoLocation, refName string) string {
 	if len(repoLocation) < 1 {
 		return repoLocation
@@ -164,12 +165,12 @@ func getRepoDir(repoLocation, refName string) string {
 		baseName = baseName + "-" + strings.ReplaceAll(refName, "/", "-")
 	}
 
-	infof(messages.repoDir, baseName)
+	infof(cli.Messages.RepoDir, baseName)
 
 	return baseName
 }
 
-// getRepoDir extract a local dirname from a Git URL.
+// isRemoteRepo return true if Git repository is a remote URL or false if local.
 func isRemoteRepo(repoLocation string) bool {
 	if len(repoLocation) < 1 {
 		return false
