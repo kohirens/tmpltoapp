@@ -226,7 +226,13 @@ func Extract(archivePath string) (string, error) {
 // Parse a file as a Go template.
 func Parse(tplFile, dstDir string, vars tmplVars) error {
 	log.Infof("parsing %v", tplFile)
-	parser, err1 := template.ParseFiles(tplFile)
+	funcMap := template.FuncMap{
+		"title":   strings.Title,
+		"toLower": strings.ToLower,
+		"toUpper": strings.ToUpper,
+	}
+
+	parser, err1 := template.New(tplFile).Funcs(funcMap).ParseFiles(tplFile)
 
 	if err1 != nil {
 		return err1
