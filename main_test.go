@@ -10,15 +10,20 @@ import (
 	"testing"
 )
 
+const (
+	FixtureDir = "testdata"
+	TmpDir     = "tmp"
+)
+
 func TestMain(m *testing.M) {
 	// Only runs when this environment variable is set.
 	if _, ok := os.LookupEnv(test.SubCmdFlags); ok {
 		runAppMain()
 	}
 	// call flag.Parse() here if TestMain uses flags
-	_ = os.RemoveAll(test.TmpDir)
+	_ = os.RemoveAll(TmpDir)
 	// Set up a temporary dir for generate files
-	_ = os.Mkdir(test.TmpDir, cli.DirMode) // set up a temporary dir for generate files
+	_ = os.Mkdir(TmpDir, cli.DirMode) // set up a temporary dir for generate files
 	// Run all tests
 	exitCode := m.Run()
 	// Clean up
@@ -57,9 +62,9 @@ func TestCallingMain(tester *testing.T) {
 			"localTemplate",
 			0,
 			[]string{
-				"-answer-path", test.FixturesDir + cli.PS + "answers-parse-dir-02.json",
-				"-tmpl-path", test.FixturesDir + cli.PS + "parse-dir-02",
-				"-out-path", test.TmpDir + cli.PS + "app-parse-dir-02",
+				"-answer-path", FixtureDir + cli.PS + "answers-parse-dir-02.json",
+				"-tmpl-path", FixtureDir + cli.PS + "parse-dir-02",
+				"-out-path", TmpDir + cli.PS + "app-parse-dir-02",
 				"-tmpl-type", "dir",
 			},
 		},
@@ -68,8 +73,8 @@ func TestCallingMain(tester *testing.T) {
 			0,
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web/archive/refs/tags/0.3.0.zip",
-				"-out-path", test.TmpDir + cli.PS + "tmpl-go-web-02",
-				"-answer-path", test.FixturesDir + cli.PS + "answers-tmpl-go-web.json",
+				"-out-path", TmpDir + cli.PS + "tmpl-go-web-02",
+				"-answer-path", FixtureDir + cli.PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "zip",
 			},
 		},
@@ -78,8 +83,8 @@ func TestCallingMain(tester *testing.T) {
 			0,
 			[]string{
 				"-tmpl-path", "https://github.com/kohirens/tmpl-go-web.git",
-				"-out-path", test.TmpDir + cli.PS + "tmpl-go-web-03",
-				"-answer-path", test.FixturesDir + cli.PS + "answers-tmpl-go-web.json",
+				"-out-path", TmpDir + cli.PS + "tmpl-go-web-03",
+				"-answer-path", FixtureDir + cli.PS + "answers-tmpl-go-web.json",
 				"-tmpl-type", "git",
 				"-branch", "refs/tags/0.3.0",
 			},
