@@ -2,7 +2,7 @@
 # -----------
 /.idea/
 /internal/cli/tmp/
-/internal/command/tmp/
+/internal/cli/testdata/repo-*/
 /out/
 /testdata/repo-*/
 /testdata/internal/command/repo-*/
