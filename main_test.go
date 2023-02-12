@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/kohirens/tmpltoapp/internal/cli"
 	"github.com/kohirens/tmpltoapp/internal/test"
@@ -233,6 +234,64 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 
 			if !strings.Contains(bytes.NewBuffer(out).String(), tc.contains) {
 				t.Errorf("did not contain %q", tc.contains)
+			}
+		})
+	}
+}
+
+func TestSetUserOptions(tester *testing.T) {
+	delayedFunc := test.TmpSetParentDataDir()
+	defer delayedFunc()
+
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+		want     string
+	}{
+		{"setCache", 0, []string{cli.CmdConfig, "set", "CacheDir", "ABC123"}, "ABC123"},
+		{
+			"setExcludeFileExtensions",
+			0,
+			[]string{cli.CmdConfig, "set", "ExcludeFileExtensions", "md,txt"},
+			`"ExcludeFileExtensions":["md","txt"]`,
+		},
+	}
+
+	for _, tc := range tests {
+		tester.Run(tc.name, func(t *testing.T) {
+
+			cmd := test.GetTestBinCmd(tc.args)
+
+			gotOut, sce := cmd.CombinedOutput()
+
+			// Debug
+			if testing.Verbose() {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", gotOut)
+				if sce != nil {
+					fmt.Printf("stderr:\n%v\n", sce.Error())
+				}
+				fmt.Print("\nEND sub-command\n\n")
+			}
+
+			gotExit := cmd.ProcessState.ExitCode()
+
+			if gotExit != tc.wantCode {
+				t.Errorf("got %q, want %q", gotExit, tc.wantCode)
+			}
+
+			file := TmpDir + cli.PS + ".tmpltoapp" + cli.PS + "config.json"
+
+			gotCfg := &cli.Config{}
+			_ = gotCfg.LoadUserSettings(file)
+			data, err1 := json.Marshal(gotCfg.UsrOpts)
+
+			if err1 != nil {
+				t.Errorf("could not find config file %q", err1.Error())
+			}
+			if !strings.Contains(bytes.NewBuffer(data).String(), tc.want) {
+				t.Errorf("the config %s did not contain %v set to %v", data, tc.args[2], tc.want)
 			}
 		})
 	}

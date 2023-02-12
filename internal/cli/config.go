@@ -51,7 +51,7 @@ func (cfg *Config) Setup(appName, ps string, dirMode os.FileMode) error {
 		return err1
 	}
 
-	// Make a directory to store data.
+	// Make a hidden directory in userspace to store data.
 	cfg.DataDir = osDataDir + ps + "." + appName
 	if e := os.MkdirAll(cfg.DataDir, dirMode); e != nil {
 		return e
@@ -68,7 +68,7 @@ func (cfg *Config) Setup(appName, ps string, dirMode os.FileMode) error {
 		return e
 	}
 
-	if e := cfg.loadUserSettings(cfg.Path); e != nil {
+	if e := cfg.LoadUserSettings(cfg.Path); e != nil {
 		return e
 	}
 
@@ -147,8 +147,8 @@ func (cfg *Config) getTmplLocation() string {
 	return pathType
 }
 
-// loadUserSettings from a file, replacing the default built-in settings.
-func (cfg *Config) loadUserSettings(filename string) error {
+// LoadUserSettings from a file, replacing the default built-in settings.
+func (cfg *Config) LoadUserSettings(filename string) error {
 	log.Infof(Messages.ReadConfig, filename)
 	content, er := ioutil.ReadFile(filename)
 
