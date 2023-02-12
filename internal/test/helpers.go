@@ -131,3 +131,30 @@ func GetTestBinCmd(args []string) *exec.Cmd {
 
 	return cmd
 }
+
+// TmpSetParentDataDir set the LOCALAPPDATA or HOME environment var for a unit test.
+func TmpSetParentDataDir() func() {
+	dir, err := filepath.Abs(TmpDir)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get path to %q for unit test", TmpDir))
+	}
+
+	// Set the app data dir to the local test tmp.
+	if runtime.GOOS == "windows" {
+		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
+
+		if e := os.Setenv("LOCALAPPDATA", dir); e != nil {
+			panic("failed to set LOCALAPPDATA for unit test")
+		}
+
+		return func() {
+			_ = os.Setenv("LOCALAPPDATA", oldAppData)
+		}
+	} else {
+		oldHome, _ := os.LookupEnv("HOME")
+		_ = os.Setenv("HOME", dir)
+		return func() {
+			_ = os.Setenv("HOME", oldHome)
+		}
+	}
+}

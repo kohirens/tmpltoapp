@@ -1,9 +1,6 @@
 package cli
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/kohirens/tmpltoapp/internal/test"
 	"os"
 	"runtime"
 	"strings"
@@ -43,7 +40,7 @@ func TestGetSettings(t *testing.T) {
 
 	t.Run("configNotFound", func(t *testing.T) {
 		cfgFixture := &Config{}
-		gotErr := cfgFixture.loadUserSettings("does-not-exist")
+		gotErr := cfgFixture.LoadUserSettings("does-not-exist")
 
 		if !strings.Contains(gotErr.Error(), "could not open") {
 			t.Errorf("got %q, want %q", gotErr, "could not open")
@@ -52,7 +49,7 @@ func TestGetSettings(t *testing.T) {
 
 	t.Run("canReadConfig", func(t *testing.T) {
 		cfgFixture := &Config{}
-		err := cfgFixture.loadUserSettings(FixtureDir + PS + "config-01.json")
+		err := cfgFixture.LoadUserSettings(FixtureDir + PS + "config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
@@ -143,66 +140,6 @@ func TestLoadAnswers(tester *testing.T) {
 //	}
 //}
 
-func TestSetUserOptions(tester *testing.T) {
-	// Set the app data dir to the local test tmp.
-	if runtime.GOOS == "windows" {
-		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
-		_ = os.Setenv("LOCALAPPDATA", TmpDir)
-		defer func() {
-			_ = os.Setenv("LOCALAPPDATA", oldAppData)
-		}()
-	} else {
-		oldHome, _ := os.LookupEnv("HOME")
-		_ = os.Setenv("HOME", TmpDir)
-		defer func() {
-			_ = os.Setenv("HOME", oldHome)
-		}()
-	}
-
-	var tests = []struct {
-		name     string
-		wantCode int
-		args     []string
-		want     string
-	}{
-		{"setCache", 0, []string{CmdConfig, "set", "CacheDir", "setCache"}, "setCache"},
-		{"setExcludeFileExtensions", 0, []string{CmdConfig, "set", "ExcludeFileExtensions", "md,txt"}, `"ExcludeFileExtensions":["md","txt"]`},
-	}
-
-	for _, tc := range tests {
-		tester.Run(tc.name, func(t *testing.T) {
-
-			cmd := test.GetTestBinCmd(tc.args)
-
-			gotOut, sce := cmd.CombinedOutput()
-
-			// Debug
-			if sce != nil {
-				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", gotOut)
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
-			}
-
-			gotExit := cmd.ProcessState.ExitCode()
-
-			if gotExit != tc.wantCode {
-				t.Errorf("got %q, want %q", gotExit, tc.wantCode)
-			}
-
-			file := TmpDir + PS + "tmpltoapp" + PS + "config.json"
-
-			gotCfg := &Config{}
-			_ = gotCfg.loadUserSettings(file)
-			ec, _ := json.Marshal(gotCfg.UsrOpts)
-
-			if !strings.Contains(string(ec), tc.want) {
-				t.Errorf("the config %s did not contain %v set to %v", ec, tc.args[2], tc.want)
-			}
-		})
-	}
-}
-
 func xTestLoadUserSettings(tester *testing.T) {
 	// Set the app data dir to the local test tmp.
 	if runtime.GOOS == "windows" {
@@ -249,7 +186,7 @@ func xTestLoadUserSettings(tester *testing.T) {
 	for _, tc := range tests {
 		tester.Run(tc.name, func(t *testing.T) {
 			gotCfg := &Config{}
-			err := gotCfg.loadUserSettings(tc.filename)
+			err := gotCfg.LoadUserSettings(tc.filename)
 
 			if err != nil { // test bad values
 
