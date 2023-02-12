@@ -47,6 +47,7 @@ type Config struct {
 // Setup All application configuration.
 func (cfg *Config) Setup(appName, ps string, dirMode os.FileMode) error {
 	osDataDir, err1 := stdlib.AppDataDir()
+	log.Dbugf("app data dir = %q\n", osDataDir)
 	if err1 != nil {
 		return err1
 	}
@@ -208,9 +209,11 @@ func UpdateUserSettings(cfg *Config, mode os.FileMode) error {
 func (cfg *Config) set(key, val string) error {
 	switch key {
 	case "CacheDir":
+		log.Dbugf("setting CacheDir = %q", val)
 		cfg.UsrOpts.CacheDir = val
 		break
 	case "ExcludeFileExtensions":
+		log.Dbugf("adding exclusions %q to config", val)
 		tmp := strings.Split(val, ",")
 		cfg.UsrOpts.ExcludeFileExtensions = &tmp
 		break
