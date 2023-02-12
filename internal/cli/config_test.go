@@ -53,7 +53,7 @@ func TestGetSettings(t *testing.T) {
 
 	t.Run("canReadConfig", func(t *testing.T) {
 		cfgFixture := &Config{}
-		err := cfgFixture.loadUserSettings(test.FixturesDir + PS + "config-01.json")
+		err := cfgFixture.loadUserSettings(FixtureDir + PS + "config-01.json")
 		if err != nil {
 			t.Errorf("got an unexpected error %v", err.Error())
 		}
