@@ -67,7 +67,8 @@ jobs:
       - run:
           name: "Internal Unit Test"
           command: |
-              go test -v ./internal/command
+              cd internal/cli
+              go test -v
       - run:
           name: "Validate Answers/Template Schemas"
           command: |
