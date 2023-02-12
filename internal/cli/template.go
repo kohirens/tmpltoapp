@@ -232,7 +232,8 @@ func Parse(tplFile, dstDir string, vars tmplVars) error {
 		"toUpper": strings.ToUpper,
 	}
 
-	parser, err1 := template.New(tplFile).Funcs(funcMap).ParseFiles(tplFile)
+	tmplName := filepath.Base(tplFile)
+	parser, err1 := template.New(tmplName).Funcs(funcMap).ParseFiles(tplFile)
 
 	if err1 != nil {
 		return err1
