@@ -145,7 +145,7 @@ func TestParse(tester *testing.T) {
 			func(err error) bool {
 				f, _ := ioutil.ReadFile(TmpDir + "/appDirParse-01/file-01.tpl")
 				s := string(f)
-				return s == "testings 1234"
+				return s == "testings 1234\n"
 			},
 			"failed with valid input",
 		},
@@ -168,7 +168,7 @@ func TestParse(tester *testing.T) {
 }
 
 func TestParseDir(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(FixtureDir + "/parse-dir-01")
+	fixturePath1, _ := filepath.Abs(FixtureDir + PS + "parse-dir-01")
 	tmpDir, _ := filepath.Abs(TmpDir)
 
 	fixtures := []struct {
@@ -177,7 +177,7 @@ func TestParseDir(tester *testing.T) {
 		fileToCheck, want       string
 	}{
 		{
-			"parse-dir-01", fixturePath1, tmpDir + "/parse-dir-01",
+			"parse-dir-01", fixturePath1, tmpDir + PS + "parse-dir-01",
 			tmplVars{"APP_NAME": "SolarPolar"},
 			tmpDir + "/parse-dir-01/dir1/README.md", "SolarPolar\n",
 		},
