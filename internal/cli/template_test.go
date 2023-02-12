@@ -38,7 +38,7 @@ func TestDownload(runner *testing.T) {
 	}
 
 	runner.Run("canDownload", func(t *testing.T) {
-		got, err := Download("/fake_dl", test.TmpDir, &fixtures)
+		got, err := Download("/fake_dl", TmpDir, &fixtures)
 		if err != nil {
 			t.Errorf("got %q, want nil", err.Error())
 		}
@@ -54,7 +54,7 @@ func ExampleDownload() {
 	client := http.Client{}
 	_, err := Download(
 		"https://github.com/kohirens/tmpltoapp-test-tpl/archive/main.zip",
-		test.TmpDir,
+		TmpDir,
 		&client,
 	)
 
@@ -66,8 +66,8 @@ func ExampleDownload() {
 func TestExtract(runner *testing.T) {
 	runner.Run("canExtractDownload", func(t *testing.T) {
 		wd, _ := os.Getwd()
-		fixture := wd + PS + test.FixturesDir + PS + "001.zip"
-		want := test.TmpDir + PS + "001"
+		fixture := wd + PS + FixtureDir + PS + "001.zip"
+		want := TmpDir + PS + "001"
 		_, err := Extract(fixture)
 
 		if err != nil {
@@ -78,7 +78,7 @@ func TestExtract(runner *testing.T) {
 
 func ExampleExtract() {
 	_, err := Extract(
-		test.TmpDir + PS + "001.zip",
+		TmpDir + PS + "001.zip",
 	)
 
 	if err != nil {
@@ -97,11 +97,11 @@ func TestParseDir2(tester *testing.T) {
 		vars tmplVars
 	}{
 		{
-			test.TmpDir + PS + "template-04-out",
+			TmpDir + PS + "template-04-out",
 			"dir1IsEmpty",
-			test.FixturesDir + "/template-04",
+			FixtureDir + "/template-04",
 			func(e error) bool {
-				return !stdlib.PathExist(test.TmpDir + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
+				return !stdlib.PathExist(TmpDir + PS + "template-04-out" + PS + "dir1" + PS + ".empty")
 			},
 			tmplVars{},
 		},
@@ -139,11 +139,11 @@ func TestParse(tester *testing.T) {
 		},
 		{
 			"validInput",
-			test.FixturesDir + "/template-02/file-01.tpl",
-			test.TmpDir + "/appDirParse-01",
+			FixtureDir + "/template-02/file-01.tpl",
+			TmpDir + "/appDirParse-01",
 			tmplVars{"var1": "1234"},
 			func(err error) bool {
-				f, _ := ioutil.ReadFile(test.TmpDir + "/appDirParse-01/file-01.tpl")
+				f, _ := ioutil.ReadFile(TmpDir + "/appDirParse-01/file-01.tpl")
 				s := string(f)
 				return s == "testings 1234"
 			},
@@ -151,7 +151,7 @@ func TestParse(tester *testing.T) {
 		},
 	}
 
-	err := os.MkdirAll(test.TmpDir+"/appDirParse-01", os.FileMode(DirMode))
+	err := os.MkdirAll(TmpDir+"/appDirParse-01", os.FileMode(DirMode))
 	if err != nil {
 		tester.Errorf("Could not copy dir, err: %s", err.Error())
 	}
@@ -168,8 +168,8 @@ func TestParse(tester *testing.T) {
 }
 
 func TestParseDir(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(test.FixturesDir + "/parse-dir-01")
-	tmpDir, _ := filepath.Abs(test.TmpDir)
+	fixturePath1, _ := filepath.Abs(FixtureDir + "/parse-dir-01")
+	tmpDir, _ := filepath.Abs(TmpDir)
 
 	fixtures := []struct {
 		name, tmplPath, outPath string
@@ -208,7 +208,7 @@ func TestParseDir(tester *testing.T) {
 }
 
 func TestReadTemplateJson(tester *testing.T) {
-	fixturePath1, _ := filepath.Abs(test.FixturesDir + "/template-03")
+	fixturePath1, _ := filepath.Abs(FixtureDir + "/template-03")
 
 	fixtures := []struct {
 		name      string
@@ -248,7 +248,7 @@ func TestReadTemplateJson(tester *testing.T) {
 func TestPlaceholderInput(tester *testing.T) {
 	defer test.Silencer()()
 	// Use a temp file to simulate input on the command line.
-	tmpFile, err := ioutil.TempFile(test.TmpDir, "qi-01")
+	tmpFile, err := ioutil.TempFile(TmpDir, "qi-01")
 	if err != nil {
 		tester.Errorf("failed to make temp file %v", err.Error())
 	}

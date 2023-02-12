@@ -66,7 +66,7 @@ func TestInitConfigFile(t *testing.T) {
 		want error
 		cfg  *Config
 	}{
-		{"NotExist", nil, &Config{Path: test.TmpDir + PS + "config-fix-01.json"}},
+		{"NotExist", nil, &Config{Path: TmpDir + PS + "config-fix-01.json"}},
 	}
 
 	for _, tc := range testCases {
@@ -90,8 +90,8 @@ func TestLoadAnswers(tester *testing.T) {
 	var fixtures = []struct {
 		name, file, want string
 	}{
-		{"goodJson", test.FixturesDir + PS + "answers-01.json", "value1"},
-		{"badJson", test.FixturesDir + PS + "answers-02.json", ""},
+		{"goodJson", FixtureDir + PS + "answers-01.json", "value1"},
+		{"badJson", FixtureDir + PS + "answers-02.json", ""},
 	}
 
 	fxtr := fixtures[0]
@@ -190,13 +190,13 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 	// Set the app data dir to the local test tmp.
 	if runtime.GOOS == "windows" {
 		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
-		_ = os.Setenv("LOCALAPPDATA", test.TmpDir)
+		_ = os.Setenv("LOCALAPPDATA", TmpDir)
 		defer func() {
 			_ = os.Setenv("LOCALAPPDATA", oldAppData)
 		}()
 	} else {
 		oldHome, _ := os.LookupEnv("HOME")
-		_ = os.Setenv("HOME", test.TmpDir)
+		_ = os.Setenv("HOME", TmpDir)
 		defer func() {
 			_ = os.Setenv("HOME", oldHome)
 		}()
@@ -245,13 +245,13 @@ func TestSetUserOptions(tester *testing.T) {
 	// Set the app data dir to the local test tmp.
 	if runtime.GOOS == "windows" {
 		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
-		_ = os.Setenv("LOCALAPPDATA", test.TmpDir)
+		_ = os.Setenv("LOCALAPPDATA", TmpDir)
 		defer func() {
 			_ = os.Setenv("LOCALAPPDATA", oldAppData)
 		}()
 	} else {
 		oldHome, _ := os.LookupEnv("HOME")
-		_ = os.Setenv("HOME", test.TmpDir)
+		_ = os.Setenv("HOME", TmpDir)
 		defer func() {
 			_ = os.Setenv("HOME", oldHome)
 		}()
@@ -288,7 +288,7 @@ func TestSetUserOptions(tester *testing.T) {
 				t.Errorf("got %q, want %q", gotExit, tc.wantCode)
 			}
 
-			file := test.TmpDir + PS + "tmpltoapp" + PS + "config.json"
+			file := TmpDir + PS + "tmpltoapp" + PS + "config.json"
 
 			gotCfg := &Config{}
 			_ = gotCfg.loadUserSettings(file)
@@ -305,13 +305,13 @@ func xTestLoadUserSettings(tester *testing.T) {
 	// Set the app data dir to the local test tmp.
 	if runtime.GOOS == "windows" {
 		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
-		_ = os.Setenv("LOCALAPPDATA", test.TmpDir)
+		_ = os.Setenv("LOCALAPPDATA", TmpDir)
 		defer func() {
 			_ = os.Setenv("LOCALAPPDATA", oldAppData)
 		}()
 	} else {
 		oldHome, _ := os.LookupEnv("HOME")
-		_ = os.Setenv("HOME", test.TmpDir)
+		_ = os.Setenv("HOME", TmpDir)
 		defer func() {
 			_ = os.Setenv("HOME", oldHome)
 		}()
@@ -324,7 +324,7 @@ func xTestLoadUserSettings(tester *testing.T) {
 	}{
 		{
 			"goodFile",
-			test.FixturesDir + PS + "good-config-01.json",
+			FixtureDir + PS + "good-config-01.json",
 			&Config{
 				UsrOpts: &UserOptions{
 					ExcludeFileExtensions: &[]string{""},
@@ -334,7 +334,7 @@ func xTestLoadUserSettings(tester *testing.T) {
 		},
 		{
 			"badFile",
-			test.FixturesDir + PS + "bad-config-01.json",
+			FixtureDir + PS + "bad-config-01.json",
 			&Config{
 				UsrOpts: &UserOptions{
 					ExcludeFileExtensions: &[]string{""},
