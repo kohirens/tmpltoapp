@@ -64,12 +64,13 @@ func TestGitCannotClone(tester *testing.T) {
 		shouldErr bool
 		wantHash  string
 	}{
-		{"clone404", "does-not-exit.git", "", "", true, ""},
+		{"clone404", "does-not-exist.git", "", "", true, ""},
 	}
 
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
-			repoPath := test.SetupARepositoryOld(tc.repo)
+			repoPath, _ := filepath.Abs(TmpDir)
+			repoPath += cli.PS + tc.repo
 
 			gotPath, gotHash, err := gitClone(repoPath, tc.outPath, tc.branch)
 
@@ -187,8 +188,8 @@ func TestGetLatestTagError(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := test.SetupARepositoryOld(tc.bundle)
-
+		repoPath, _ := filepath.Abs("tmp")
+		repoPath += test.PS + tc.bundle
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getLatestTag(repoPath)
 
