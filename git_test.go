@@ -127,7 +127,7 @@ func TestGetRepoDir2(tester *testing.T) {
 		want     string
 		wantHash string
 	}{
-		{"local", "repo-02", "refs/remotes/origin/third-commit", absTestTmp + cli.PS + "remotes" + cli.PS + "repo-02", "bfeb0a45c027420e4df286dc089965599e350bf9"},
+		{"localFullBranchRefArg", "repo-02", "refs/remotes/origin/third-commit", absTestTmp + cli.PS + "repo-02", "bfeb0a45c027420e4df286dc089965599e350bf9"},
 	}
 
 	for _, tc := range testCases {
