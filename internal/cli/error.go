@@ -78,7 +78,7 @@ var Errors = struct {
 	ParsingConfigArgs:      "error parsing config command args: %v",
 	PathNotAllowed:         "path/URL to template is not in the allow-list",
 	RunGitFailed:           "error running git %v: %v\n%s",
-	TmplManifest404:        "the required manifest template.json file was not %s found",
+	TmplManifest404:        "the required manifest %q file was not found",
 	TmplOutput:             "template has NOT been cloned locally",
 	TmplPath:               "please specify a path (or URL) to a template",
 	UnhandledHttpErr:       "template Download aborted; I'm coded to NOT do anything when HTTP status is %q and status code is %d",
