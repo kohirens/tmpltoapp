@@ -5,6 +5,6 @@ import "os"
 const (
 	CmdConfig   = "config"
 	CmdManifest = "manifest"
-	DirMode     = 774
+	DirMode     = 0774
 	PS          = string(os.PathSeparator)
 )
