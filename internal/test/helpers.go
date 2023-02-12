@@ -133,8 +133,8 @@ func GetTestBinCmd(args []string) *exec.Cmd {
 }
 
 // TmpSetParentDataDir set the LOCALAPPDATA or HOME environment var for a unit test.
-func TmpSetParentDataDir() func() {
-	dir, err := filepath.Abs(TmpDir)
+func TmpSetParentDataDir(d string) func() {
+	dir, err := filepath.Abs(d)
 	if err != nil {
 		panic(fmt.Sprintf("failed to get path to %q for unit test", TmpDir))
 	}
