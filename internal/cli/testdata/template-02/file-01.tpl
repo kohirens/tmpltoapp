@@ -1,0 +1,1 @@
+testings {{ .var1 }}
