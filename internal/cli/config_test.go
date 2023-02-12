@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"github.com/kohirens/tmpltoapp/internal/test"
 	"os"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -141,20 +141,8 @@ func TestLoadAnswers(tester *testing.T) {
 //}
 
 func xTestLoadUserSettings(tester *testing.T) {
-	// Set the app data dir to the local test tmp.
-	if runtime.GOOS == "windows" {
-		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
-		_ = os.Setenv("LOCALAPPDATA", TmpDir)
-		defer func() {
-			_ = os.Setenv("LOCALAPPDATA", oldAppData)
-		}()
-	} else {
-		oldHome, _ := os.LookupEnv("HOME")
-		_ = os.Setenv("HOME", TmpDir)
-		defer func() {
-			_ = os.Setenv("HOME", oldHome)
-		}()
-	}
+	delayedFunc := test.TmpSetParentDataDir(TmpDir)
+	defer delayedFunc()
 
 	var tests = []struct {
 		name     string
