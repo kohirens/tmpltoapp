@@ -80,40 +80,6 @@ func SetupARepository(bundleName, tmpDir, bundleDir, ps string) string {
 	return absPath
 }
 
-func SetupARepositoryOld(bundleName string) string {
-	repoPath := Remotes + PS + bundleName
-
-	// It may have already been unbundled.
-	fileInfo, err1 := os.Stat(repoPath)
-	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
-		absPath, e2 := filepath.Abs(repoPath)
-		if e2 == nil {
-			return absPath
-		}
-		return repoPath
-	}
-
-	srcRepo := "." + PS + FixturesDir + PS + bundleName + ".bundle"
-
-	// It may not exist.
-	if !stdlib.PathExist(srcRepo) {
-		return bundleName
-	}
-
-	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, repoPath)
-	}
-
-	absPath, e2 := filepath.Abs(repoPath)
-	if e2 == nil {
-		return absPath
-	}
-
-	return repoPath
-}
-
 // GetTestBinCmd return a command to run the test binary in a sub-process, passing it flags as fixtures to produce expected output; `TestMain`, will be run automatically.
 func GetTestBinCmd(args []string) *exec.Cmd {
 	// call the generated test binary directly
