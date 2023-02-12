@@ -52,7 +52,7 @@ func (cfg *Config) Setup(appName, ps string, dirMode os.FileMode) error {
 	}
 
 	// Make a directory to store data.
-	cfg.DataDir = osDataDir + ps + appName
+	cfg.DataDir = osDataDir + ps + "." + appName
 	if e := os.MkdirAll(cfg.DataDir, dirMode); e != nil {
 		return e
 	}
