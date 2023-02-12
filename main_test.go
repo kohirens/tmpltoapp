@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/kohirens/tmpltoapp/internal/cli"
 	"github.com/kohirens/tmpltoapp/internal/test"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -137,4 +139,101 @@ func runMain(testFunc string, args []string) *exec.Cmd {
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd
+}
+
+func TestSubCmdConfigExitCode(tester *testing.T) {
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+		expected string
+	}{
+		{"noArgs", 1, []string{cli.CmdConfig}, "usage: config"},
+		{"keyDoesNotExist", 1, []string{cli.CmdConfig, "set", "key", "value"}, "no \"key\" setting found"},
+	}
+
+	for _, tc := range tests {
+		tester.Run(tc.name, func(t *testing.T) {
+
+			cmd := test.GetTestBinCmd(tc.args)
+
+			out, sce := cmd.CombinedOutput()
+
+			// get exit code.
+			got := cmd.ProcessState.ExitCode()
+
+			if testing.Verbose() && sce != nil {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
+			}
+
+			if got != tc.wantCode {
+				t.Errorf("got %q, want %q", got, tc.wantCode)
+			}
+
+			// using bytes.NewBuffer(out).String() allows the byte array to be
+			// converted as-is and keeps chars such as newlines and quotes from
+			// being converted to '\n' or '\"', etc.
+			if !strings.Contains(bytes.NewBuffer(out).String(), tc.expected) {
+				t.Errorf("std error from program did not contain %q", tc.expected)
+			}
+		})
+	}
+}
+
+func TestSubCmdConfigSuccess(tester *testing.T) {
+	// Set the app data dir to the local test tmp.
+	if runtime.GOOS == "windows" {
+		oldAppData, _ := os.LookupEnv("LOCALAPPDATA")
+		_ = os.Setenv("LOCALAPPDATA", TmpDir)
+		defer func() {
+			_ = os.Setenv("LOCALAPPDATA", oldAppData)
+		}()
+	} else {
+		oldHome, _ := os.LookupEnv("HOME")
+		_ = os.Setenv("HOME", TmpDir)
+		defer func() {
+			_ = os.Setenv("HOME", oldHome)
+		}()
+	}
+
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+		contains string
+	}{
+		{"help", 0, []string{cli.CmdConfig, "-help"}, "usage: config"},
+		{"getCache", 0, []string{cli.CmdConfig, "get", "CacheDir"}, "tmp"},
+	}
+
+	for _, tc := range tests {
+		tester.Run(tc.name, func(t *testing.T) {
+
+			cmd := test.GetTestBinCmd(tc.args)
+
+			out, sce := cmd.CombinedOutput()
+
+			// Debug
+			if sce != nil {
+				fmt.Print("\nBEGIN sub-command\n")
+				fmt.Printf("stdout:\n%s\n", out)
+				fmt.Printf("stderr:\n%v\n", sce.Error())
+				fmt.Print("\nEND sub-command\n\n")
+			}
+
+			// get exit code.
+			got := cmd.ProcessState.ExitCode()
+
+			if got != tc.wantCode {
+				t.Errorf("got %q, want %q", got, tc.wantCode)
+			}
+
+			if !strings.Contains(bytes.NewBuffer(out).String(), tc.contains) {
+				t.Errorf("did not contain %q", tc.contains)
+			}
+		})
+	}
 }
