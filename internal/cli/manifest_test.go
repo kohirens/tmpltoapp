@@ -24,7 +24,7 @@ func TestGenerateATemplateJson(runner *testing.T) {
 
 	for _, tc := range testCases {
 		runner.Run(tc.name, func(t *testing.T) {
-			repoPath := test.SetupARepository(tc.repo)
+			repoPath := test.SetupARepository(tc.repo, TmpDir, FixtureDir, PS)
 			got, err := GenerateATemplateManifest(repoPath, fec, []string{})
 			f := repoPath + PS + "template.json"
 

@@ -41,8 +41,9 @@ func Silencer() func() {
 	}
 }
 
-func SetupARepository(bundleName string) string {
-	repoPath := Remotes + PS + bundleName
+func SetupARepository(bundleName, tmpDir, bundleDir, ps string) string {
+	repoPath := tmpDir + ps + bundleName
+
 	// It may have already been unbundled.
 	fileInfo, err1 := os.Stat(repoPath)
 	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
@@ -58,7 +59,7 @@ func SetupARepository(bundleName string) string {
 		panic(fmt.Sprintf("%v failed to get working directory", e.Error()))
 	}
 
-	srcRepo := wd + PS + FixturesDir + PS + bundleName + ".bundle"
+	srcRepo := wd + ps + bundleDir + ps + bundleName + ".bundle"
 	// It may not exist.
 	if !stdlib.PathExist(srcRepo) {
 		panic(fmt.Sprintf("%v bundle not found", srcRepo))
@@ -67,12 +68,11 @@ func SetupARepository(bundleName string) string {
 	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, repoPath)
 	_, _ = cmd.CombinedOutput()
 	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, repoPath)
+		log.Panicf("error un-bundling %q to %q for a unit test", srcRepo, repoPath)
 	}
 
 	absPath, e2 := filepath.Abs(repoPath)
 	if e2 != nil {
-		fmt.Printf("\n\npanicing\n\n")
 		panic(e2.Error())
 	}
 

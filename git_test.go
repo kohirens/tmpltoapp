@@ -22,7 +22,7 @@ func TestGitClone(tester *testing.T) {
 		{
 			"cloneRepo1",
 			"repo-01.git",
-			test.TmpDir + cli.PS + "repo-01-refs-heads-main",
+			TmpDir + cli.PS + "repo-01-refs-heads-main",
 			"refs/heads/main",
 			false,
 			"b7e42844c597d2beaf774eddfdcb653a2a4b0050",
@@ -31,7 +31,7 @@ func TestGitClone(tester *testing.T) {
 
 	for _, tc := range testCases {
 		tester.Run(tc.name, func(t *testing.T) {
-			repoPath := test.SetupARepository(tc.repo)
+			repoPath := test.SetupARepository(tc.repo, TmpDir, FixtureDir, cli.PS)
 
 			gotPath, gotHash, err := gitClone(repoPath, tc.outPath, tc.branch)
 
@@ -119,7 +119,7 @@ func TestGetRepoDir(tester *testing.T) {
 }
 
 func TestGetRepoDir2(tester *testing.T) {
-	absTestTmp, _ := filepath.Abs(test.TmpDir)
+	absTestTmp, _ := filepath.Abs(TmpDir)
 	var testCases = []struct {
 		name     string
 		bundle   string
@@ -131,7 +131,7 @@ func TestGetRepoDir2(tester *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		repoPath := test.SetupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle, TmpDir, FixtureDir, cli.PS)
 
 		tester.Run(tc.name, func(t *testing.T) {
 			gotRepo, gotHash, gotErr := gitCheckout(repoPath, tc.branch)
@@ -161,7 +161,7 @@ func TestGetLatestTag(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := test.SetupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle, TmpDir, FixtureDir, cli.PS)
 
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getLatestTag(repoPath)
@@ -215,7 +215,7 @@ func TestGetRemoteTags(tester *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		repoPath := test.SetupARepository(tc.bundle)
+		repoPath := test.SetupARepository(tc.bundle, TmpDir, FixtureDir, cli.PS)
 
 		tester.Run(fmt.Sprintf("%v.%v", i+1, tc.name), func(t *testing.T) {
 			got, gotErr := getRemoteTags(repoPath)
