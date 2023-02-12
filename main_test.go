@@ -95,23 +95,17 @@ func TestCallingMain(tester *testing.T) {
 		{"manifest0", 1, []string{"manifest"}},
 	}
 
-	for _, test := range tests {
-		tester.Run(test.name, func(t *testing.T) {
-			cmd := runMain(tester.Name(), test.args)
+	for _, tc := range tests {
+		tester.Run(tc.name, func(t *testing.T) {
+			cmd := runMain(tester.Name(), tc.args)
 
-			out, sce := cmd.CombinedOutput()
+			_, _ = test.VerboseSubCmdOut(cmd.CombinedOutput())
 
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
 
-			if got != test.wantCode {
-				t.Errorf("got %q, want %q", got, test.wantCode)
-			}
-
-			if testing.Verbose() && sce != nil {
-				fmt.Printf("\nBEGIN sub-command\nstdout:\n%v\n\n", string(out))
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
+			if got != tc.wantCode {
+				t.Errorf("got %q, want %q", got, tc.wantCode)
 			}
 		})
 	}
@@ -157,17 +151,9 @@ func TestSubCmdConfigExitCode(tester *testing.T) {
 
 			cmd := test.GetTestBinCmd(tc.args)
 
-			out, sce := cmd.CombinedOutput()
-
+			out, _ := test.VerboseSubCmdOut(cmd.CombinedOutput())
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
-
-			if testing.Verbose() && sce != nil {
-				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", out)
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
-			}
 
 			if got != tc.wantCode {
 				t.Errorf("got %q, want %q", got, tc.wantCode)
@@ -202,15 +188,7 @@ func TestSubCmdConfigSuccess(tester *testing.T) {
 
 			cmd := test.GetTestBinCmd(tc.args)
 
-			out, sce := cmd.CombinedOutput()
-
-			// Debug
-			if sce != nil {
-				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", out)
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
-			}
+			out, _ := test.VerboseSubCmdOut(cmd.CombinedOutput())
 
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
@@ -250,17 +228,7 @@ func TestSetUserOptions(tester *testing.T) {
 
 			cmd := test.GetTestBinCmd(tc.args)
 
-			gotOut, sce := cmd.CombinedOutput()
-
-			// Debug
-			if testing.Verbose() {
-				fmt.Print("\nBEGIN sub-command\n")
-				fmt.Printf("stdout:\n%s\n", gotOut)
-				if sce != nil {
-					fmt.Printf("stderr:\n%v\n", sce.Error())
-				}
-				fmt.Print("\nEND sub-command\n\n")
-			}
+			_, _ = test.VerboseSubCmdOut(cmd.CombinedOutput())
 
 			gotExit := cmd.ProcessState.ExitCode()
 

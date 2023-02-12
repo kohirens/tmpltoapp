@@ -76,7 +76,6 @@ func SetupARepository(bundleName, tmpDir, bundleDir, ps string) string {
 		panic(e2.Error())
 	}
 
-	fmt.Printf("\nabsPath = %v\n", absPath)
 	return absPath
 }
 
@@ -123,4 +122,20 @@ func TmpSetParentDataDir(d string) func() {
 			_ = os.Setenv("HOME", oldHome)
 		}
 	}
+}
+
+func VerboseSubCmdOut(stdo []byte, stde error) ([]byte, error) {
+	// Debug
+	if testing.Verbose() {
+		fmt.Print("\nBEGIN sub-command\n")
+		fmt.Printf("stdout:\n%s\n", stdo)
+
+		if stde != nil {
+			fmt.Printf("stderr:\n%v\n", stde.Error())
+		}
+
+		fmt.Print("\nEND sub-command\n\n")
+	}
+
+	return stdo, stde
 }
