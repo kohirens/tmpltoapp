@@ -32,6 +32,7 @@ var Errors = struct {
 	LocalOutPath           string
 	MissingTmplJson        string
 	NoGitTagFound          string
+	OutPathCollision       string
 	ParsingConfigArgs      string
 	PathNotAllowed         string
 	RunGitFailed           string
@@ -75,6 +76,7 @@ var Errors = struct {
 	LocalOutPath:           "enter a local path to output the app",
 	MissingTmplJson:        "%s is a file that is required to be in the template, there was a problem reading %q; error %q",
 	NoGitTagFound:          "no tag found in %v",
+	OutPathCollision:       "-tmpl-path %q and -out-path %q cannot point to the same directory",
 	ParsingConfigArgs:      "error parsing config command args: %v",
 	PathNotAllowed:         "path/URL to template is not in the allow-list",
 	RunGitFailed:           "error running git %v: %v\n%s",

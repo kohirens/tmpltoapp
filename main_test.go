@@ -251,3 +251,46 @@ func TestSetUserOptions(tester *testing.T) {
 		})
 	}
 }
+
+// Check input repo directory matches the output directory.
+func TestTmplAndOutPathMatch(tester *testing.T) {
+	fixture := "repo-08"
+	fixtureDir := TmpDir + test.PS + "remotes" + test.PS + fixture
+	// Must be cleaned on every test run to ensure no existing config.
+	if e := os.RemoveAll(TmpDir); e != nil {
+		panic("could not clean tmp directory for test run")
+	}
+	// Set the tmp directory as the place to download/clone templates.
+	test.TmpSetParentDataDir(TmpDir)
+
+	var testCases = []struct {
+		name string
+		want int
+		args []string
+	}{
+		{
+			"inputOutputCollision",
+			1,
+			[]string{
+				"-tmpl-path", fixtureDir,
+				"-out-path", fixtureDir,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tester.Run(tc.name, func(t *testing.T) {
+			test.SetupARepository(fixture, TmpDir+test.PS+"remotes", FixtureDir, test.PS)
+
+			cmd := runMain(tester.Name(), tc.args)
+
+			_, _ = test.VerboseSubCmdOut(cmd.CombinedOutput())
+
+			got := cmd.ProcessState.ExitCode()
+
+			if got != tc.want {
+				t.Errorf("got %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
