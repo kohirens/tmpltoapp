@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kohirens/stdlib"
 	"github.com/kohirens/tmpltoapp/internal/cli"
 	"github.com/kohirens/tmpltoapp/internal/test"
 	"os"
@@ -290,6 +291,55 @@ func TestTmplAndOutPathMatch(tester *testing.T) {
 
 			if got != tc.want {
 				t.Errorf("got %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+// Check for the bug that occurs when there is no config file, and you
+// want to process a template. This occurs most the first time you use the CLI.
+func TestFirstTimeRun(tester *testing.T) {
+	fixture := "repo-07"
+	// Must be cleaned on every test run to ensure no existing config.
+	if e := os.RemoveAll(TmpDir); e != nil {
+		panic("could not clean tmp directory for test run")
+	}
+	// Set the tmp directory as the place to download/clone templates.
+	test.TmpSetParentDataDir(TmpDir)
+
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+	}{
+		{
+			"pressTmplWithNoConfig",
+			0,
+			[]string{
+				"-answer-path", FixtureDir + test.PS + fixture + "-answers.json",
+				"-tmpl-path", "will be replace below",
+				"-out-path", TmpDir + test.PS + "processed" + test.PS + fixture,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		tester.Run(tc.name, func(t *testing.T) {
+			tc.args[3] = test.SetupARepository(fixture, TmpDir+test.PS+"remotes", FixtureDir, test.PS)
+
+			cmd := runMain(tester.Name(), tc.args)
+
+			_, _ = test.VerboseSubCmdOut(cmd.CombinedOutput())
+
+			got := cmd.ProcessState.ExitCode()
+
+			if got != tc.wantCode {
+				t.Errorf("got %q, want %q", got, tc.wantCode)
+			}
+
+			gotPressedTmpl := tc.args[5]
+			if !stdlib.DirExist(gotPressedTmpl) {
+				t.Errorf("output directory %q was not found", gotPressedTmpl)
 			}
 		})
 	}

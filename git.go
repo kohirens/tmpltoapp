@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/kohirens/tmpltoapp/internal/cli"
 	"os"
@@ -39,13 +40,21 @@ func gitClone(repoUri, repoDir, refName string) (string, string, error) {
 
 		infof("clone output \n%s", sco)
 
-		// git checkout <ref_name>
-		sco3, e3 := gitCmd(repoDir, "checkout", "-b", refName)
-		if e3 != nil {
-			return "", "", fmt.Errorf(cli.Errors.Cloning, repoUri, e1.Error(), sco3)
+		// get current branch
+		cb, e4 := gitCmd(repoDir, "branch", "--show-current", refName)
+		if e4 != nil {
+			return "", "", fmt.Errorf(cli.Errors.CurrentBranch, repoUri, e4.Error(), cb)
 		}
+		// skip if already on desired branch
+		if strings.Trim(bytes.NewBuffer(cb).String(), "\r\n") != refName {
+			// git checkout <ref_name>
+			co, e3 := gitCmd(repoDir, "checkout", "-b", refName)
+			if e3 != nil {
+				return "", "", fmt.Errorf(cli.Errors.Checkout, repoUri, e3.Error(), co)
+			}
 
-		infof("clone output \n%s", sco3)
+			infof("checkout output \n%s", co)
+		}
 	}
 
 	latestCommitHash, e2 := getLastCommitHash(repoDir)
