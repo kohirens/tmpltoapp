@@ -2,6 +2,33 @@
 ## [Unreleased]
 
 
+<a name="3.0.0"></a>
+## [3.0.0] - 2023-02-13
+### Added
+- FuncMap To Template
+- Validation For User Input
+- Validation To Placeholders
+- Template Schema Validation
+
+### Changed
+- Validation Rule Names To Camel Case
+- Throw An Error When Tmpl Path And Out Path Match
+- More Debug Messages With Config
+- Load Config Setting From File
+- Make TmplToApp Cache Hidden
+- Refactor To Internal
+- Upgraded Kohirens Stdlib To Version 0.4.0
+- Updated the templpate.json Schema
+- Begin Refactoring Template Internals
+
+### Fixed
+- Rule regExp Expression Dependency
+- Bug Generating A Template When There Is No Config
+- Mapping Functions To Templates
+- An Error Message
+- Directory Mode Permissions Mask
+
+
 <a name="2.0.2"></a>
 ## [2.0.2] - 2023-02-07
 ### Changed
@@ -238,7 +265,8 @@
   version.
 
 
-[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.2...HEAD
+[Unreleased]: https://github.com/kohirens/tmpltoapp.git/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.2...3.0.0
 [2.0.2]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/kohirens/tmpltoapp.git/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/kohirens/tmpltoapp.git/compare/1.0.0...2.0.0
