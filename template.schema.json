@@ -57,7 +57,7 @@
                 },
                 "rule": {
                     "type": "string",
-                    "enum": ["alpha-numeric", "reg-exp"]
+                    "enum": ["alphaNumeric", "regExp"]
                 },
                 "expression": {
                     "type": "string",
