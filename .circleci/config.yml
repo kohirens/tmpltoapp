@@ -72,8 +72,10 @@ jobs:
       - run:
           name: "Validate Answers/Template Schemas"
           command: |
-              yajsv -s template.schema.json testdata\template-01.json
-              yajsv -s answers.schema.json testdata\answers-01.json
+              curl -L -o "yajsv" https://github.com/neilpa/yajsv/releases/download/v1.4.1/yajsv.linux.amd64
+              chmod +x ./yajsv
+              ./yajsv -s answers.schema.json testdata/answers-01.json
+              ./yajsv -s template.schema.json testdata/template-01.json
 
   publish-image:
     docker:
