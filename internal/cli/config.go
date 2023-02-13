@@ -256,6 +256,10 @@ func (cfg *Config) Validate() error {
 		return fmt.Errorf(Errors.LocalOutPath)
 	}
 
+	if cfg.TmplPath == cfg.OutPath {
+		return fmt.Errorf(Errors.OutPathCollision, cfg.TmplPath, cfg.OutPath)
+	}
+
 	if stdlib.DirExist(cfg.OutPath) {
 		return fmt.Errorf(Messages.OutPathExist, cfg.OutPath)
 	}
