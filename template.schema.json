@@ -64,11 +64,8 @@
                     "format": "regex"
                 }
             },
-            "if": {
-                "properties": { "rule": { "const": "reg-exp"} }
-            },
-            "then": {
-                "required": [ "expression" ]
+            "dependentRequired": {
+                "regExp": [ "expression" ]
             }
         }
     }
