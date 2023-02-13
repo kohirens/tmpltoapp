@@ -8,6 +8,7 @@ var Errors = struct {
 	CannotDecodeAnswerFile string
 	CannotInitFileChecker  string
 	CannotReadAnswerFile   string
+	Checkout               string
 	Cloning                string
 	CouldNot               string
 	CouldNotCloseFile      string
@@ -16,6 +17,7 @@ var Errors = struct {
 	CouldNotMakeCacheDir   string
 	CouldNotSaveConf       string
 	CouldNotWriteFile      string
+	CurrentBranch          string
 	FatalHeader            string
 	FlagOrderErr           string
 	FileTooBig             string
@@ -52,6 +54,7 @@ var Errors = struct {
 	CannotDecodeAnswerFile: "could not decode JSON in answer file %q, because of: %s",
 	CannotInitFileChecker:  "cannot instantiate file extension checker: %v",
 	CannotReadAnswerFile:   "there was an error reading the answer file %q: %s",
+	Checkout:               "checkout failed for branch %q",
 	Cloning:                "error cloning %v: %s",
 	CouldNot:               "could not %s",
 	CouldNotCloseFile:      "could not close file %v, %v",
@@ -60,6 +63,7 @@ var Errors = struct {
 	CouldNotMakeCacheDir:   "could not make cache directory, error: %s",
 	CouldNotSaveConf:       "could not save a config file, reason: %v",
 	CouldNotWriteFile:      "could not write file %v, reason: %v",
+	CurrentBranch:          "failed to get current for %s",
 	FatalHeader:            "\nfatal error detected: ",
 	FlagOrderErr:           "flag %v MUST come before any non-flag arguments, a fix would be to move this flag to the left of other input arguments",
 	FileTooBig:             "template file too big to Parse, must be less thatn %v bytes",
