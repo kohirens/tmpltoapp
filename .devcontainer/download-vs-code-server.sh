@@ -18,7 +18,7 @@ get_latest_release() {
           grep '"type":'                    | # Get tag line
           sed -E 's/.*"([^"]+)".*/\1/'      ) # Pluck JSON value
 
-    if [ "${sha_type}" = "commit" ] || [ "${sha_type}" = "tag" ]; then
+    if [ "${sha_type}" != "commit" ]; then
         combo_sha=$(curl -s "https://api.github.com/repos/${1}/git/tags/${sha}" | # Get latest release from GitHub API
               grep '"sha":'                                                     | # Get tag line
               sed -E 's/.*"([^"]+)".*/\1/'                                      ) # Pluck JSON value
@@ -32,23 +32,40 @@ get_latest_release() {
     printf "${sha}"
 }
 
-archive="vscode-server-linux-x64.tar.gz"
+ARCH="x64"
+U_NAME=$(uname -m)
+IS_ALPINE=$(cat /etc/os-release | grep alpine)
+
+if [ "${U_NAME}" = "aarch64" ]; then
+    ARCH="arm64"
+elif [ "${U_NAME}" = "x86_64" ]; then
+    ARCH="x64"
+elif [ "${U_NAME}" = "armv7l" ]; then
+    ARCH="armhf"
+elif [ -n "${IS_ALPINE}" ]; then
+    echo "downloading alpine flavor"
+    ARCH="alpine"
+fi
+
+archive="vscode-server-linux-${ARCH}.tar.gz"
 owner='microsoft'
 repo='vscode'
 commit_sha=$(get_latest_release "${owner}/${repo}")
 
 if [ -n "${commit_sha}" ]; then
     echo "will attempt to download VS Code Server version = '${commit_sha}'"
-
-    # Download VS Code Server tarball to tmp directory.
-    curl -L "https://update.code.visualstudio.com/commit:${commit_sha}/server-linux-x64/stable" -o "/tmp/${archive}"
+    curl -L "https://update.code.visualstudio.com/commit:${commit_sha}/server-linux-${ARCH}/stable" -o "/tmp/${archive}"
 
     # Make the parent directory where the server should live.
-    # NOTE: Ensure VS Code will have read/write access; namely the user running VScode or container user.
+    # NOTE: Ensure VS Code will have read/write access; namely the user VScode is running as in the container.
     mkdir -vp ~/.vscode-server/bin/"${commit_sha}"
 
     # Extract the tarball to the right location.
     tar --no-same-owner -xzv --strip-components=1 -C ~/.vscode-server/bin/"${commit_sha}" -f "/tmp/${archive}"
+
+    # Add symlink
+    cd ~/.vscode-server/bin
+    ln -s "${commit_sha}" default_version
 else
     echo "could not pre install vscode server"
 fi
