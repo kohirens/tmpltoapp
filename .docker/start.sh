@@ -8,19 +8,23 @@
 set -e
 
 shutd () {
-    printf "Shutting down the container gracefully..."
+    printf "%s" "Shutting down the container gracefully..."
+
     # You can run clean commands here!
-    printf "done\n"
+
+    echo "done"
 }
 
-trap 'shutd' SIGTERM
+trap 'shutd' TERM
 
-echo "Starting up..."
+echo "Starting up"
 
 # Run non-blocking commands here
 go mod tidy
 go mod vendor
 
-# This keeps the container running until it receives a signal to be stopped.
-# Also very low CPU usage.
+echo "Ready."
+
+# This will keep the container running, it has very low CPU usage.
+# When this process receives a signal to be stopped, shutd function will run.
 while :; do :; done & kill -STOP $! && wait $!
