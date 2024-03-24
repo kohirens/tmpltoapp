@@ -1,125 +1,88 @@
-* [TmplToApp](#tmpltoapp)
-    * [Description](#description)
-    * [Installation](#installation)
-        * [Using Go](#using-go)
-        * [Using Docker](#using-docker)
-    * [Get Started](#get-started)
-        * [Making a Template](#making-a-template)
-        * [Using a Template](#using-a-template)
-
-# TmplToApp
+# TmplPress
 
 Start an app (or something) from a template.
 
+## Table of Contents
+
+* [TmplPress](#tmplpress)
+    * [Info](#info)
+    * [Description](#description)
+    * [Installation](#installation)
+        * [Requirements](#requirements)
+        * [Using Go](#using-go)
+        * [Using Docker](#using-docker)
+        * [Using cURL & tar](#using-curl--tar)
+    * [Using a Template](#using-a-template)
+    * [Making a Template](/docs/template-designing.md#making-a-template)
+    * [FYI](#fyi)
+    * [Teminology](/docs/terminology.md)
+
 ## Info
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/kohirens/tmpltoapp/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/kohirens/tmpltoapp/tree/main)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/kohirens/tmplpress/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/kohirens/tmplpress/tree/main)
 
 ## Description
 
-Uses the Go text/template engine to produce output such as an app, project, etc.
-A template is a folder with files (of any extension). Each file processed as a
-Go template. Data for the template is supplied with JSON files. They can be
-simple key/value pairs. However, you are only limited to your knowledge of Go
-templates. Meaning it can be more than just simple string replacement of
-placeholders. Think loops, conditions, and function calls (built into go).
+A template is a collection of files organized in a folder hierarchy. Any
+extension can be used as long as it is text (only tested with UTF-8) containing
+Go template syntax. This application takes such a folder and processes each
+file in the folder structure to an output folder of your choosing.
 
-This can be used to process anything you can start from a template. For example
-image you want to send out an email to many clients, then you can process
-a file, in a loop, and supply the data that changes to produce different output
-with each pass of the loop.
+Data for the template is supplied with questions answer from the CLI or a
+JSON file as input. This is extremely powerful; you are only limited to your
+knowledge of Go templates.
 
-## Terminology
+You can make whole project templates or smaller pieces your more likely to use
+on a regular basis. For examole, making a Docker file template or a CI/CD
+configuration you use for many projects. Making a tempalte out of them to fill
+in application details for example.
 
-* Placeholders - refer to the variables that need to be filled in when a file
-  is process as a Go template.
-* Template - is a folder/directory with files (of any extension).
-* Empty directory - a directory with a single file named `.empty`, contents
-  are ignored.
-* Templates source - can be a local folder, URL to a zip file, or Git repo.
+The idea is to quickly setup things you need on a regular basis.
+
+**Hint:** Templates are invaluable for quickly setting up apps/projects layouts
+(even a small parts) that you commonly use. This is especially true when using
+the `answer.json` file with automation.
 
 ## Installation
+
+### Requirements
+
+Git must be installed on your system in order to use this tool. Git is used
+to perform actions such as cloning and checking out branches or tags, and is
+necessary for this application to perform its functions.
 
 ### Using Go
 
 ```
-go get github.com/kohirens/tmpltoapp
+go install github.com/kohirens/tmplpress
 ```
 
 ### Using Docker
 
 ```
-docker pull kohirens/tmpltoapp:latest
+docker pull kohirens/tmplpress:x.x.x
 ```
 
-### Using cURL
+### Using Pre-built Binary
 
 ```
-cd /tmp
 mkdir -p "${HOME}/bin"
-curl -L -o tmpltoapp.tar.gz https://github.com/kohirens/tmpltoapp/releases/download/x.x.x/tmpltoapp-linux-amd64.tar.gz
-tar -xzvf tmpltoapp.tar.gz  ${HOME}/bin
+curl -L -o tmplpress.tar.gz https://github.com/kohirens/tmplpress/releases/download/x.x.x/tmplpress-linux-amd64.tar.gz
+tar -xzvf tmplpress.tar.gz  ${HOME}/bin
 export PATH="${HOME}/bin:${PATH}"
 ```
 
-## Get Started
+## Using a Template
 
-### Making a Template
+You'll need to download this tool in order to use a template. See [Installation]
+if you have not done so.
 
-Templates are just directories containing files, which can contain Go template
-syntax that will be processed to fill in placeholders. The output will serve as
-a new project.
-
-1. Make a new directory.
-2. Add folders, and if a directory should be empty, then place a file named
-   ".empty" in it. It does need any text in it.
-3. Add your files, the extension does not matter as it will be processed as a Go template. For example imagine "README.md" with the content.
-   1. Files can contain a GoLang template placeholder, so `README.md` can contain:
-      ```gotemplate
-      # {{ .appName }}
-
-      ## Summary
-      ```
-   Note: the placeholder `{{ .appName }}` will be replaced with the apps name at runtime.
-4. Add a `template.json` file that serves as a manifest of all variables in the template, see [How To Build A Template JSON Manifest](/docs/building-a-template-json.md)
-5. Commit the changes and push up to your repo.
-
-### Using a Template
+NOTE: There are command line flags should you need to place the arguments
+out of order. Run the program with `-h` or `--help` for options.
 
 Run this application with 3 parameters:
-1. a path to a template, a URL to a zip or local folder.
+1. a path to a template, a URL or local folder.
 2. a path to where you want to place the project (it should not exist).
-3. a path to an answer (JSON) file containing key/value pairs that will
-   serve as variables. The name is not imp For example, an `{{ .author }}`
-   placeholder would take a file that has:
-   ```
-   {
-      "author": "your name here",
-      "appName": "awesomeAppName"
-   }
-   ```
-NOTICE: Name change pending... "start-from-tmpl" to make it obvious what this
-tool does.
-
-4. make a `template.json` file which acts as a manifest, it needs the following:
-   ```
-   {
-      "version": "1.0.0",
-      "placeholders": {
-        "appName": "name of the app",
-        "repoName": "name of the VCS repository"
-      },
-      "excludes": [
-         ".gitignore",
-         "*.gif",
-         "*.jpg",
-         "*.png",
-         "*.mov",
-      ]
-   }
-   ```
-NOTE: There are command line flags should you need to place the arguments
-      out of order. Run the program with `-h` or `--help` for options.
 
 ### Notes About Template Processing
 
@@ -128,6 +91,20 @@ NOTE: There are command line flags should you need to place the arguments
 * Empty directories will be placed without the ".empty" file.
 * Files listed in the `excludes` list are output to the final app directory without template processing.
 * Template are processed with the Go lib [Golang text/template].
+
+## FYI
+
+1. Why is it called "TmplPress"?
+    * The name is a play on newspress. Old machines used to print newspapers.
+      Like a newspaper the TmplPress (Template Press) produces copies from
+      templates.
+2. What is up with the name "printer.go" in the press package"
+    * Going along with the them of newspress, the machine as a whole acts as a
+      printer. Originally the name was lever, for what a person would pull to
+      print 1 side of a newpaper, but since the press package is meant to
+      contain all the parts build to produce the paper, it made more since to
+      call the file that contains the main function to produce a tempalte be
+      name printer.
 
 ---
 

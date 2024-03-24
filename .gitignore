@@ -4,16 +4,17 @@
 /internal/cli/testdata/001/
 /internal/cli/testdata/repo-*/
 /internal/cli/tmp/
-/testdata/repo-*/
+/testdata/parse-dir-02/
 /out/
 /vendor/
+repo-*/
 tmp/
 
 # Files
 # -----
 /info.go
-/tmpltoapp
-/tmpltoapp.exe
-/tmpltoapp.test
-/tmpltoapp.test.exe
+/tmplpress
+/tmplpress.exe
+/tmplpress.test
+/tmplpress.test.exe
 ...

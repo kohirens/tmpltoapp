@@ -1,5 +1,11 @@
-module github.com/kohirens/tmpltoapp
+module github.com/kohirens/tmplpress
 
-go 1.15
+go 1.21
 
-require github.com/kohirens/stdlib v0.0.0-20230205130150-22fbc3b400e2
+toolchain go1.21.6
+
+require (
+	github.com/kohirens/stdlib v0.0.0-20240317173523-467fce39bae3
+	github.com/ryanuber/go-glob v1.0.0
+	golang.org/x/mod v0.16.0
+)

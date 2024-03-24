@@ -1,10 +1,10 @@
 {
     "$comment": "see here for clarity: https://json-schema.org/understanding-json-schema/index.html",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://github.com/kohirens/tmpltoapp/blob/main/template.schema.json",
+    "$id": "https://github.com/kohirens/tmplpress/blob/main/template.schema.json",
     "title": "Template Placeholder Manifest",
     "description": "Provide list a placeholder variables names for a template",
-    "version": "1.0.0",
+    "version": "2.2.0",
     "type": "object",
     "required": [ "version", "placeholders" ],
     "properties": {
@@ -17,8 +17,13 @@
             "description": "A map where the keys are the placeholder names and the values are strings to present as a question to ask for the value in a CLI prompt",
             "type": "object"
         },
-        "excludes": {
-            "description": "A list of files and directories to exclude from template processing, and to copy as-is",
+        "emptyDirFile": {
+            "description": "Name of a file that marks a directory as empty and has the effect of \"mkdir -p\". This file allows you to add directories to Git but have them made and empty when the template is pressed.",
+            "type": "string",
+            "pattern": "^\\.?[a-zA-Z0-9-_.]+$"
+        },
+        "copyAsIs": {
+            "description": "A list of files and directories to skip template processing and copy to the output directory unaltered.",
             "type": "array",
             "items": {
                 "type": "string"
@@ -27,12 +32,12 @@
             "uniqueItems": true
         },
         "skip": {
-            "description": "A list of files and directories to completely skip, will not be processed or copied",
+            "description": "A list of files and directories to completely skip, will not be processed or copied to the output directory",
             "type": "array",
             "items": {
                 "type": "string"
             },
-            "minItems": 0,
+            "minItems": 1,
             "uniqueItems": true
         },
         "validation": {
@@ -43,6 +48,11 @@
                 "type": "object",
                 "$ref": "#/$defs/validator"
             }
+        },
+        "substitute": {
+            "description": "Name of a directory containing files to overwrite at the root of the template before template processing. This is for cases where you need to include files, for example, automation but also want one for the template.",
+            "type": "string",
+            "pattern": "^\\.?[a-zA-Z0-9-_.]+$"
         }
     },
     "$defs": {
